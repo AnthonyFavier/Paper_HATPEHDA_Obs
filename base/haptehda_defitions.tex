@@ -1,0 +1,51 @@
+\section{HATPEHDA Definitions}
+
+\newcommand{\statespace}{S}
+\newcommand{\worldstate}{s}
+\newcommand{\agenth}{\alpha}
+\newcommand{\agents}{Ag}
+\newcommand{\agentstate}{\sigma}
+\newcommand{\ctrlagents}{\widehat{Ag}}
+\newcommand{\unctrlagents}{\widetilde{Ag}}
+\newcommand{\agentsstates}{\sigma}
+\newcommand{\ctrlagentsstates}{\widehat{\sigma}}
+\newcommand{\unctrlagentsstates}{\widetilde{\sigma}}
+\newcommand{\agentsstatesset}{\Sigma}
+\newcommand{\actionmodel}{\Lambda}
+\newcommand{\operators}{Op}
+\newcommand{\abstracttasks}{Ab}
+\newcommand{\methods}{Me}
+\newcommand{\agenda}{d}
+\newcommand{\plan}{\pi}
+\newcommand{\triggerset}{Tr}
+\newcommand{\policy}{\Pi}
+
+\newcommand{\realset}{\mathbb{R}}
+\newcommand{\intset}{\mathbb{N}}
+
+
+\subsection{Definitions}
+The main structure manipulated by our planner is the \textbf{agent}, more precisely two will be represented, the \textit{human} and the \textit{robot}. Each agent has their own \textbf{beliefs}, \textbf{action model}, \textbf{agenda}, \textbf{plan} and \textbf{triggers}. The planner has to use their action models and beliefs to decompose the tasks in their agenda into primitive tasks (actions) that are inserted in their plan. By doing so, it also has to update the beliefs of each agent and to model their reaction by executing the triggers.
+
+\paragraph{\bf Agents}
+First, we define an agent state as a tuple $\agentstate_{\agenth} = \langle  \agenda_{\agenth}, \plan_{\agenth}, \worldstate_{\agenth} \rangle$, with $\agenda_{\agenth}$ the agenda, $\plan_{\agenth}$ the partial plan and $\worldstate_{\agenth}$ the beliefs of the agent $\agenth$ (more details are presented in what follows). Then, we define an agent as being $\agenth = \langle \text{name}_{\agenth}, \agentstate_{\agenth}, \actionmodel_{\agenth}, \triggerset_{\agenth} \rangle$, with $\text{name}_{\agenth}$ the agent name, $\agentstate_{\agenth}$ the agent state, $\actionmodel_{\agenth}$ the action model and $\triggerset_{\agenth}$ the triggers of the agent $\agenth$ (detailed in what follows). Then we define two agents: the controllable one --- the \textit{robot} ---; and the uncontrollable one --- the \textit{human} ---. We have $\agentstate = \langle \agentstate_{robot}, \agentstate_{human} \rangle$ representing an agent\underline{s} state, being the state of all the agents at a certain plan step. Let $\agentsstatesset$ be the set of all the possible agents states.
+
+\paragraph{\bf Beliefs}
+Let $\statespace$ be the set of all possible world states, we call beliefs of an agent $\agenth$ the state $\worldstate_{\agenth} \in \statespace$ in which this agent thinks the world is in. It is important to note that the state of the controllable agent (robot) is assumed to be the real world state estimation for the planner, as we consider the planner as being part of the controllable agent.
+
+\paragraph{\bf Action models}
+We represent the action model of an agent $\agenth$ as $\actionmodel_{\agenth} = \langle \operators_{\agenth}, \abstracttasks_{\agenth}, \methods_{\agenth} \rangle$ where $\operators_{\agenth}$ are the primitive tasks (\textit{i.e.}~operators, actions) that the agent $\agenth$ can perform, $\abstracttasks_{\agenth}$ the set of abstract tasks and $\methods_{\agenth}$ are the methods (\textit{i.e.}~decompositions) describing how an agent $\agenth$ can perform an abstract task through a refinement process. It is important to note that while this representation makes a clear distinction between the robot and the human tasks, it does not prevent representing joint abstract tasks or tasks that can be either done by one or the other agent. Indeed, as we show later, complementary abstract tasks can be represented and some tasks can have the same operational model even if they are not in the same agent action model. 
+
+More precisely, the primitive tasks (operators) are defined as functions: $\operators \ni o: \agentsstatesset \rightarrow \agentsstatesset \cup \bot$ which produce new agents state, being the effect of the application of the primitive task, or \textit{false} if the task is not applicable. We represent operators as being instantaneous (or all having the same duration) in their realization. 
+%In the future, to represent more accurately intricate coordination, we want to include the expected duration of an operator. 
+With this definition of operators, we are able to represent action effecting the beliefs of any agents (\textit{e.g.} depending on the \textit{observability} of a robot action, the operator will or will not update the beliefs of the human). Moreover, we can represent actions whose only effects are knowledge sharing (\textit{e.g.} verbal communication for belief alignment).
+
+Then, methods are defined as tuple, containing an abstract task and a decomposition function: $\methods \ni m = \langle \tau, \delta \rangle$ with $\tau \in \abstracttasks$ and $\delta: \agentsstatesset \rightarrow (\operators \cup \abstracttasks)^n \cup () \cup \bot$ with $n \in \intset^*$, which, depending on agents state, decompose the abstract task returning a sequence of tasks (primitive or abstract), an empty sequence if the abstract task does not need to be decomposed, or \textit{false} if the task cannot be decomposed in the current state. Multiple methods can address the same abstract task, the goal of the HTN planner is then to choose the right one to create a plan.
+
+\paragraph{\bf Agents agendas and plans}
+An agenda $\agenda_{\agenth}$ and a plan $\plan_{\agenth}$ (this agent only stream of actions) are defined for each agent $\agenth$. The agenda $\agenda_{\agenth}$ is a sequence of tasks (abstract or primitive) having to be performed by the agent. The plan $\plan_{\agenth}$ is a sequence of primitive tasks, built from the agenda, which the agent has to perform. The links of actions order between the two streams of actions (plans) are kept in each plan, allowing for coordination.
+
+\paragraph{\bf Agent triggers}
+Finally, we define for each agent $\agenth$ a set of so-called \textit{trigger functions} $\triggerset_{\agenth}$. These trigger functions aim at representing reactions of agents to certain situations (subsets of world states). They are useful to model event-driven behavior, as in PRS~\cite{ingrand1996prs}, when a specific world state \textit{triggers} a reaction from an agent. Besides, these triggers can be used to represent social norms as defined in \cite{carlucci2015explicit}, where the user can specify literals which, if true in the world state during the planning process, add some specific robot actions to the plan.
+
+Trigger functions are defined as: $\triggerset \ni t: \agentsstatesset \rightarrow (\operators \cup \abstracttasks)^n \cup ()$ with $n \in \intset^*$, returning a sequence of tasks to be inserted in an agent agenda as a reaction to specific agents state. For now, the tasks returned by a trigger function are added on top of the agenda, thus preempting any task that may have started to be decomposed. A considered solution is to support the flagging of some abstract tasks in the domain as being \textit{atomic}. We can then prevent the tasks returned by a trigger to be inserted between any tasks resulting from the decomposition of an atomic task.

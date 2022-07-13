@@ -1,0 +1,22 @@
+\section{Beliefs description and definitions}
+\textbf{DEFINITIONS:}
+\begin{itemize}
+
+    \item \textbf{Word state}: Let $\worldstates$ be the set of all possible world states, any world state is composed of a set of fluents, i.e. $\forall\worldstate\in\worldstates, \worldstate=\{ \fluent^\worldstate \}$.
+    
+    \item \textbf{Fluent}: A fluent $\fluent^\worldstate$ is a statement partially describing a world state $\worldstate\in\worldstates$ whose truth value is situation dependent. Fluents may be seen as ''properties of the world" that may change over time.
+    \subitem E.g. Considering the fluent $\fluent_1^\worldstate \equiv at(ball, \worldstate)$, if the ball is initially in $place_1$ then $\fluent_1^{\worldstate_0}=place_1$, $\worldstate_0$ being the initial state.
+    % \subitem E.g. Considering the fluent $\fluent_1^\worldstate \equiv water\_is\_hot(\worldstate)$, if the water is initially hot then $\fluent_1^{\worldstate_0}=true$, $\worldstate_0$ being the initial state.
+    
+    \item \textbf{Belief divergence}: We note $\fluent^{\worldstate,\agent}$ a fluent evaluated in the perspective of an agent $\agent$. Thus, in a given real state of the world $\worldstate\in\worldstates$, the robot and the human can have different values for the same fluent. We call such mismatch a belief divergence or a false belief on a fluent.
+    % or a \textbf{false belief} of the human (only if $\fluent^{\worldstate,\robot} \neq \unknown$). 
+    \subitem E.g. $(\fluent_1^{\worldstate_0,\robot}=place_1) \neq (\fluent_1^{\worldstate_0,\human}=place_2)$
+    
+    % \item \textbf{Unknown} / \textbf{Known}\textbf{ (maybe remove, issues in algo)}: Any fluent evaluated in the perspective of the robot $\fluent^{\worldstate,\robot}$ can be set to $\unknown$ (Unknown). It means that the robot is aware it doesn't know a fact. In the same way, any fluent evaluated in the perspective of the human $\fluent^{\worldstate,\human}$ can be set to $\unknown$, meaning that the robot is aware that the human doesn't know a fact. Additionally, any fluent $\fluent^{\worldstate,\human}$ can also be set to $\known$ (Known). It means that the robot is aware that the human knows a fact but the robot itself doesn't.
+    % \subitem E.g. $at(ball, \worldstate, \robot)=\unknown$ and $at(ball,\worldstate,\human)=\known$
+    
+    \item \textbf{Beliefs}: We call beliefs of an agent $\agent$, noted $\beliefs_\agent$, the state $\worldstate_\agent\in\worldstates$ in which the this agent thinks the world is in, i.e. the set of all fluents evaluated in their perspective: $\worldstate_\agent=\{ \fluent^{\worldstate,\agent} \}$. It is important to note that the beliefs of the robot $\beliefs_\robot$ are assumed to be the ground truth, as we consider the planner as being part of the robot. Note also that the human's beliefs $\beliefs_\human$ are only estimated by the robot by doing some perspective-taking reasoning.
+    
+    % \item \textbf{False belief}: When there is a belief divergence on a fluent $\fluent^{\worldstate}$, if that fluent is known in the robot perspective, i.e. $\fluent^{\worldstate,\robot} \neq \unknown$, we call this divergence a false belief of the human. Indeed, since the robot knows the ground truth value of the fluent, we assume any other value is erroneous, and thus, that the human is wrong. 
+    
+\end{itemize}

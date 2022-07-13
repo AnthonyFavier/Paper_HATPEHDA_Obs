@@ -1,0 +1,77 @@
+\section{Observability description}
+
+\textbf{DEFINITIONS:}
+\begin{itemize}
+
+    \item \textbf{Action effects}: 
+    Actions can have three types of effects: 
+    \subitem - \textbf{non-observable}: Effects that can't be observed by other agents.
+    \subitem - \textbf{inferable}: Effects that can't be observed but can be inferred by agents observing the action execution.
+    \subitem - \textbf{observable}: Effects that can be observed by other agents, regardless if the action execution has been observed.
+    
+    \item \textbf{Places}: 
+    A place is an area in the environment. Let $\places=\{ \place_i \}$ be the set of all defined places. Agents are always situated in a place. Actions are always performed in a place, except for navigation actions that involve two places.
+    
+    \item \textbf{Observation of an action execution}: 
+    For simplification purposes we define the notion of co-presence. Two agents located in a same place are said to be co-present.
+    % We assume that an agent observes the action execution of all co-present agents. 
+    % More specifically, the human (resp. robot) will observe the execution of an action performed by the robot (resp. human) only if they are both in the same place.
+    Based on that, we assume that the execution of an action being performed by an agent $\agent$ is observed by all agents that were co-present with $\agent$ either at the before or after the action.
+    The co-presence is checked both before and after to cover navigation actions.
+    As future work a more elaborated formula could be used to evaluate the observation of an action execution, for instance using geometrical reasoning.
+    
+    \item \textbf{Checking observability when executing an action}: 
+    Consider two agents $\lambda_1$ and $\lambda_2$. When $\agent_1$ performs an action, we first update the acting agent's beliefs $\beliefs_{\agent_1}$ with all the effects of the action. Then, before updating the other agent's beliefs $\beliefs_{\agent_2}$, we check if $\agent_2$ observed the action execution of $\agent_1$. 
+    To do so, according to our assumption, we simply check if $\agent_1$ and $\agent_2$ were co-present either before or after simulating the action's effects. If so, $\agent_2$ observed the action execution and $\beliefs_{\agent_2}$ is updated with both the inferable and observable effects. 
+    Otherwise, the action missed by $\agent_2$ is stored in a set noted $\missedactions_{\agent_2}$, which stores every actions missed by $\agent_2$.
+    
+    \item \textbf{Situation Assessment}: 
+    The idea is to predict the situation assessment of an agent and update their beliefs about all the observable effects that they missed while being away. 
+    % The situation assessment is performed in a place and when entering one. 
+    To do so, when an agent $\agent$ enters a place $\place\in\places$, all the non observed actions that happened in $\place$ are extracted from $\missedactions_\agent$. Then, we chronologically apply the effects of each of these actions and remove them from $\missedactions_\agent$. If $\agent$ is the robot, all the effects are applied. Otherwise, if $\agent$ is the human, only the observable effects are applied. 
+    
+    \item \textbf{Checking if there are relevant false beliefs}: 
+    We want to detect if a false belief influences the plan of the human, i.e. if when using the human beliefs containing false beliefs induces different human actions than the ones expected using the ground truth beliefs. If so, the false beliefs are qualified as relevant. Indeed, a false belief can wrongly affect the applicability of a human action, its cost and its effects. Assuming that the robot estimated the best possible plans for the human using the ground truth $\beliefs_\robot$, any different plan found with $\beliefs_\human$ is either not applicable in reality, more expensive or with undesired effects. Thus, a relevant false belief is always considered as detrimental.
+
+    When refining the human agenda to estimate their next possible actions, we first use the human beliefs $\beliefs_H$. Then we repeat the process but considering the robot beliefs $\beliefs_R$ (ground truth). After, the two obtained refinements are compared to check if they are the same. Two refinements are considered to be the same if they respectively have the same decompositions, i.e. if, in both refinements, each decomposition respectively has the same type, subtasks and if their actions have the same applicability, cost and effects. If the two refinements are not the same we consider that there are relevant belief divergences to align, but we don't know which ones yet.
+    
+    % \item \textbf{Communicate to correct the relevant false beliefs}: 
+    \item \textbf{Identify the relevant false beliefs and communicate}: 
+    Once the presence of relevant false beliefs has been confirmed they have to be identified. For now, all divergences between $\mathcal{B}_R$ and $\mathcal{B}_H$ are first computed. Then one divergence after another we simulate the divergence correction (i.e. $\fluent_i^{\worldstate, \human} \gets \fluent_i^{\worldstate, \robot}$) and the human agenda is refined again in order to compare the new refinement with the one previously obtained with $\beliefs_\robot$. We keep simulating combination of divergence corrections until the refinements are the same, which means that all the relevant false beliefs have been identified. Then, the corresponding communication action is inserted in the robot's plan to inform the human about their relevant false beliefs and to correct them.
+    
+\end{itemize}
+
+
+\begin{algorithm}
+\caption{Get applied refinement complete}\label{alg:cacc}
+\begin{algorithmic}
+\Require $ag\_name$: acting agent name, $ags$: all agents
+
+\State $ref \gets refineAgenda(ags, ag\_state=ag\_name)$
+
+\State $ref\_b\_r \gets refineAgenda(ags, ag\_state=robot\_name)$
+\If{$needBeliefAlignment()$} \Comment{Human only}
+    \State $alignBeliefsWithComAction()$
+    \State $ref \gets refineAgenda(aligned\_ags, ag\_state=ag\_name)$
+\EndIf
+
+\For{$decomp$ in $refinement$}
+
+    \State $result \gets applyOperator(decomp)$ 
+    \If{$resultNotValid(result)$}
+        \State \texttt{add wait, idle or do nothing (end)}
+    \Else
+        \State $applyOperatorCheckObs(decomp)$
+        \State $updateActingAgentAgenda()$
+        
+        \If{$needSituationAssessment()$}
+            \State $situationAssessment()$
+        \EndIf
+        
+        \State $checkOtherTriggers()$
+        \State \texttt{update decomp subtask and agents}
+    \EndIf
+\EndFor
+
+\end{algorithmic}
+\end{algorithm}

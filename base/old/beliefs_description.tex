@@ -1,0 +1,18 @@
+\section{Beliefs description and definitions}
+\textbf{DEFINITIONS:}
+\begin{itemize}
+
+    \item A \textbf{Property} $\varphi$ is a property/attribute describing the world.
+    \subitem Ex: $\prop_1=at[``robot"]$, $\prop_2=pan\_is\_hot$
+    
+    \item Let $\allprops$ be the set of all properties.
+    
+    \item A \textbf{Predicate} $\predicate_{\prop}$ is a 2-tuple $\langle \prop, \predval \rangle$, where $\prop\in\allprops$ and $\predval$ is the value used to evaluate the associated property. We note $\predicate_\prop^\agent$ a predicate evaluated in the perspective of an agent $\agent$.
+    \subitem Ex: $\predicate_{\prop_1}=\langle at[``robot"], \texttt{room1} \rangle$, $\predicate_{\prop_2}=\langle pan\_is\_hot, \texttt{true} \rangle$
+    
+    \item The \textbf{Beliefs} of an agent $\agent$, noted $\beliefs_\agent$, is a set of all predicates in the perspective of the agent, i.e. $\beliefs_\agent = \{ \predicate_\prop^\agent \}_{\forall \prop\in\allprops}$. The beliefs gives a full estimation of the state of the world, through the perspective of the agent $\agent$. Note that, since we are in the robot's side, we consider the robot beliefs $\beliefs_R$ as the ground truth and the human beliefs $\beliefs_H$ are only estimated from the point of view of the robot.
+    
+    \item There is a \textbf{divergence} on a property $\prop\in\allprops$ when it doesn't have the same value in every agent perspective, basically, if $\predicate_{\prop}^R \ne \predicate_{\prop}^H$. If so, we say that the human has a \textbf{false belief}, since we consider the robot beliefs is the ground truth.
+    \subitem Ex: if $\predicate_{\prop_2}^R=\langle pan\_is\_hot, \texttt{true} \rangle$ and $\predicate_{\prop_2}^H=\langle pan\_is\_hot, \texttt{false} \rangle$ then the human has a false belief on $\prop_2$.
+    
+\end{itemize}

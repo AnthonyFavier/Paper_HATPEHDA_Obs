@@ -1,0 +1,23 @@
+\section{Refinement description}
+
+% Here the planning process differs from classical HTN planning and even from the original HATPEHDA planner. We get in a turn based fashion each agent's possible actions. 
+% The goal is to pop the first task $t_0$ in the agenda of an agent $\agent$ $d_\agent$ and refine it until reaching not already done primitive tasks (actions). This is the purpose of the function $refineAgenda()$. If the first task popped 
+
+The refinement of the HTNs is mostly done thanks to the function $refineAgenda()$. This function keeps refining the agenda of an agent in a given state until reaching a not done primitive task at the first spot. It returns a list of decomposition, made of a list of subtasks, for each applicable methods. Each decomposition starts with a not done primitive task. The parameter $agent\_state$ of the function $refineAgenda$ can be used to specify with which beliefs the refinement has to be done. 
+
+\begin{itemize}
+    \item \textbf{Refinement}: 
+    \subitem - decompositions: Decomposition[]
+    
+    \item \textbf{Decomposition}:
+    \subitem - subtasks: Task[]
+    \subitem - agents: Agents
+    \subitem - type: DecompType $\in$ \{ok, no\_method, agenda\_empty, both\_agendas\_empty\}
+    
+    \item \textbf{Task}:
+    \subitem - name: Str
+    \subitem - parameters: Any[]
+    \subitem - agent: Str
+    \subitem - previous: Task
+    
+\end{itemize}

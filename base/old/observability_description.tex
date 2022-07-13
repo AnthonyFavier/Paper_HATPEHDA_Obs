@@ -1,0 +1,66 @@
+\section{Observability description}
+
+\textbf{DEFINITIONS:}
+\begin{itemize}
+
+    \item Actions have three types of effects: 
+    \subitem - \textbf{non-observable}: Effects can't be observed by other agents.
+    \subitem - \textbf{instant-observable}: Effects can't be observed but can be inferred by agents observing the action execution.
+    \subitem - \textbf{post-observable}: Effects can be observed by other agents, regardless if the action execution has been observed.
+
+    \item \textbf{Places}: As part of the domain we define a set of places $\places=\{ \place_i \}$. A place is an area in the environment of the task where an agent can stand and perform actions.
+    
+    \item \textbf{Co-presence}: Two agents located in a same place are said to be co-present. 
+
+    \item \textbf{Observability function (remove ?)}: 
+    It evaluates in a given state/context if the execution of an action from an agent $\agent_1$ is being observed by another agent $\agent_2$.
+    Each agent has a defined observability function.
+    Currently, we consider that two agents in the same place observe each other's action executions.
+    
+    \item \textbf{Checking observability when executing an action}: Consider two agents $\lambda_1$ and $\lambda_2$. When $\agent_1$ execute an action, we first update the beliefs of the acting agent $\beliefs_{\agent_1}$. Then, before applying the effects to the other agent's beliefs $\beliefs_{\agent_2}$, we check if $\agent_2$ is observing the action execution of $\agent_1$. 
+    To do so we call the observability function of $\agent_2$ before and after simulating the effects of the action. If any call returns \texttt{true} we consider that $\agent_2$ is observing the execution of the action, and thus we update $\beliefs_{\agent_2}$ with both instant and post observable effects of the action. Otherwise, the action isn't observed by $\lambda_2$ and we store the action among all other non observed actions of $\lambda_2$ for the situation assessment process.
+    
+    \item \textbf{needSituationAssessment}: It evaluates if there is a need to perform a situation assessment for an agent $\agent_1$ about their non observed actions. We basically call the observability function of the agent and compare the results with the last call. We track rising edges of the observability (e.g. agent came back in the scene). When there is a rising edge we assume that the situation assessment process needs to be run.
+    
+    \item \textbf{situationAssessment}: The idea is to simulate a situation assessment and update the beliefs of the agent about all the observable effects of the non observed actions. Thus, we apply the effects of every non observed actions stored. For the human, we only apply the post observable effects. For the robot, we apply all the effects. Then, both non observable actions list are cleared.
+    
+    \item \textbf{planNeedsSomeBeliefAlignment/relevantDivergenceExisting}: We want to detect if a false belief influences the plan of the human (we assume this influence is always negative). When refining the human agenda to estimate their next possible actions, we first use the human beliefs $\beliefs_H$. Then we repeat the process but considering the robot beliefs $\beliefs_R$ (ground truth). After, we compare the two obtained refinements and \texttt{true} is returned if they are not the same. Two refinements are considered the same if they have respectively the same decompositions, i.e. if, in both refinements, each decomposition respectively has the same type, subtasks and if their actions have the same applicability, cost and effects. If the two refinements are not the same we consider that there is a relevant belief divergence to align.
+    
+    \item \textbf{correctDivergenceWithComAction}: Once the need of beliefs alignment has been detected we want to add a communication action to correct the relevant divergence, and thus align the beliefs/remove the relevant false belief. First we look for all divergences between $\mathcal{B}_R$ and $\mathcal{B}_H$. Then for each divergence on a property $\varphi$ we simulate the alignment (i.e. $\mathcal{P}_\varphi^H \gets \mathcal{P}_\varphi^R$). Then, we refine again the agenda of the human and check if there is still a need of belief alignment by calling the previous function. If there is no need of belief alignment anymore then we found the relevant divergence and the aligned beliefs are returned. Otherwise, we keep going through the remaining divergences.
+    
+\end{itemize}
+
+
+\begin{algorithm}
+\caption{Get applied refinement complete}\label{alg:cacc}
+\begin{algorithmic}
+\Require $ag\_name$: acting agent name, $ags$: all agents
+
+\State $ref \gets refineAgenda(ags, ag\_state=ag\_name)$
+
+\State $ref\_b\_r \gets refineAgenda(ags, ag\_state=robot\_name)$
+\If{$needBeliefAlignment()$} \Comment{Human only}
+    \State $alignBeliefsWithComAction()$
+    \State $ref \gets refineAgenda(aligned\_ags, ag\_state=ag\_name)$
+\EndIf
+
+\For{$decomp$ in $refinement$}
+
+    \State $result \gets applyOperator(decomp)$ 
+    \If{$resultNotValid(result)$}
+        \State \texttt{add wait, idle or do nothing (end)}
+    \Else
+        \State $applyOperatorCheckObs(decomp)$
+        \State $updateActingAgentAgenda()$
+        
+        \If{$needSituationAssessment()$}
+            \State $situationAssessment()$
+        \EndIf
+        
+        \State $checkOtherTriggers()$
+        \State \texttt{update decomp subtask and agents}
+    \EndIf
+\EndFor
+
+\end{algorithmic}
+\end{algorithm}
