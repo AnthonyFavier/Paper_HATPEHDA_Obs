@@ -132,7 +132,7 @@
 
 \section{Introduction}
 % what is known ? our understanding of the world
-general context, towards robot partner. 
+General context, towards robot partner. 
 
 % what is unknown ? the gap we want to fill
 % how and why ? your rational and purpose/hypothesis 
@@ -141,10 +141,12 @@ general context, towards robot partner.
 \section{Related Work / Background}
 
 \begin{itemize}
-    \item some refs from ICRA paper ? (Devin theory of mind) 
-    \item human activity model, hierarchical HTN
+    \item Some refs from ICRA paper ? (Devin theory of mind) 
+    \item Human activity model, hierarchical HTN
     \item HATP general
     \item HATPEHDA (ICRA)
+    \item explicit communication, multi agent 
+    \item belief divergences, non verbal com
 \end{itemize}
 
 \section{Materials and Methods}
@@ -158,13 +160,13 @@ Agents can have a shared goal but no shared plan. There is no plan negotiation b
 
 The main structure manipulated by our planner is the \textbf{agent}, more precisely two will be represented, the \textit{human} and the \textit{robot}. Each agent has their own \textbf{beliefs}, \textbf{action model}, \textbf{agenda}, \textbf{plan} and \textbf{triggers}. The planner has to use their action models and beliefs to decompose the tasks in their agenda into primitive tasks (actions) that are inserted in their plan. By doing so, it also has to update the beliefs of each agent and to model their reaction by executing the triggers. \cite{buisan:hal-03684211}.
 
-The agents, robot and human, have each a distinct action model modeled with HTNs. The robot HTN starts with the goal given to the robot and describes how to decompose that abstract goal into several actions. The human HTN represents the anticipation by the robot of the human plan and possible actions in a given situation. Other formalism like POMPD or PDDL could be used to describe the agents' action models as soon as they provide the next possible actions of an agent in a given state. Especially the human one which is an estimation.
+The agents, robot and human, have each a distinct action model modeled with HTNs. The robot HTN starts with the goal given to the robot and describes how to decompose that abstract goal into several actions. The human HTN represents the anticipation by the robot of the human plan and possible actions in a given situation. Other formalism like POMDP or PDDL could be used to describe the agents' action models as soon as they provide the next possible actions of an agent in a given state. Especially the human one which is an estimation.
 
 The planner has a goal creation mechanism, especially for the human, based on goal-directed or situation-directed task creation.
 
 The planning algorithm is implemented as a search involving two threads: 1) the robot task-based plan search using the robot action model 2) the estimation of the human task-based plan search using the human action model.
 
-While HTN-R corresponds to the controllable part  (from the robot point of view) of the (shared) plan, HTN-H represents the contigent part of the plan: the decisions and actions of the human. 
+While HTN-R corresponds to the controllable part  (from the robot point of view) of the (shared) plan, HTN-H represents the contingent part of the plan: the decisions and actions of the human. 
 
 Hence, the obtained plan has two streams (one for the human and one of the robot) and is conditional. Alternatives correspond to human decision: choosing to act or not, making one (out of several choices).
 
@@ -182,23 +184,30 @@ In our case the plan process starts:
 
 Situation-directed task creation in HTN-H allows to model (potential) reaction by the human to a situation created by after a given action of the robot. This can be used in the planner to elicit a reactiion of the human.
 
+\textbf{HTN formalism [in background ?]}:
+An HTN \textit{planning problem} is the 3-tuple $\langle d, S_0, \mathcal{D} \rangle$, where $d$ is the sequence of (primitive or abstract) tasks to solve, $S_0$ is an initial state as in classical planning, and $\mathcal{D}$ is an HTN \textit{planning domain}. Specifically, an HTN \textit{planning domain} is the pair $\mathcal{D}=\langle\mathcal{A},\mathcal{M}\rangle$ where $\mathcal{A}$-the primitives of the domain-is a finite set of operators as before, and $\mathcal{M}$ is a finite set of \textit{methods}. A \textit{method} is a tuple consisting of the name of the method, the abstract task that the method is used to solve, a precondition specifying when the method is applicable (like an operator's precondition), and a \textit{body} indicating which tasks are used to solve the task associated with the method. The method-body is a sequence of primitive and/or abstract tasks. 
+
+The planning process works by selecting applicable reduction methods from $\mathcal{M}$ and applying them to abstract tasks in $d$ in a depth-first manner. In each iteration this will typically result in $d$ becoming a "more primitive" sequence of tasks. The process continues until $d$ has only primitive tasks left. At any stage in the planning process, if no applicable method can be found for an abstract task, the planner essentially "backtracks" and tries an alternative method for an abstract task refine earlier.
+
+\textbf{Computing next possible agent actions / refining agenda [nothing new here, in hatpehda background ?]}:
+% The refinement of the HTNs is mostly done thanks to the function $refineAgenda()$. This function keeps refining the agenda of an agent in a given state until reaching a not done primitive task at the first spot. It returns a refinement which is list of decomposition, one for each applicable methods. Each decomposition is a list of the obtained subtasks which starts with a not done primitive task. The second parameter the function $refineAgenda$ can be used to specify with which beliefs the refinement has to be done. 
+The action model of each agent is described with a HTN. Thus, the process to compute (or estimate in the human case) the next possible actions of an agent is very close to classic HTN refinement.
+The classic planning process for HTN planning problem consist in selecting applicable reduction methods from $\mathcal{M}$ and applying them to abstract tasks in $d$ in a depth-first manner. In our contribution the planning process slightly differs from the classic process since the goal is to compute or estimate all possible next actions in a given state. 
+Here, $d$ corresponds to what we call the agenda of the agent. To compute the next possible actions the agent's agenda is refined. To do so the first task in the agenda is popped, and all applicable reduction methods are applied to the task resulting is search branches with different subtasks. The process is repeated for each created branch until reaching a primitive task in each of them. The primitive tasks from each search branch constitute the set of all possible next actions of the agent.
+A search branch can refine into nothing but if all search branches refine into nothing then the first task popped from the agenda is done, so the next task in the agent's agenda is popped and refined.  
+
 \subsection{Knowledge representation and observability definitions}
 
 Our formalism is close to the SAS+ Formalism applied to HTN.  
 
-\textbf{Places}: 
-A place is an area defined a priori in the environment. Let $\places=\{ \place_i \}$ be the set of all defined places. Agents are always situated in a place or moving between them. Actions are always performed in a place. (Most?) State variables are associated to a place.
-
-\textbf{Observation of an action execution}: 
-For simplification purposes we define the notion of co-presence. Two agents located in a same place are said to be co-present.
-Based on that, we assume that the execution of an action performed by an agent $\agent$ has been observed by all agents that were co-present with $\agent$ either before or after the action. The co-presence is checked both before and after to cover navigation actions.
-(As future work a more elaborated formula could be used to evaluate the observation of an action execution, for instance using geometrical reasoning.)
-
 \textbf{Word state}: 
-Let $\worldstates$ be the set of all possible world states. World states are defined by a same set of fluents. Each world state is fully described by the value of all fluents at a given time i.e. $\forall\worldstate\in\worldstates, \worldstate=\{ \fluent{\worldstate}{}{}{} \}$.
+Let $\worldstates$ be the set of all possible world states. World states are defined by a same set of fluents. Each world state is fully described by the value of all its fluents at a given time i.e. $\forall\worldstate\in\worldstates, \worldstate=\{ \fluent{\worldstate}{}{}{} \}$.
 
 \textbf{Fluent}: 
 A fluent $\fluent{\worldstate}{}{}{}$ is a multi-valued state variable associated to a finite domain $Dom(\fluent{\worldstate}{}{}{})$ partially describing the state of the world at a given time.
+
+% (introduce loc ?)
+% The observability type of fluents is qualified through the relation $\obs{ \fluent{\worldstate}{}{}{} } \in \{ \observable, \inferable \}$. 
 
 e.g. Considering the following fluent $\fluent{\worldstate}{}{temp\_water}{}$, if initially the water is hot then $\fluent{\worldstate_0}{}{temp\_water}{}=hot$.
 
@@ -208,62 +217,88 @@ We note $\fluent{\worldstate}{,\agent}{}{}$ a fluent evaluated in the perspectiv
 e.g. $(\fluent{\worldstate_0}{,\robot}{temp\_water}{}=hot) \neq (\fluent{\worldstate_0}{,\human}{temp\_water}{}=cold)$
 
 \textbf{Two distinct Beliefs}: 
-We call beliefs of an agent $\agent$, noted $\beliefs_\agent$, the belief state in which this agent thinks the world is in, i.e. the set of all fluents evaluated in their perspective at a given time: $\beliefs_\agent=\{ \fluent{\worldstate}{,\agent}{}{} \}$. It is important to note that we use two distinct belief states during the planning process. On one hand, we consider the beliefs of the robot $\beliefs_\robot$ which are obtained through perception and effects of robot actions and decisions. As we consider the planner as being part of the robot, we assume that $\beliefs_\robot$ is the ground truth estimation for the planner. On the other hand, we consider the human's belief state $\beliefs_\human$ which is only estimated by the robot by doing some perspective-taking reasoning during the planning process.
+We call beliefs of an agent $\agent$, noted $\beliefs_\agent$, the belief state in which this agent thinks the world is in, i.e. the set of all fluents evaluated in their perspective at a given time: $\beliefs_\agent=\{ \fluent{\worldstate}{,\agent}{}{} \}$. It is important to note that we use two distinct belief states during the planning process. On one hand, we consider the beliefs of the robot $\beliefs_\robot$ which are obtained through perception and effects of robot actions and decisions. As we consider the planner as being part of the robot, we assume that $\beliefs_\robot$ is the ground truth estimation for the planner. On the other hand, we consider the human's belief state $\beliefs_\human$ which is only estimated by the robot by doing some perspective-taking reasoning during the planning process (and before ?).
+
+
+\subsection{Place-based observability model}
+
+We introduce in our contribution a place-based model of observability. An agent observes and can only observe what happens in their current place, this includes action executions and fluent values.
+
+\textbf{Places}: 
+A place is an area defined a priori in the environment. Let $\places=\{ \place_i \}$ be the set of all defined places. Agents are always situated in a place or moving between them. Two agents situated in the same place are said to be co-present. Actions are always performed in a place. (Most?) State variables are associated to a place.
+
+\textbf{Observation of an action execution}: 
+The execution of an action performed by an agent $\agent$ is observed by all agents that were co-present with $\agent$ either before or after the action. The co-presence is checked both before and after to cover navigation actions.
 
 \textbf{Observability of fluents}:
-Each (most) fluent is associated to a place $\place \in \places$ through the relation $\loc{ \fluent{\worldstate}{}{}{} }=\place$. These relations help to describe the world state by expressing where the fluents are effective and observable. These relations can be dynamic if the fluent describes a property linked to a moving entity (agents, movable objects). Currently the location of a fluent has to be updated manually in the domain if it is dynamic (we should go for an "entity-based" description of the world state to automatically update).
+Each (most?) fluent is associated to a place $\place \in \places$ through the relation $\loc{ \fluent{\worldstate}{}{}{} }=\place$. These relations help to describe the world state by expressing where the fluents are effective and observable. These relations can be dynamic for example when the fluent describes a property linked to a moving entity. Currently, the location of a fluent has to be updated manually in the domain if it is dynamic (we should go for an "entity-based" description of the world state to automatically update).
 
-The observability of each fluent is qualified through the relation $\obs{ \fluent{\worldstate}{}{}{} } \in \{ \observable, \inferable \}$. 
-% The first value $\observable$ means that the fluent is observable. More details on how this property is used will be given in the \textit{Situation Assessment} part but keep in mind that a fluent is observed by an agent only if it is observable and if that agent is in the place associated to the fluent. 
-The first value $\observable$ means that the fluent is observable. A fluent is observed by an agent only if it is observable and if that agent is in the place associated to the fluent (co-present with fluent?). This property is used in the \textit{Situation Assessment} process.
-The other value $\inferable$ qualifies inferable fluents. A fluent is inferable if its value isn't observable but can be inferred by attending an action affecting that fluent. For instance, by observing someone adding salt to a dish we infer that there is now salt in the dish, although the salt in the dish isn't observable. It means that without attending the action execution it's impossible to tell if there salt just by looking at it. Thus, we consider that when an action affects inferable fluents only the co-present agents gets their beliefs updated. We later refer to actions affecting inferable fluents as actions with some inferable effects.
+The observability type of each fluent is constant and defined initially through the relation $\obs{ \fluent{\worldstate}{}{}{} } \in \{ \observable, \inferable \}$. 
+The first value $\observable$ means that the fluent is observable. A fluent is observed by an agent only if it is observable and if that agent is in the place associated to the fluent. 
+Note that places can be symbolic and not only physical/geometric to represent more complex situation. Let's consider the fluent $\fluent{\worldstate}{}{at}{,o}$ describing the position of an object \textit{o}. The object is in the kitchen inside a cupboard that can either be open or closed. This situation can be modeled as follows :
+\begin{itemize}
+    \item $\fluent{\worldstate}{}{at}{,o}=cupboard$
+    \item $\obs{ \fluent{\worldstate}{}{at}{,o} }=\observable$
+    \item $\loc{ \fluent{\worldstate}{}{at}{,o} } \in \{ kitchen, closed \}$
+\end{itemize}
+The relation $\loc{ \fluent{\worldstate}{}{at}{,o} } = kitchen$ corresponds to when the cupboard is open, which means any agent in the place $kitchen$ can observe the object. On the other hand, when the cupboard is closed, $\loc{ \fluent{\worldstate}{}{at}{,o} } = closed$, the agent cannot observe the object.
+
+The other value $\inferable$ qualifies inferable fluents. A fluent is inferable if its value isn't observable but can be inferred by attending an action affecting that fluent. For instance, by observing someone adding salt to a dish we infer that there is now salt in the dish, although the salt in the dish isn't observable. It means that without attending the action execution it's impossible to tell if there salt just by looking at it. Thus, when an action affects inferable fluents only the co-present agents gets their beliefs updated. We later refer to actions affecting inferable fluents as actions with inferable effects.
+
+\subsection{Beliefs updates}
+
+Agents' beliefs are updated by four different processes: 1) performing an action, 2) attending inferable effects, 3) assessing the situation, and 4) communicating about a relevant belief divergence.  
+
+
+\textbf{Performing actions / Inferable effects}: 
+% When an action is performed, first the beliefs of the acting agent are updated then the other agent's beliefs are update but differently depending on if the acting is the robot or the human. 
+
+% If the robot is performing the action, the human beliefs will be updated in two ways. First, if the robot and the human are co-present, $\beliefs_\human$ is updated with the inferable effects of the action. Secondly, the situation assessment process will update $\beliefs_\human$ with all other observable effects.
+
+% On the other hand, when the human is performing an action, the robot beliefs $\beliefs_\robot$ always get updated with all effects weither it can observe the effects or not. 
+% Indeed, since we currently use explicit values for fluents, it doesn't make sense for the robot to predict it shouldn't know a fact. 
+
+% When an agent performs an action, the beliefs are updated differently according to if the agent is the robot or the human. 
+% About the robot beliefs updates, especially when the robot doesn't observe a human action. Using explicit values of state variables, it makes no sense for the robot to know that it doesn't know something.
+% For now, we assume that if the human has to do something that is planned and not observable by the robot it should be quite simple. Thus, we suppose it's ok to apply all effects instantly.
+% Thus, when the human is performing an action, the acting agent beliefs $\beliefs_\human$ are updated as well as the robot ones $\beliefs_\robot$, with all effects.
+
+% When the robot is performing an action, the acting agent beliefs, here $\beliefs_\robot$, are updated. Then, only if the human and the robot are co-present, $\beliefs_\human$ gets updated with the inferable effects of the robot action. The situation assessment process will update $\beliefs_\human$ with all other observable effects.
+
+When an agent performs an action its own beliefs are always directly updated with the action's effects.
+
+The other agent's beliefs are updated about these effects through two mechanisms. The first one, that will handle observable effects, is the situation assessment and is detailed just after. 
+The other one concerns inferable effects. Only agents that observed the action execution get their beliefs updated with the inferable effects.
+
+% Since our model is deterministic with explicit values of state variables, it makes no sense for the robot to know it doesn't know an explicit effect when it didn't observe the action execution. Based on this, for now, we assume that if we estimated that the human will perform an action not observable by the robot it should be quite simple 
+% it's ok to apply instantly the effects of the human action to the robot beliefs. 
+
+For now, we assume that if we estimate that the human will perform a task not observable by the robot then it should remain quite simple like a series of deterministic actions. Basically, we currently do not handle more complex cases where the human has multiple choices of actions while being not observable. Considering this hypothesis, the robot beliefs are also always updated with the effects of human actions, weither they are co-present or not.
 
 \textbf{Situation Assessment}:
-The idea is to predict the situation assessment of an agent and update their beliefs according to what they can see in their current place. The situation assessment is executed after every action execution. When executed, each agent updates their beliefs with the ground truth value of every observed fluents, i.e. for every observable fluents ($\obs{ \fluent{\worldstate}{}{}{} } = \observable$) located in their place ($\loc{\fluent{\worldstate}{}{}{}} = \fluent{\worldstate}{}{at}{,\agent}$), we have $\fluent{\worldstate}{,\agent}{}{} \gets \fluent{\worldstate}{}{}{}$. Note that since the ground truth is actually the robot beliefs, this situation assessment is only effective for the human. 
-
-With our symbolic place-based model of observability we assume that the observabilty of each fluent is constant and defined initially by the scenario. Note that even with this simplified model we can cover scenarios where an object is suddenly not observable by defining a dedicated place for this obstructed state. For instance, if an object is put inside a cupboard (move object to place \textit{inside\_cupboard}), an agent will be able to observe the object only if they open the cupboard (move agent to place \textit{inside\_cupboard}) or if they get the object out (move object to same place as the agent).
-
-\textbf{Beliefs update after action [draft]}: 
-When an action is performed, first the beliefs of the acting agent are updated then the other agent's beliefs are update but differently depending on if the acting is the robot or the human. 
-
-If the robot is performing the action, the human beliefs will be updated in two ways. First, if the robot and the human are co-present, $\beliefs_\human$ is updated with the inferable effects of the action. Secondly, the situation assessment process will update $\beliefs_\human$ with all other observable effects.
-
-On the other hand, when the human is performing an action, the robot beliefs $\beliefs_\robot$ always get updated with all effects weither it can observe the effects or not. 
-Indeed, since we currently use explicit values for fluents, it doesn't makes sense for the robot to predict it shouldn't know a fact. 
-
-When an agent performs an action, the beliefs are updated differently according to if the agent is the robot or the human. 
-About the robot beliefs updates, especially when the robot doesn't observe a human action. Using explicit values of state variables, it makes no sense for the robot to know that it doesn't know something.
-For now we assume that if the human has to do something that is planned and not observable by the robot it should be quite simple. Thus, we suppose it's ok to apply all effects instantly.
-Thus, when the human is performing an action, the acting agent beliefs $\beliefs_\human$ are updated as well as the robot ones $\beliefs_\robot$, with all effects.
-
-When the robot is performing an action, the acting agent beliefs, here $\beliefs_\robot$, are updated. Then, only if the human and the robot are co-present, $\beliefs_\human$ gets updated with the inferable effects of the robot action. The situation assessment process will update $\beliefs_\human$ with all other observable effects.
-
-\textbf{HTN formalism}:
-An HTN \textit{planning problem} is the 3-tuple $\langle d, S_0, \mathcal{D} \rangle$, where $d$ is the sequence of (primitive or abstract) tasks to solve, $S_0$ is an initial state as in classical planning, and $\mathcal{D}$ is an HTN \textit{planning domain}. Specifically, an HTN \textit{planning domain} is the pair $\mathcal{D}=\langle\mathcal{A},\mathcal{M}\rangle$ where $\mathcal{A}$-the primitives of the domain-is a finite set of operators as before, and $\mathcal{M}$ is a finite set of \textit{methods}. A \textit{method} is a tuple consisting of the name of the method, the abstract task that the method is used to solve, a precondition specifying when the method is applicable (like an operator's precondition), and a \textit{body} indicating which tasks are used to solve the task associated with the method. The method-body is a sequence of primitive and/or abstract tasks. 
-
-The planning process works by selecting applicable reduction methods from $\mathcal{M}$ and applying them to abstract tasks in $d$ in a depth-first manner. In each iteration this will typically result in $d$ becoming a "more primitive" sequence of tasks. The process continues until $d$ has only primitive tasks left. At any stage in the planning process, if no applicable method can be found for an abstract task, the planner essentially "backtracks" and tries an alternative method for an abstract task refine earlier.
-
-\textbf{Computing next possible agent actions}:
-% The refinement of the HTNs is mostly done thanks to the function $refineAgenda()$. This function keeps refining the agenda of an agent in a given state until reaching a not done primitive task at the first spot. It returns a refinement which is list of decomposition, one for each applicable methods. Each decomposition is a list of the obtained subtasks which starts with a not done primitive task. The second parameter the function $refineAgenda$ can be used to specify with which beliefs the refinement has to be done. 
-The action model of each agent is described with a HTN. Thus, the process to compute (or estimate in the human case) the next possible actions of an agent is very close to classic HTN refinement.
-The classic planning process for HTN planning problem consist in selecting applicable reduction methods from $\mathcal{M}$ and applying them to abstract tasks in $d$ in a depth-first manner. In our contribution the planning process sligthly differs from the classic process since we aim to compute or estimate all possible actions, thus we apply all applicable reduction methods in a breadth-first manner.
+The idea is to predict the situation assessment of an agent and update their beliefs according to what they can see in their current place. When executed, each agent $\agent$ updates their beliefs with the ground truth value of every observed fluents, i.e., for every observable fluents ($\obs{ \fluent{\worldstate}{}{}{} } = \observable$) located in their place ($\loc{\fluent{\worldstate}{}{}{}} = \fluent{\worldstate}{}{at}{,\agent}$), we have $\fluent{\worldstate}{,\agent}{}{} \gets \fluent{\worldstate}{}{}{}$. The situation assessment is executed after every action execution. This way, the agent's beliefs are updated either with the observable effects of an action performed by another co-present agent, or with the observable effects they missed when entering another place. 
+Note that since the ground truth is actually the robot beliefs, this situation assessment is only effective for the human. 
 
 \textbf{Relevant belief divergences checking}:
 We want to detect if a belief divergence influences the plan of the human, i.e. if when using the human beliefs containing belief divergences induces different human actions than the ones expected using the ground truth beliefs. If so, the belief divergences are qualified as relevant. Indeed, a belief divergence can wrongly affect the applicability of a human action, its cost and its effects. 
-Any difference in the human plan makes it either not applicable in reality, more expensive or with undesired effects. There are some rare cases of belief divergences inducing a different plan still applicable, with a similar cost and no undesired effects. But for now we omit these cases and we consider relevant belief divergences as always detrimental.
+Any difference in the human plan makes it either not applicable in reality, more expensive or with undesired effects. There are some rare cases of belief divergences inducing a different plan still applicable, with a similar cost and no undesired effects. But for now we omit these cases, and we consider relevant belief divergences as always detrimental.
 
 To check if there are some relevant belief divergences we proceed as follows. When refining the human agenda to estimate their next possible actions, we first use the human beliefs $\beliefs_H$. The process is repeated but considering the robot beliefs $\beliefs_R$ (ground truth). The two obtained refinements are then compared to check if they are the same. Two refinements are considered to be the same if they respectively have the same decompositions, i.e. if, in both refinements, each decomposition respectively has the same type, subtasks and if their actions have the same applicability, cost and effects. If the two refinements are not the same we consider that there are relevant belief divergences to align, but we don't know which ones yet.
 
 \textbf{Identify the relevant divergences and communicate}: 
-Once the presence of relevant belief divergences has been confirmed they have to be identified. All divergences between $\mathcal{B}_R$ and $\mathcal{B}_H$ are first computed. Then the divergence's corrections are simulated one after another (i.e. $ \fluent{\worldstate}{,\human}{i}{} \gets \fluent{\worldstate}{,\robot}{i}{}$) and the human agenda is refined again in order to compare the new refinement with the one previously obtained with $\beliefs_\robot$. We keep simulating combination of divergence corrections in a breadth-first (search) manner until the refinements are the same, which means that all the relevant divergences have been identified. In the worst case, the last combination corresponds to all divergences being corrected, which means $\beliefs_\human$ and $\beliefs_\robot$ are now the same. Thus the obtained refinements will necessarily be the same which guarantees the ending of our algorithm. After having identified the divergences to correct in order to obtain the same refinements, the corresponding communication action is inserted in the robot's plan to inform the human about their relevant belief divergences and to correct them.
+Once the presence of relevant belief divergences has been confirmed they have to be identified. All divergences between $\mathcal{B}_R$ and $\mathcal{B}_H$ are first computed. Then the divergence's corrections are simulated one after another (i.e. $ \fluent{\worldstate}{,\human}{i}{} \gets \fluent{\worldstate}{,\robot}{i}{}$) and the human agenda is refined again in order to compare the new refinement with the one previously obtained with $\beliefs_\robot$. We keep simulating combination of divergence corrections in a breadth-first (search) manner until the refinements are the same, which means that all the relevant divergences have been identified. In the worst case, the last combination corresponds to all divergences being corrected, which means $\beliefs_\human$ and $\beliefs_\robot$ are now the same. Thus, the obtained refinements will necessarily be the same which guarantees the ending of our algorithm. After having identified the divergences to correct in order to obtain the same refinements, the corresponding communication action is inserted in the robot's plan to inform the human about their relevant belief divergences and to correct them.
     
-Communication actions are supposed to be instantaneous (0 time step to execute), to be able to correct sevaral divergences at the same time and for now they are inserted right before the detected erroneous human action. (A more complex reasoning could be added to identify the optimal place to insert the communicaton action in the plan). 
+Communication actions are supposed to be instantaneous (0 time step to execute), to be able to correct several divergences at the same time and for now they are inserted right before the detected erroneous human action. (A more complex reasoning could be added to identify the optimal place to insert the communication action in the plan). 
+
+
+
+
 
 \subsection{Algorithm}
 
 The refinement of the HTNs is mostly done thanks to the function $refineAgenda()$. This function keeps refining the agenda of an agent in a given state until reaching a not done primitive task at the first spot. It returns a refinement which is list of decomposition, one for each applicable methods. Each decomposition is a list of the obtained subtasks which starts with a not done primitive task. The second parameter the function $refineAgenda$ can be used to specify with which beliefs the refinement has to be done. 
 
-The returned refinement in \ref{alg:ap_ref_all} contains the subtasks obtained through the refinement of the agenda after a potential belief alignement, application of the actions, situation assessment and triggers.
+The returned refinement in \ref{alg:ap_ref_all} contains the subtasks obtained through the refinement of the agenda after a potential belief alignment, application of the actions, situation assessment and triggers.
 
 \begin{algorithm}
 \caption{Get applied refinement ALL}\label{alg:ap_ref_all}
@@ -298,8 +333,8 @@ The returned refinement in \ref{alg:ap_ref_all} contains the subtasks obtained t
 \end{algorithm}
 
 \textbf{Choice to reduce ambiguities}:
-In the case of a shared goal, let's assume that the human didn't observe the robot performing an action with only inferable effects, so when coming back the human has no way to tell if the action has been done just by looking at the scene. Then three cases can occur : 1) The human considers that the robot didn't perform the action, thus the human will try to perform it again, 2) The human considers that the robot performed the action so the plan execution continues, 3) the human prefers to directly ask the robot if it performed the action. 
-Humans are rational so they will rarely blindly act without at least asking the state of the shared plan. However, whatever case we are in an ambiguity will remain for the human and we are able to predict it. Thus we decide to proactively reduce the ambiguity by communicating about their belief divergences or the missed actions. This communication might seem optional in some situations but having a plan without ambiguities in the context of a shared goal is often much better than a plan with less steps but where agent aren't sure about what they have to do. Communication help to compel the human actions.
+In the case of a shared goal, let's assume that the human didn't observe the robot performing an action with only inferable effects, so when coming back the human has no way to tell if the action has been done just by looking at the scene. Then three cases can occur : 1) The human considers that the robot didn't perform the action, thus the human will try to perform it again, 2) The human considers that the robot performed the action, so the plan execution continues, 3) the human prefers to directly ask the robot if it performed the action. 
+Humans are rational, so they will rarely blindly act without at least asking the state of the shared plan. However, whatever case we are in an ambiguity will remain for the human, and we are able to predict it. Thus, we decide to proactively reduce the ambiguity by communicating about their belief divergences or the missed actions. This communication might seem optional in some situations but having a plan without ambiguities in the context of a shared goal is often much better than a plan with fewer steps but where agent aren't sure about what they have to do. Communication help to compel the human actions.
 
 \section{Results}
 % what results did you get ?
@@ -310,7 +345,7 @@ Present example : Probably cooking example turning fire (situation assessment) a
 
 Think about other configuration of the same scenario for other cases ? Here prevent action with undesired effects. Should find also applicability and cost.
 
-Quantitative: We can randomize or use all combination of initial state : pasta location, starting agent, initial agent location, (initial belief divergence ?). Make statistics on applicability of plans with and withou contribution 
+Quantitative: We can randomize or use all combination of initial state : pasta location, starting agent, initial agent location, (initial belief divergence ?). Make statistics on applicability of plans with and without contribution 
 
 Qualitative :
 
@@ -356,11 +391,11 @@ Scenarios:
     
     \item \textbf{pasta in another place, R starts}
         w/o: Agents are omniscient, H knows instantly about the effects of R actions even without observing the actions
-        w/: H sees salt action and assess the fire on action when coming back. Thus no com required, same plan than w/o but beliefs have been updated differently
+        w/: H sees salt action and assess the fire on action when coming back. Thus, no com required, same plan than w/o, but beliefs have been updated differently
         
     \item \textbf{pasta in another place, H starts}
         w/o: Agents omniscient again, H knows about all R actions instantly
-        \subitem w/: R predicts H will miss both actions but will be able to assess the pot fire action execution when back in place1 but can't be sure about salt action. Decides to com to remove ambiguitiy
+        \subitem w/: R predicts H will miss both actions but will be able to assess the pot fire action execution when back in place1 but can't be sure about salt action. Decides to com to remove ambiguity
     
     \item \textbf{initial belief divergence on pasta location(R:place1 H:place2). The robot brought the pasta closer before the human comes}
         \subitem w/o: Plan isn't actually applicable with ground truth knowledge (grab pasta, no pasta here)
