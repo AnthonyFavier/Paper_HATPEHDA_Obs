@@ -213,23 +213,23 @@ A search branch, corresponding to a list of subtasks, is called a decomposition.
 Our formalism is close to the SAS+ Formalism applied to HTN.(Probably to remove, might bring more confusions than explanations)
 
 \textbf{Word state}: 
-Let $\worldstates$ be the set of all possible world states. World states are defined by a same set of fluents. Each world state is fully described by the value of all its fluents at a given time i.e. $\forall\worldstate\in\worldstates, \worldstate=\{ \fluent{\worldstate}{}{}{} \}$.
+Let $\worldstates$ be the set of all possible world states. World states are defined by a same set of fluents. Each world state is fully described by the value of all its fluents at a given time i.e. $\forall\worldstate\in\worldstates, \worldstate=\{ \fluent{\worldstate}{}{} \}$.
 
 \textbf{Fluent}: 
-A fluent $\fluent{\worldstate}{}{}{}$ is a multi-valued state variable associated to a finite domain $Dom(\fluent{\worldstate}{}{}{})$ partially describing the state of the world at a given time.
+A fluent $\fluent{\worldstate}{}{}$ is a multi-valued state variable associated to a finite domain $Dom(\fluent{\worldstate}{}{})$ partially describing the state of the world at a given time.
 
 % (introduce loc ?)
-% The observability type of fluents is qualified through the relation $\obs{ \fluent{\worldstate}{}{}{} } \in \{ \observable, \inferable \}$. 
+% The observability type of fluents is qualified through the relation $\obs{ \fluent{\worldstate}{}{} } \in \{ \observable, \inferable \}$. 
 
-e.g. Considering the following fluent $\fluent{\worldstate}{}{temp\_water}{}$, if initially the water is hot then $\fluent{\worldstate_0}{}{temp\_water}{}=hot$.
+e.g. Considering the following fluent $\fluent{\worldstate}{}{temp\_water}$, if initially the water is hot then $\fluent{\worldstate_0}{}{temp\_water}=hot$.
 
 \textbf{Belief divergence}: 
-We note $\fluent{\worldstate}{,\agent}{}{}$ a fluent evaluated in the perspective of an agent $\agent$. Thus, for a given real state of the world $\worldstate\in\worldstates$, the robot and the human can have different values for the same fluent. We call such mismatch a belief divergence.
+We note $\fluent{\worldstate}{,\agent}{}$ a fluent evaluated in the perspective of an agent $\agent$. Thus, for a given real state of the world $\worldstate\in\worldstates$, the robot and the human can have different values for the same fluent. We call such mismatch a belief divergence.
 
-e.g. $(\fluent{\worldstate_0}{,\robot}{temp\_water}{}=hot) \neq (\fluent{\worldstate_0}{,\human}{temp\_water}{}=cold)$
+e.g. $(\fluent{\worldstate_0}{,\robot}{temp\_water}{}=hot) \neq (\fluent{\worldstate_0}{,\human}{temp\_water}=cold)$
 
 \textbf{Two distinct Beliefs}: 
-We call beliefs of an agent $\agent$, noted $\beliefs_\agent$, the belief state in which this agent thinks the world is in, i.e. the set of all fluents evaluated in their perspective at a given time: $\beliefs_\agent=\{ \fluent{\worldstate}{,\agent}{}{} \}$. It is important to note that we use two distinct belief states during the planning process. On one hand, we consider the beliefs of the robot $\beliefs_\robot$ which are obtained through perception and effects of robot actions and decisions. And as we consider the planner as being part of the robot, we assume that $\beliefs_\robot$ is the ground truth estimation for the planner. On the other hand, we consider the human's belief state $\beliefs_\human$ which is only estimated by the robot by doing some perspective-taking reasoning during the planning process (and before ?).
+We call beliefs of an agent $\agent$, noted $\beliefs_\agent$, the belief state in which this agent thinks the world is in, i.e. the set of all fluents evaluated in their perspective at a given time: $\beliefs_\agent=\{ \fluent{\worldstate}{,\agent}{} \}$. It is important to note that we use two distinct belief states during the planning process. On one hand, we consider the beliefs of the robot $\beliefs_\robot$ which are obtained through perception and effects of robot actions and decisions. And as we consider the planner as being part of the robot, we assume that $\beliefs_\robot$ is the ground truth estimation for the planner. On the other hand, we consider the human's belief state $\beliefs_\human$ which is only estimated by the robot by doing some perspective-taking reasoning during the planning process (and before ?).
 
 \subsection{Place-based observability model}
 
@@ -242,17 +242,17 @@ A place is an area defined a priori in the environment. Let $\places=\{ \place_i
 The execution of an action performed by an agent $\agent$ is observed by all agents that were co-present with $\agent$ either before or after the action. The co-presence is checked both before and after to cover navigation actions.
 
 \textbf{Observability of fluents}:
-Each (most?) fluent is associated to a place $\place \in \places$ through the relation $\loc{ \fluent{\worldstate}{}{}{} }=\place$. These relations help to describe the world state by expressing where the fluents are effective and observable. (If $\loc{ \fluent{\worldstate}{}{}{} } = \varnothing $ then the fluent is ubiquitous). These relations can be dynamic for example when the fluent describes a property linked to a moving entity. Currently, the location of a fluent has to be updated manually in the domain if it is dynamic (we should go for an "entity-based" description of the world state to automatically update).
+Each (most?) fluent is associated to a place $\place \in \places$ through the relation $\loc{ \fluent{\worldstate}{}{} }=\place$. These relations help to describe the world state by expressing where the fluents are effective and observable. (If $\loc{ \fluent{\worldstate}{}{} } = \varnothing $ then the fluent is ubiquitous). These relations can be dynamic for example when the fluent describes a property linked to a moving entity. Currently, the location of a fluent has to be updated manually in the domain if it is dynamic (we should go for an "entity-based" description of the world state to automatically update).
 
-The observability type of each fluent is constant and defined initially through the relation $\obs{ \fluent{\worldstate}{}{}{} } \in \{ \observable, \inferable \}$. 
+The observability type of each fluent is constant and defined initially through the relation $\obs{ \fluent{\worldstate}{}{} } \in \{ \observable, \inferable \}$. 
 The first value $\observable$ means that the fluent is observable. A fluent is observed by an agent only if it is observable and if that agent is in the place associated to the fluent. 
-Note that places can be symbolic and not only physical/geometric to represent more complex situation. For instance, let's consider the fluent $\fluent{\worldstate}{}{at}{,o}$ describing the position of an object \textit{o}. The object is in the kitchen inside a cupboard that can either be open or closed. This situation can be modeled as follows :
+Note that places can be symbolic and not only physical/geometric to represent more complex situation. For instance, let's consider the fluent $\fluent{\worldstate}{}{at\_o}$ describing the position of an object \textit{o}. The object is in the kitchen inside a cupboard that can either be open or closed. This situation can be modeled as follows :
 \begin{itemize}
-    \item $\fluent{\worldstate}{}{at}{,o}=cupboard$
-    \item $\obs{ \fluent{\worldstate}{}{at}{,o} }=\observable$
-    \item $\loc{ \fluent{\worldstate}{}{at}{,o} } \in \{ kitchen, closed \}$
+    \item $\fluent{\worldstate}{}{at\_o}=cupboard$
+    \item $\obs{ \fluent{\worldstate}{}{at\_o} }=\observable$
+    \item $\loc{ \fluent{\worldstate}{}{at\_o} } \in \{ kitchen, closed \}$
 \end{itemize}
-The relation $\loc{ \fluent{\worldstate}{}{at}{,o} } = kitchen$ corresponds to when the cupboard is open, which means any agent in the place $kitchen$ can observe the object. On the other hand, when the cupboard is closed, $\loc{ \fluent{\worldstate}{}{at}{,o} } = closed$, the agent cannot observe the object.
+The relation $\loc{ \fluent{\worldstate}{}{at\_o} } = kitchen$ corresponds to when the cupboard is open, which means any agent in the place $kitchen$ can observe the object. On the other hand, when the cupboard is closed, $\loc{ \fluent{\worldstate}{}{at\_o} } = closed$, the agent cannot observe the object.
 
 The other value $\inferable$ qualifies inferable fluents. A fluent is inferable if its value isn't observable but can be inferred by attending an action affecting that fluent. For instance, by observing someone adding salt to a dish we infer that there is now salt in the dish, although the salt in the dish isn't observable. It means that without attending the action execution it's impossible to tell if there salt just by looking at it. Thus, when an action affects inferable fluents only the co-present agents gets their beliefs updated. We later refer to actions affecting inferable fluents as actions with inferable effects (resp. with observable effects).
 
@@ -270,7 +270,7 @@ The second one concerns inferable effects. As mentioned before, only agents that
 For now, we assume that if we estimate that the human will perform a task not observable by the robot then it should remain quite simple like a series of deterministic actions. Basically, we currently do not handle more complex cases where the human has multiple choices of actions while not being observable. Considering this hypothesis, the robot beliefs are always updated with the effects of human actions, weither they are co-present or not.
 
 \textbf{Situation Assessment}:
-The idea is to predict the situation assessment of an agent and update their beliefs according to what they can see in their current place. When executed, each agent $\agent$ updates their beliefs with the ground truth value of every observed fluents, i.e. for every observable fluents ($\obs{ \fluent{\worldstate}{}{}{} } = \observable$) located in their place ($\loc{\fluent{\worldstate}{}{}{}} = \fluent{\worldstate}{}{at}{,\agent}$), we have $\fluent{\worldstate}{,\agent}{}{} \gets \fluent{\worldstate}{}{}{}$. The situation assessment is executed after every action execution. This way, the agent's beliefs are updated either with the observable effects of an action performed by another co-present agent, or with the observable effects they missed when entering another place. 
+The idea is to predict the situation assessment of an agent and update their beliefs according to what they can see in their current place. When executed, each agent $\agent$ updates their beliefs with the ground truth value of every observed fluents, i.e. for every observable fluents ($\obs{ \fluent{\worldstate}{}{} } = \observable$) located in their place ($\loc{\fluent{\worldstate}{}{}} = \fluent{\worldstate}{}{at\_\agent}$), we have $\fluent{\worldstate}{,\agent}{} \gets \fluent{\worldstate}{}{}$. The situation assessment is executed after every action execution. This way, the agent's beliefs are updated either with the observable effects of an action performed by another co-present agent, or with the observable effects they missed when entering another place. 
 Note that since the ground truth is actually the robot beliefs, this situation assessment is only effective for other agents, so here the human. 
 
 \textbf{Relevant belief divergences checking}:
@@ -282,7 +282,7 @@ To check if there are some relevant belief divergences we proceed as follows. Wh
 If a difference is spotted we consider that there are relevant belief divergences to align, but we don't know which ones yet.
 
 \textbf{Identify the relevant divergences and communicate}: 
-Once the presence of relevant belief divergences has been confirmed they have to be identified. All divergences between $\mathcal{B}_R$ and $\mathcal{B}_H$ are first computed. Then the divergence's corrections are simulated one after another (i.e. $ \fluent{\worldstate}{,\human}{i}{} \gets \fluent{\worldstate}{,\robot}{i}{}$) and the human agenda is refined again in order to compare the new refinement with the one previously obtained with $\beliefs_\robot$. We keep simulating combination of divergence corrections in a breadth-first (search) manner until the refinements are the same, which means that all the relevant divergences have been identified. In the worst case, the two refinement are not the same until reaching the last combination which corresponds to all divergences being corrected, thus where $\beliefs_\human$ and $\beliefs_\robot$ are the same. So the obtained refinements will necessarily be the same which guarantees the ending of our algorithm. After having identified the divergences to correct in order to obtain the same refinements, the corresponding communication action is inserted in the robot's plan to inform the human about their relevant belief divergences and to correct them.
+Once the presence of relevant belief divergences has been confirmed they have to be identified. All divergences between $\mathcal{B}_R$ and $\mathcal{B}_H$ are first computed. Then the divergence's corrections are simulated one after another (i.e. $ \fluent{\worldstate}{,\human}{i} \gets \fluent{\worldstate}{,\robot}{i}$) and the human agenda is refined again in order to compare the new refinement with the one previously obtained with $\beliefs_\robot$. We keep simulating combination of divergence corrections in a breadth-first (search) manner until the refinements are the same, which means that all the relevant divergences have been identified. In the worst case, the two refinement are not the same until reaching the last combination which corresponds to all divergences being corrected, thus where $\beliefs_\human$ and $\beliefs_\robot$ are the same. So the obtained refinements will necessarily be the same which guarantees the ending of our algorithm. After having identified the divergences to correct in order to obtain the same refinements, the corresponding communication action is inserted in the robot's plan to inform the human about their relevant belief divergences and to correct them.
     
 Communication actions are supposed to be instantaneous and able to correct several divergences at once. For now they are inserted right before the detected erroneous human action. (A more complex reasoning could be added to identify the optimal place to insert the communication action in the plan). 
 
@@ -345,9 +345,9 @@ Quantitative: We can randomize or use all combination of initial state : pasta l
 Qualitative :
 
 For these examples, the world state is composed of the following fluents :\\
-- $\fluent{\worldstate}{}{salt}{} \equiv salt\_added(s)\in\{true, false\}$\\
-- $\fluent{\worldstate}{}{fire}{} \equiv pot\_fire\_on(s)\in\{true, false\}$\\
-- $\fluent{\worldstate}{}{at}{, \{\robot,\human,pasta\} } \equiv at(e, s)\in \{place_1, place_2\}$
+- $\fluent{\worldstate}{}{salt} \equiv salt\_added(s)\in\{true, false\}$\\
+- $\fluent{\worldstate}{}{fire} \equiv pot\_fire\_on(s)\in\{true, false\}$\\
+- $\fluent{\worldstate}{}{at\_\{\robot,\human,pasta\} } \equiv at(e, s)\in \{place_1, place_2\}$
 % , e \in \{ \robot, \human, pasta \}$
 
 \begin{figure}
