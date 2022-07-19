@@ -199,7 +199,8 @@ The planning process works by selecting applicable reduction methods from $\math
 The action model of each agent is described with a HTN. Thus, the process to compute (or estimate in the human case) the next possible actions of an agent is very close to classic HTN refinement.
 The classic planning process for HTN planning problem consist in selecting applicable reduction methods from $\mathcal{M}$ and applying them to abstract tasks in $d$ in a depth-first manner. In our contribution the planning process slightly differs from the classic process since the goal is to compute or estimate all possible next actions in a given state. 
 Here, $d$ corresponds to what we call the agenda of the agent. To compute the next possible actions the agent's agenda is refined. To do so the first task in the agenda is popped, and all applicable reduction methods are applied to the task resulting is search branches with different subtasks. The process is repeated for each created branch until reaching a primitive task in each of them. The primitive tasks from each search branch constitute the set of all possible next actions of the agent.
-A search branch can refine into nothing but if all search branches refine into nothing then the first task popped from the agenda is done, so the next task in the agent's agenda is popped and refined.  
+A search branch can refine into nothing but if all search branches refine into nothing then the first task popped from the agenda is done, so the next task in the agent's agenda is popped and refined. 
+A search branch, corresponding to a list of subtasks, is called a decomposition. The list of all obtained decompositions is called a refinement.  
 
 
 \section{Materials and Methods}
@@ -292,6 +293,7 @@ Communication actions are supposed to be instantaneous and able to correct sever
 
 
 \subsection{Algorithm (Optional maybe ...)}
+MAYBE OPTINAL because it involves mechanisms not introduced (or maybe we should introduce them in the background ?) like the triggers and the WAIT/IDLE actions.
 
 The refinement of the HTNs is mostly done thanks to the function $refineAgenda()$. This function keeps refining the agenda of an agent in a given state until reaching a not done primitive task at the first spot. It returns a refinement which is list of decomposition, one for each applicable methods. Each decomposition is a list of the obtained subtasks which starts with a not done primitive task. The second parameter the function $refineAgenda$ can be used to specify with which beliefs the refinement has to be done. 
 
@@ -336,8 +338,6 @@ The returned refinement in Alg.~\ref{alg:ap_ref_all} contains the subtasks obtai
 
 Present example : Probably cooking example turning fire (situation assessment) and adding salt (relevant divergence). Show plan without our contribution. Then show what we obtain with our contribution.
 
-
-
 Think about other configuration of the same scenario for other cases ? Here prevent action with undesired effects. Should find also applicability and cost.
 
 Quantitative: We can randomize or use all combination of initial state : pasta location, starting agent, initial agent location, (initial belief divergence ?). Make statistics on applicability of plans with and without contribution 
@@ -374,22 +374,17 @@ Task description in HTN depicted in Fig.~\ref{fig:htn}
 \end{figure*}
 
 
-
-
-
-
-
 Scenarios:
 \begin{itemize}
     \item \textbf{pasta in same place}
-        normal execution
+        \subitem normal execution
     
     \item \textbf{pasta in another place, R starts}
-        w/o: Agents are omniscient, H knows instantly about the effects of R actions even without observing the actions
-        w/: H sees salt action and assess the fire on action when coming back. Thus, no com required, same plan than w/o, but beliefs have been updated differently
+        \subitem w/o: Agents are omniscient, H knows instantly about the effects of R actions even without observing the actions
+        \subitem w/: H sees salt action and assess the fire on action when coming back. Thus, no com required, same plan than w/o, but beliefs have been updated differently
         
     \item \textbf{pasta in another place, H starts}
-        w/o: Agents omniscient again, H knows about all R actions instantly
+        \subitem w/o: Agents omniscient again, H knows about all R actions instantly
         \subitem w/: R predicts H will miss both actions but will be able to assess the pot fire action execution when back in place1 but can't be sure about salt action. Decides to com to remove ambiguity
     
     \item \textbf{initial belief divergence on pasta location(R:place1 H:place2). The robot brought the pasta closer before the human comes}
@@ -409,7 +404,8 @@ Point out ambiguities (created both by the lack of situation assessment and beli
 FUTURE WORK:
 \begin{itemize}
     \item A more elaborated formula for observability than co-presence. Using geometrical reasoning with a physic simulator.
-    \item Use an entity-based world description to be able to automatically update the $\loc{\fluent{\worldstate}{}{}{}}$
+    \item Use an entity-based world description to be able to automatically update the $\loc{\fluent{\worldstate}{}{}{}}$.
+    \item A more complex reasoning to decide where to insert the communication action in the plan.
 \end{itemize}
 
 \bibliography{bib.bib}
