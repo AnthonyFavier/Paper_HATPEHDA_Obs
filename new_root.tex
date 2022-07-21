@@ -104,7 +104,13 @@
 % nouns, adverbs, adjectives should be capitalized, including both words in hyphenated terms, while
 % articles, conjunctions, and prepositions are lower case unless they
 % directly follow a colon or long dash
-\title{Towards a robot partner reducing\\ ambiguities using perspective taking}
+\title
+{
+Human-Aware 
+Planning with Communication: \\ While Keeping Itself in Human's Shoes a Robot Plans for Both 
+%is in Human's Shoes   
+% Towards a robot partner reducing\\ ambiguities using perspective taking
+}
 \author{
     %Authors
     % All authors must be in the same font size and format.
@@ -128,9 +134,66 @@
 \maketitle
 
 \begin{abstract}
+We consider human-aware task planning for a team of a human and a robot sharing joint tasks with known task objectives.
+
 \end{abstract}
 
 \section{Introduction}
+With the increasing penetration of sensor networks, advancements in robotic technology, the Internet of Things (IoT), etc., multi-robot systems are becoming ubiquitous, and the complexity of the tasks these (multiple) autonomous robots can handle is constantly increasing.
+Robots collaborating and (or) interacting with humans, for example, a robot hands over a water bottle to a human, robots achieving joint goals or getting a common joint-task done with the help of humans available in the environment, a robot getting its task done while receiving some routine helps when needed from a human, etc., is seldom seen in our day to day life, will soon become ubiquitous, too.
+
+Consider a scenario in which you (a \textit{human} agent) want to prepare, together with your robot, some pasta in your kitchen. This joint task comprises several components and activities in the real world, for example, pasta packets kept in the cupboard in the kitchen or a room, lidding a pot, turning on a furnace, salt, adding some salt to the pasta, etc. Sometimes the needed objects might be accessible only to you (the robot) from your (its) current position, while some are accessible to both. 
+Like this subclass of collaborative tasks, its multiple instantiations across many other real-world domains exist, e.g., homes, offices, hospitals, etc.
+
+In such scenarios, naturally the human agent would want to work alongside the robot but without being bothered too much and too often, or sometimes she is too lazy to perform an action assuming that the robot will do it instead, even if it takes longer to achieve the overall joint-task. The human agent may \textit{choose} to leave the place during the task execution. Although, in these cases, the human agent is considered a fully cooperative and rational partner, she cannot be managed like an artificial agent (a fully controllable agent). But, the robot can always influence her behavior. 
+% by eliciting her actions and emulating her mental state
+%Even 
+That gives rise to one crucial aspect of human-robot collaboration: A robot should not only plan for their joint actions but also predict and emulate human decisions and actions (and sometimes human's reactions, as well) to seamlessly achieve the joint-task together. 
+The robot must put itself in the shoes of the human agent, which helps sometimes \textit{prohibit} the human agent execute an action with a detrimental effect on the overall joint-task, e.g., the action ends up destroying a resource essential to achieving the joint-task. 
+Moreover, it also helps the robot to create a situation that will \textit{promote} some actions of the human agent, which is ``relevant'' to achieving the joint-task.       
+% In this setting, it is common to compute a policy for all agents using a central engine. This policy is executed by
+% the agents in a decentralized manner, and agent communication
+% is performed through explicit actions.
+
+
+Considering these above scenarios: There has been a series of work on
+human task modelling and human-aware task planning to build a task planner focusing on human-robot collaboration and (\textit{partially}) dealing with those important issues we discussed earlier~\cite{alami2006toward,montreuil2007planning,alili2009planning,lallement2014hatp,de2015hatp,lallement2018hatp}.
+
+Recently, in~\cite{BuisanA21,buisan:hal-03684211}, unlike the previous approaches, the authors propose a more suitable framework for these sub-class of HRI problems, which is comprising a \textit{dual} HTNs (Hierarchical Task Networks~\cite{naubooks0014222}) joint-task specification model: One model is for the human agent, and the other is for the robot. 
+They assume that a domain modeler with expertise (in robotics, human-human collaboration, and human psychology) is available to describe HTN specifications for such collaborative planning paradigms. The dual HTNs describe agents' capabilities, initial beliefs, shared tasks, world dynamics, common ground (or their understanding of the world), etc. While the modeler also describes some \textit{hypothetical} hidden variables that are implicit, to capture a human's mood, intentions, etc., and they are hard to observe. Both these models are with the robot, while it plans its actions based on these joint specification models, and predicts and emulates human actions, decisions, and reactions.    
+
+HATP-EHDA~\cite{buisan:hal-03684211} is a dual HTNs based solver that is the state-of-the-art planner. In principle, it is able to model and handle most of the cases that may arise in human-robot collaboration during planning. Without loss of generality, it assumes that agents \textit{decide} to act (e.g., pushing a heavy box, moving, noop, idle, etc.) one after the other. 
+It generates a policy tree comprising human and robot actions. Note that a human is an uncontrollable agent, so even if she is being rational and collaborative, it is hard to determine her ``next'' action upfront -- describes the impact of those hidden variables.
+Therefore, for a sound execution, after every robot action, the policy tree gets branched on all possible \textit{choices} available for the human.
+
+HATP-EHDA assumes that if the robot executes an action, the human's belief gets updated, along with the robot's belief, or vice versa. It means that all the action execution is observable to both these agents. It is a \textit{major} drawback of the solver, since it is not always the case in reality. For example, in the pasta preparation scenario, suppose the human leaves the kitchen, and before she arrives back in the kitchen, the robot \textit{adds} some salt to the pasta, \textit{lids} the pot, and \textit{turns} on the furnace. 
+Later, when the human arrives in the kitchen: What would be the new belief of the human? Certainly, she will observe that the furnace is {\sc on}, and also the pot is closed. But what about ``there is already some salt in pasta?'' Which creates divergence in the agents' belief states. 
+% In such scenarios, 
+To simplify the reasoning process over multiple task models, we assume that the robot is always aware of the ground truth. That means that we ignore the uncertainty associated with what the human does when the robot is absent. 
+And any advancement in this direction is left for future work. 
+
+
+% can handle different initial distinct beliefs
+In this work, we address the issue of execution time observability, and propose a principled approach to handle such belief divergences during the planning phase. 
+We address it via explicitly modeling and planning with communication actions. 
+To do so, we extend the existing HATP-EHDA framework. We thank the modeler again for explicitly specifying, which state variables/fluents are \textit{observable} (an persistent effect of an action, e.g., turning on the furnace, which the human can observe with the help of \textit{situation assessment} (SA)~\cite{cite?} -- SA helps the human to assess the environment), \textit{inferrable} -- an effect of an action being executed by some other agent, which can only be inferred when the agent sees the action being performed by the other agent, e.g., robot adding some salt to the pasta and human sees it doing so. 
+The latter can be informed about the exact value of the inferrable state variables, otherwise, to manage the belief alignment.   
+%- both human and robot beliefs will be updated 
+
+Communication paradigms like text, visual, speech, etc., are prerequisites for building a communication protocol among multiple agents. However, effective use of the modality is essential to achieve the motivation behind their development, say, a seamless agent collaboration. Moreover, using communication among the agents, too much and too little, can hamper or delay the overall task achievement. So, deciding on ``How to communicate?'' is crucial, but it is equally significant to decide ``If, When, and What to Communicate?'' 
+We assume that a natural language-based speech modality is available, while our proposed algorithm optimally decides if, when, and what to communicate via planning with communication actions.
+%
+
+The paper is structured as follows: We first build a relevant background to understand this framework and discuss the related work. We then discuss the methodology: which includes modeling and planning with communication actions. 
+After that, we present the results and show examples where handling the belief divergences is effective and how HATP-EHDA is ineffective under those scenarios. We compare the overall effectiveness of our approach and prove that it does not use communication more than needed (avoids verbosity) in the process. We conclude with a summary, discussion, and future work.
+
+\section{Background and Related Work}
+
+**********************
+
+**********************
+
+
 % what is known ? our understanding of the world
 General context, towards robot partner. 
 
