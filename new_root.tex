@@ -216,7 +216,7 @@ Our formalism is close to the SAS+ Formalism applied to HTN.(Probably to remove,
 Let $\worldstates$ be the set of all possible world states. World states are defined by a same set of fluents. Each world state is fully described by the value of all its fluents at a given time i.e. $\forall\worldstate\in\worldstates, \worldstate=\{ \fluent{\worldstate}{}{} \}$.
 
 \textbf{Fluent}: 
-A fluent $\fluent{\worldstate}{}{}$ is a multi-valued state variable associated to a finite domain $Dom(\fluent{\worldstate}{}{})$ partially describing the state of the world at a given time.
+A fluent $\fluent{\worldstate}{}{}$ is a multi-valued state variable associated to a finite domain $\dom{\fluent{\worldstate}{}{}}$ partially describing the state of the world at a given time.
 
 % (introduce loc ?)
 % The observability type of fluents is qualified through the relation $\obs{ \fluent{\worldstate}{}{} } \in \{ \observable, \inferable \}$. 
@@ -340,15 +340,38 @@ Present example : Probably cooking example turning fire (situation assessment) a
 
 Think about other configuration of the same scenario for other cases ? Here prevent action with undesired effects. Should find also applicability and cost.
 
+Explicitly say that previous version of hatpehda do not handle belief divergences at planning level, it could if specification is given in the domain. That's why fails here but were able to handle them in specific scenario (example previous paper/thesis).
+
 Quantitative: We can randomize or use all combination of initial state : pasta location, starting agent, initial agent location, (initial belief divergence ?). Make statistics on applicability of plans with and without contribution 
 
 Qualitative :
 
-For these examples, the world state is composed of the following fluents :\\
-- $\fluent{\worldstate}{}{salt} \equiv salt\_added(s)\in\{true, false\}$\\
-- $\fluent{\worldstate}{}{fire} \equiv pot\_fire\_on(s)\in\{true, false\}$\\
-- $\fluent{\worldstate}{}{at\_\{\robot,\human,pasta\} } \equiv at(e, s)\in \{place_1, place_2\}$
-% , e \in \{ \robot, \human, pasta \}$
+Domain description:
+
+\begin{itemize}
+    \item $\places = \{ kitchen, room \}$
+    
+    \item $\fluent{\worldstate}{}{salt\_added}$
+        \subitem $\dom{\fluent{}{}{}} = \{ true, false \}$
+        \subitem $\loc{\fluent{}{}{}} = kitchen$
+        \subitem $\obs{\fluent{}{}{}} = \inferable$
+
+    \item $\fluent{\worldstate}{}{pot\_fire}$
+        \subitem $\dom{\fluent{}{}{}} = \{ on, off \}$ 
+        \subitem $\loc{\fluent{}{}{}} = kitchen$ 
+        \subitem $\obs{\fluent{}{}{}} = \observable$ 
+    
+    \item $\fluent{\worldstate}{}{at\_\{\robot,\human\}}$
+        \subitem $\dom{\fluent{}{}{}} = \places$ 
+        \subitem $\loc{\fluent{}{}{}} \in  \places$ 
+        \subitem $\obs{\fluent{}{}{}} = \observable$ 
+
+    \item $\fluent{\worldstate}{}{at\_\{pasta\}}$
+        \subitem $\dom{\fluent{}{}{}} = \places \cup \{ \robot, \human \}$ (when holding)
+        \subitem $\loc{\fluent{}{}{}} \in  \places$ 
+        \subitem $\obs{\fluent{}{}{}} = \observable$ 
+    
+\end{itemize}
 
 \begin{figure}
     \centering
@@ -362,7 +385,7 @@ Task description in HTN depicted in Fig.~\ref{fig:htn}
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/htn.png}
-    \caption{HTN, cook task description}
+    \caption{HTN, cook task description. Done conditions are added to primitive tasks to lighten the htn description. This can be modeled with dedicated methods with classical HTN model.}
     \label{fig:htn}
 \end{figure}
 
@@ -376,18 +399,18 @@ Task description in HTN depicted in Fig.~\ref{fig:htn}
 
 Scenarios:
 \begin{itemize}
-    \item \textbf{pasta in same place}
+    \item \textbf{pasta in same place (0-1)}
         \subitem normal execution
     
-    \item \textbf{pasta in another place, R starts}
+    \item \textbf{pasta in another place, R starts (72)}
         \subitem w/o: Agents are omniscient, H knows instantly about the effects of R actions even without observing the actions
         \subitem w/: H sees salt action and assess the fire on action when coming back. Thus, no com required, same plan than w/o, but beliefs have been updated differently
         
-    \item \textbf{pasta in another place, H starts}
+    \item \textbf{pasta in another place, H starts (73)}
         \subitem w/o: Agents omniscient again, H knows about all R actions instantly
         \subitem w/: R predicts H will miss both actions but will be able to assess the pot fire action execution when back in place1 but can't be sure about salt action. Decides to com to remove ambiguity
     
-    \item \textbf{initial belief divergence on pasta location(R:place1 H:place2). The robot brought the pasta closer before the human comes}
+    \item \textbf{initial belief divergence on pasta location(R:place1 H:place2) (8-9). The robot brought the pasta closer before the human comes}
         \subitem w/o: Plan isn't actually applicable with ground truth knowledge (grab pasta, no pasta here)
         \subitem w/: Relevant belief divergence detected. R com to correct the relevant divergence and make H plan applicable
     
