@@ -563,6 +563,7 @@ Quantitative: We can randomize or use all combination of initial state : pasta l
 
 Qualitative :
 
+\subsection{Problem description}
 Domain description:
 
 \begin{itemize}
@@ -614,6 +615,8 @@ Task description in HTN depicted in Fig.~\ref{fig:htn}
 \end{figure*}
 
 
+\subsection{Scenarios detailed}
+
 Scenarios:
 \begin{itemize}
     \item \textbf{pasta in same place (0-1)}
@@ -631,6 +634,21 @@ Scenarios:
         \subitem w/o: Plan isn't actually applicable with ground truth knowledge (grab pasta, no pasta here)
         \subitem w/: Relevant belief divergence detected. R com to correct the relevant divergence and make H plan applicable
     
+\end{itemize}
+
+
+\subsection{Quantitative}
+
+All combination of initial state and belief divergences (no divergence on robot and human position)
+
+All combination : with contribution = 100\%, without contribution = 25.7\%
+
+\subsection{Interesting cases}
+\begin{itemize}
+    \item belief divergence on pasta location, R:at\_pasta=room H:at\_pasta=kitchen. Without: H try to grab pasta in kitchen but action not applicable in reality. With: Robot com to warn H that pasta are in room. Actually, H will be able to see that the pasta are not in the kitchen, they cannot see where it is but at least it's not in the kitchen, where they thought it was. We currently not handle explicit assessing of not knowing (assessing that the pasta are not here). However our planner still handles the cases because this divergence (here ambiguity) will affect the human plan thus it is considered as relevant, as a consequence R will communication to align $\beliefs_\human$ and remove the ambiguity.
+    \item div on pasta loc always leads to failure without
+    \item div on pot fire leads to failure (not applicable reality) only if there is no div on pasta loc (otherwise fails before due to pasta div) and if human tries to pour pasta before robot actually turns on fire. If R turn on fire before, it's not applicable with $\beliefs_\human$ but fixes the div.
+    \item failure inactivity deadlock without if H div on pot\_fire or salt = false although it's already done, thus the robot will never do them again and deadlock occurs
 \end{itemize}
 
 \section{Discussion}
