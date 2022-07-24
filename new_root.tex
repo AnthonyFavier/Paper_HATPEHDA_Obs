@@ -267,7 +267,7 @@ representation of their decision, action, and reaction models.
 % Hierarchical modeling of human-centred activities has been exploited in human-computer interaction in the literature~\cite{annett1967task,paterno2004concurtasktrees,martinie2019analysing}.
 
 % ut loss of generality, only one agent
-Note that we discuss only a high-level, general framework here and minor details are purposely skipped due to the page limit. For more details on this the reader is refereed to~\cite{thesisBuisan21,buisan:hal-03684211}. 
+Note that we discuss only a high-level, general framework here and minor details are purposely skipped due to the page limit constraint. More details on this are provided in~\cite{thesisBuisan21,buisan:hal-03684211}. 
 
 In the interest of this work: The agents start with a joint task network, means they have a shared $w_0$ to start with in their respective task models: $\mathrm{HTN}_{h}$ and $\mathrm{HTN}_{r}$. The new problem, $\mathcal{P}_{hr}$, composed of these two networks. Decomposing a non-primitive task, updating the current network with new constraints, etc., are generalized accordingly for the \textit{two-agent} scenario. 
 
@@ -281,7 +281,7 @@ We do not add any further information in the individual task models during plan 
 }  
 \end{definition}
 
-The requirement from this solution tree is that for each branch, from the root to a leaf node, the sequence of primitive actions, say,  $\pi=(o_1^r,o_2^h,o_3^r,...,o_{k-1}^h,o_k^r)$ is a solution plan for the HATP problem, $\mathcal{P}_{hr}$. Here, each $o_i^h$ represents a choice the human made (out of several) during execution.
+The requirement from this solution tree is that for each branch, from the root to a leaf node, the sequence of primitive actions, say,  $\pi=(o_1^r,o_2^h,o_3^r,...,o_{k-1}^h,o_k^r)$ is a solution plan for the HATP problem, $\mathcal{P}_{hr}$. Here, each $o_i^h$ represents a choice the human could make (out of several) during execution.
 % , which means there exists a primitive decomposition $w_p_{hr}$ of the initial joint-task network $w_0$, and $\pi$ is an instance of it. 
 
 \paragraph{Situation Assessment} In human psychology, especially in human-human interaction, spatial reasoning and perspective taking is crucial. 
@@ -331,8 +331,19 @@ Two agents present at a place simultaneously are said to be co-present or co-loc
 We associate each attribute (a fully grounded state-variable function) of a state to a place. For example, if the robot turns on the furnace placed in the kitchen, then $f_{\textit{TurnOn}}(\textit{furnace}, s, kitchen) \rightarrow \textit{boolVal}$ such that $\textit{boolVal} \in \{\textit{true},\textit{false}\}$ and only for the constant $kitchen$ it takes \textit{true} for all other object variable from \textit{Places}, the state variable function returns \textit{false}. We note that our current planning system is unable to do this type of reasoning, and hence we take a liberty here to manage it manually so that the main contribution can be targeted. 
 Similarly, action schema is managed as state attributes are also a part of precondition and effect of an action. 
 
-%  
+\begin{definition}
+\textbf{NEW (Location function.)}
+Each \textit{state-variable symbol} is associated to a place through a location function $loc(f_{\textit{svs}}, s) \rightarrow \place \in \places$.
+\end{definition}
+These relations help to describe the world state by expressing where the state-variables are effective and observable. Currently, the locations has to be updated manually in the action's effects.
 
+\begin{definition}
+\textbf{(Observability type function.) (ref to Obesrvability of fluents section)}
+The observability type of each \textit{state-varibale symbol} is defined by the function $obs(f_{\textit{svs}}, s) \rightarrow o \in\{\observable, \inferable\}$.
+\end{definition}
+For now, we assume the observability types are constant and initially defined.
+
+Explanation $\observable$ and $\inferable$.
 
 
 \textbf{****************************}
