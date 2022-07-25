@@ -613,6 +613,21 @@ The returned refinement in Alg.~\ref{alg:ap_ref_all} contains the subtasks obtai
 \section{Results}
 % what results did you get ?
 
+%TODO
+% Fig3 A : show when agents copresent 
+% show from what process beliefs are updated
+
+% visually show situation assesmsent (black point after action)
+
+% S w/ how much with com 
+
+% put number of scenario 512
+
+% small cartoon: to show difference between obs and inf
+% robot and human, human not looking 
+% move object 
+% add salt
+
 
 Explicitly say that previous version of hatpehda do not handle belief divergences at planning level, it could if specification is given in the domain. That's why fails here but were able to handle them in specific scenario (example previous paper/thesis).
 
@@ -695,13 +710,15 @@ For each situation (A,B,C), Fig.~\ref{fig:scenarios} depicts the plan computed a
 
 We ran the planner, both with and without the contribution, on every possible initial state of the pasta cooking problem. The table below shows the success rate of the planner with the contribution (S w/) and without (S w/o). Without the contribution a planning failure can occur in two cases. First, if a human estimated action is not applicable (NA) in reality  or if an inactivity deadlock (IDL) has been reached, i.e. if there is a succession of at least four WAIT or IDLE actions. The ratio of failed planning due to non-applicable human action and due to inactivity deadlocks are given in the table as well.
 
-\begin{tabular}{|c|c|c|c|c|}
+\begin{tabular}{|c||c|c||c|c|c|}
     \hline
-    \textbf{Problem} & \textbf{S w/} & \textbf{S w/o} & \textbf{NA} & \textbf{IDL}\\
+    & \multicolumn{2}{|c||}{\textbf{With contrib.}} & \multicolumn{3}{c|}{\textbf{Without contrib.}}\\
     \hline
-    Pasta cooking & 100\% & 25.7\% & 70.5\% & 29.5\%\\
+    \textbf{Pb} & \textbf{S} & \textbf{Com} & \textbf{S} & \textbf{NA} & \textbf{IDL}\\
     \hline
-    Other & -\% & -\% & -\% & -\%\\
+    Pasta (512) & 100\% & 52.3\% & 25.7\% & 70.5\% & 29.5\%\\
+    \hline
+    Other & -\% & -\% & -\% & -\% & -\%\\
     \hline 
 \end{tabular}
 
