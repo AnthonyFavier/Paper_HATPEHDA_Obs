@@ -564,17 +564,16 @@ The returned refinement in Alg.~\ref{alg:ap_ref_all} contains the subtasks obtai
 \section{Results}
 % what results did you get ?
 
-Present example : Probably cooking example turning fire (situation assessment) and adding salt (relevant divergence). Show plan without our contribution. Then show what we obtain with our contribution.
-
-Think about other configuration of the same scenario for other cases ? Here prevent action with undesired effects. Should find also applicability and cost.
 
 Explicitly say that previous version of hatpehda do not handle belief divergences at planning level, it could if specification is given in the domain. That's why fails here but were able to handle them in specific scenario (example previous paper/thesis).
 
-Quantitative: We can randomize or use all combination of initial state : pasta location, starting agent, initial agent location, (initial belief divergence ?). Make statistics on applicability of plans with and without contribution 
-
-Qualitative :
+While considering the same problem, we compared the plans obtained using HATPEHDA without and with our contribution. First, we give some details about the problem description solved by the two planner, with and without our contribution. Secondly, we present some relevant situations (combinations of initial state) producing interesting plans. Eventually we run the planner, with and without the contribution, on every possible initial state on two different problems (Currently one only).  
 
 \subsection{Problem description}
+
+This problem consist of cooking collaboratively some pasta. The scene is visually represented in Fig.~\ref{fig:scene}.
+The robot and the human have different role in this joint task depicted in the HTNs in Fig.~\ref{fig:htn}. The robot is in charge of adding salt to the water pot and to turn on the pot fire (turn on the stove). The human agent has to grab the pasta and pour some in the pot once the fire is on and the salt added. 
+
 Domain description:
 
 \begin{itemize}
@@ -611,12 +610,15 @@ Domain description:
 
 Task description in HTN depicted in Fig.~\ref{fig:htn}
 
-\begin{figure}
+\begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{figures/htn.png}
-    \caption{HTN, cook task description. Done conditions are added to primitive tasks to lighten the htn description. This can be modeled with dedicated methods with classical HTN model.}
+    \includegraphics[width=0.4\linewidth]{figures/htn_human.png}
+    \includegraphics[width=0.4\linewidth]{figures/htn_robot.png}
+    \caption{HTN, cook task description. Additional methods without the move action are not represented corresponding to when the agent is already at the right location.}
     \label{fig:htn}
-\end{figure}
+\end{figure*}
+
+
 
 \begin{figure*}
     \centering
@@ -628,39 +630,48 @@ Task description in HTN depicted in Fig.~\ref{fig:htn}
 
 \subsection{Scenarios detailed}
 
-Scenarios:
-\begin{itemize}
-    \item \textbf{pasta in same place (0-1)}
-        \subitem normal execution
-    
-    \item \textbf{pasta in another place, R starts (72)}
-        \subitem w/o: Agents are omniscient, H knows instantly about the effects of R actions even without observing the actions
-        \subitem w/: H sees salt action and assess the fire on action when coming back. Thus, no com required, same plan than w/o, but beliefs have been updated differently
-        
-    \item \textbf{pasta in another place, H starts (73)}
-        \subitem w/o: Agents omniscient again, H knows about all R actions instantly
-        \subitem w/: R predicts H will miss both actions but will be able to assess the pot fire action execution when back in place1 but can't be sure about salt action. Decides to com to remove ambiguity
-    
-    \item \textbf{initial belief divergence on pasta location(R:place1 H:place2) (8-9). The robot brought the pasta closer before the human comes}
-        \subitem w/o: Plan isn't actually applicable with ground truth knowledge (grab pasta, no pasta here)
-        \subitem w/: Relevant belief divergence detected. R com to correct the relevant divergence and make H plan applicable
-    
-\end{itemize}
+In this section we focus on the plans obtained with and without our contribution in three different situations. First, both the human and the robot are initially in the kitchen, but the pasta is in the other room, thus the human will have to leave the kitchen. We consider first the case where the robot starts (A) and then when the human starts (B). The third situation includes an initial belief divergence. This time the pasta is already in the kitchen (robot could have brought them before the human arrives) but the human thinks they are still in the other room (C).  
 
+For each situation (A,B,C), Fig.~\ref{fig:scenarios} depicts the plan computed and the updates of the human beliefs, both with (right side) and without (left side) the contribution. For legibility purposes when the actions computed are the same with and without the contribution they are merged.
+
+% 72
+\textbf{Scenario (A):} The plans obtained with and without the contribution are the same, however it's interesting to notice that the human beliefs are updated in the same way. In this scenario the human will not observe the "turn on pot fire" action of the robot. Without the contribution the agents are omniscient, so the human instantly knows about the effects of the robot action even being in the same room. With the contribution, we plan that the human will not observe the robot action thus their beliefs isn't updated. However, we predict that when coming back in the kitchen the human will assess the effects of the robot action and update their beliefs.
+
+%73
+\textbf{Scenario (B):} This time the human directly leaves the kitchen and will not attend both robot actions which will make the two plans differ. The plan obtained without the contribution is very similar to the (A) one. Before coming back, the human already knew about the salt and the fire. With the contribution, since we plan that the human will not be in the same place their beliefs isn't updated after each the robot action. When the human comes back in the kitchen they will assess the situation and notice that the fire is on. However, the "salt\_added" state-variable is only inferable, not observable, thus we predict that the human will not know about the salt even when back in the kitchen. Then, this belief divergence is detected as relevant since it has on influence on the human plan (they might add salt again in the pot). Thus, we decide to insert a communication action to correct the divergence and remove the ambiguity about the salt.
+
+% 9
+\textbf{Scenario (C):} Now the human thinks the pasta is in the other room, but the robot actually brought it to the kitchen before the human arrives. Without the contribution human next action are estimated using their beliefs ($\beliefs_\human$) so the human will move to the other room and try to grab the pasta. Since there is no pasta in the other room the grab action will fail with the ground truth (but not with $\beliefs_\human$), which makes the plan not valid. With the contribution, we rely on the fact that the human will update their beliefs themselves by assessing the situation and see that the pasta is already in the kitchen. Thus, no communication is needed.
 
 \subsection{Quantitative}
 
-All combination of initial state and belief divergences (no divergence on robot and human position)
+We ran the planner, both with and without the contribution, on every possible initial state of the pasta cooking problem. The table below shows the success rate of the planner with the contribution (S w/) and without (S w/o). Without the contribution a planning failure can occur in two cases. First, if a human estimated action is not applicable (NA) in reality  or if an inactivity deadlock (IDL) has been reached, i.e. if there is a succession of at least four WAIT or IDLE actions. The ratio of failed planning due to non-applicable human action and due to inactivity deadlocks are given in the table as well.
 
-All combination : with contribution = 100\%, without contribution = 25.7\%
+\begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{Problem} & \textbf{S w/} & \textbf{S w/o} & \textbf{NA} & \textbf{IDL}\\
+    \hline
+    Pasta cooking & 100\% & 25.7\% & 70.5\% & 29.5\%\\
+    \hline
+    Other & -\% & -\% & -\% & -\%\\
+    \hline 
+\end{tabular}
 
-\subsection{Interesting cases}
-\begin{itemize}
-    \item belief divergence on pasta location, R:at\_pasta=room H:at\_pasta=kitchen. Without: H try to grab pasta in kitchen but action not applicable in reality. With: Robot com to warn H that pasta are in room. Actually, H will be able to see that the pasta are not in the kitchen, they cannot see where it is but at least it's not in the kitchen, where they thought it was. We currently not handle explicit assessing of not knowing (assessing that the pasta are not here). However our planner still handles the cases because this divergence (here ambiguity) will affect the human plan thus it is considered as relevant, as a consequence R will communication to align $\beliefs_\human$ and remove the ambiguity.
-    \item div on pasta loc always leads to failure without
-    \item div on pot fire leads to failure (not applicable reality) only if there is no div on pasta loc (otherwise fails before due to pasta div) and if human tries to pour pasta before robot actually turns on fire. If R turn on fire before, it's not applicable with $\beliefs_\human$ but fixes the div.
-    \item failure inactivity deadlock without if H div on pot\_fire or salt = false although it's already done, thus the robot will never do them again and deadlock occurs
-\end{itemize}
+With the contribution the planner always find a valid plan that may include communication. When there are no initial belief divergence the planner without the contribution always finds a valid plan. However, the plan generated will always the agents as omniscient which may later lead to ambiguities when executing the plan in real life. Most of the scenarios that include belief divergence leads to non-valid plans without the contribution. Inactivity deadlocks occur when the human thinks the stove is off or that there is no salt, although it's already done, the robot will never do the corresponding actions again and the human beliefs will never be updated. Hence, the precondition of the "pour pasta" action will never be met.
+
+% \begin{itemize}
+%     \item w/o always working when there is no belief divergence initially. However, the plan generated will always the agents as omniscient which may later lead to ambiguities when executing the plan in real life. 
+%     \item belief divergence on pasta location, R:at\_pasta=room H:at\_pasta=kitchen. Without: H try to grab pasta in kitchen but action not applicable in reality. With: Robot com to warn H that pasta are in room. Actually, H will be able to see that the pasta are not in the kitchen, they cannot see where it is but at least it's not in the kitchen, where they thought it was. We currently not handle explicit assessing of not knowing (assessing that the pasta are not here). However our planner still handles the cases because this divergence (here ambiguity) will affect the human plan thus it is considered as relevant, as a consequence R will communication to align $\beliefs_\human$ and remove the ambiguity.
+%     \item div on pasta loc always leads to failure without (not app)
+%     \item div on pot fire leads to failure (not applicable reality) only if there is no div on pasta loc (otherwise fails before due to pasta div) and if human tries to pour pasta before robot actually turns on fire. If R turn on fire before, it's not applicable with $\beliefs_\human$ but fixes the div.
+%     \item failure inactivity deadlock without if H div on pot\_fire or salt = false although it's already done, thus the robot will never do them again and deadlock occurs
+% \end{itemize}
+
+\subsection{Interesting case}
+
+An interesting case to focus on is a scenario close to (C) with a belief divergence on the pasta location. Both agents are in the kitchen and the pasta is in the other room, but the human thinks the pasta is in the kitchen. Without the contribution we estimate that the human will try to grab pasta in the kitchen which will fails in real life. [...] 
+
+
 
 \section{Discussion}
 % how do the results fill the gap ?
