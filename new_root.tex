@@ -191,7 +191,7 @@ generates a policy tree comprising human and robot actions.
 The human is an uncontrollable agent,
 % , so even if they are rational and collaborative, 
 so it is hard to determine their ``next'' action upfront, which captures the impact of their mood or intention.
-Therefore, for a sound execution, after every robot action, the policy tree gets branched on all possible \text{choices} available to the human.
+Therefore, for a sound execution, after every robot action, the policy tree gets branched on all ``legal'' possible \text{choices} available to the human.
 
 The planner makes some unrealistic assumptions. For example, an action performed by one agent would also impact the beliefs of other agents, i.e. it implicitly considers that those other agents always observe this agent acting and share the same perspective as this agent. However, in reality, a robot can act that can impact human's belief differently under different scenarios. For example, activities like the robot adding some salt to the pasta, or turning on the furnace, would impact the human's belief differently depending on whether the human is available in the kitchen at the time of action execution.   
 
@@ -239,7 +239,8 @@ the decision about communication is made by the new algorithm.
 %
 
 The paper is structured as follows: We first build a relevant background to understand this framework and discuss the related work. We then discuss the methodology: which includes modeling and planning with communication actions. 
-After that, we present the results and show examples where handling the belief divergences is effective and how HATP-EHDA is ineffective under those scenarios. We compare the overall effectiveness of our approach and prove that it does not use communication more than needed (avoids verbosity) in the process. We conclude with a summary, discussion, and future work.
+After that, we present the results and show examples where handling the belief divergences is effective and how HATP-EHDA is ineffective under those scenarios. We compare the overall effectiveness of our approach and show that it uses communication when needed (avoids verbosity) in the process. 
+We conclude with a summary, discussion, and future work.
 
 \section{Background}
 % In this section, we build a relevant background, providing some essential definitions and discussing problem models and planning frameworks on which this work is based.
@@ -277,7 +278,7 @@ representation of their decision, action, and reaction models.
 % ut loss of generality, only one agent
 Note that we discuss only a high-level, general framework here and minor details are purposely skipped due to the page limit constraint. More details on this are provided in~\cite{thesisBuisan21,buisan:hal-03684211}. 
 
-In the interest of this work: The agents start with a joint task network, means they have a shared $w_0$ to start with in their respective task models: $\mathrm{HTN}_{h}$ and $\mathrm{HTN}_{r}$ (their internal components carry agent-specific \textit{subscripts} or \textit{superscripts}). The new problem, $\mathcal{P}_{hr}$, composed of these two networks. Decomposing a non-primitive task, updating the current network with new constraints, etc., are generalized accordingly for the \textit{two-agent} scenario. 
+In the interest of this work: The agents start with a joint task network, means they have a shared $w_0$ to start with in their respective task models: $\mathrm{HTN}_{h}$ and $\mathrm{HTN}_{r}$ (their internal components carry agent-specific \textit{subscripts} or \textit{superscripts}). The new problem, $\mathcal{P}_{hr}$, composed of these two networks. Decomposing a non-primitive task, updating the current network with new constraints, etc., are generalized accordingly for the two-agent scenario. 
 
 Without loss of generality the solver assumes that only one agent \textit{decides} to act at a time, while also it decides ``what to execute?'', e.g. \textit{cook}, \textit{noop}, \textit{add-salt}, etc., after the other.
 % in planning and execution. 
@@ -308,7 +309,7 @@ Most proposed approaches based on hierarchical task decomposition concepts to hu
 
 \textbf{*****}
 
-\textcolor{red}{(This section is NOT finished!! Will work next week.)}
+\textcolor{red}{(Related work section is NOT finished!)}
 
 \textbf{*****}
 
@@ -337,7 +338,7 @@ Each such possible \textit{instantiation} of defined state variable functions, r
 
 If a variable is of the form $f_{svs_1}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ and $gr_1$ contains just one element in it, then we simplify it to $f_{svs_1}^{gr_1}: (\mathcal{S}) \rightarrow ?g_2 (gr_2)$ or, for a given state $s \in \mathcal{S}$, , we further compress it to: $f_{svs_1}^{gr_1,s} \rightarrow const \text{ such that } const \in gr_2$. 
 
-Suppose $s \in \mathcal{S}$ is the real state. As per our assumptions, the belief state of the robot is always the real world state, i.e., $B_{\varphi_r} = s$, and the human belief is $B_{\varphi_h}$ -- that is generated when the robot takes the human's perspective. Each state variable function instantiation with respect to a belief state, $B_{\varphi_r}$ ($B_{\varphi_h}$), represents the truth value of that state attribute with the \textit{perspective} of that agent, $\varphi_r$ ($\varphi_h$). (Both perspectives are managed by the robot in our setting.) 
+Suppose $s \in \mathcal{S}$ is the real state with the ground truth. As per our assumptions, the belief state of the robot w.r.t. the real-world is always the real world state, i.e., $B_{\varphi_r}^s = s$, and the human belief w.r.t. $s$ is $B_{\varphi_h}^s$ --- that is generated when the robot takes the human's perspective. Each state variable function instantiation with respect to a belief state, $B_{\varphi_r}^s$ ($B_{\varphi_h}^s$), represents the truth value of that state attribute with the \textit{perspective} of that particular agent: $\varphi_r$ ($\varphi_h$). (Both perspectives are managed by the robot in our setting.) 
 
 \begin{definition}
 \textbf{(Belief Divergence.)}
@@ -350,23 +351,46 @@ Belief divergence is caused if there exists an instantiation such that $f_{\text
 Note that both the agents are always ``definite'' about their individual knowledge of the current state. (In our context, it is true unless the human somehow \textit{learns} the truth.)
 
 \subsection{Place-Based Observability}
+We now introduce state-variable attributes with standard observability conventions.
 
 \begin{definition}
-\textbf{(Places.)} Represented as $\mathit{Places}$ --- a group of constants such that each member individually captures a pre-specified area in an environment declared by the domain modeler.  
+\textbf{(Places.)} Represented as $\mathit{Places}$, captures a group of constant symbols such that each member individually captures a pre-specified area in an environment declared by the domain modeler.  
 \end{definition}
 Two agents present at a place, $p \in \mathit{Places}$, together at a time are said to be \textit{co-present} or \textit{co-located}.
 
+% OLD GENERAL Discussion %%%
+% \begin{definition}
+%     \textbf{(Place Specific State Attribute-Value Function.)} A {\em grounded} state-variable function {\em aka} state attribute and its value in a given state is associated with a place, that is, $f_{pssav}: (f_{svs} :(?g_1(gr_1),...,?g_k(gr_k),\mathcal{S}) \rightarrow ?g_{k+1}(gr_{k+1})) \rightarrow \mathit{Places' \cup \{un\} \equiv Places}$
+%     \label{def:pssav}
+% \end{definition}
+% Here, $\mathit{pssav}$ stands for {\em place-specific state attribute-value}, captures place specific attribute-value pair for a given state. $\mathit{Places'}$ maps to the real places, while $\mathit{un}$ is for \textit{undefined}, and they together represent $\mathit{Places}$.
+
+% We associate each attribute of a state and its exact value in that state to a \textit{place}. 
+% For example, suppose that, being in $s_1$, the robot switches on the furnace placed in the kitchen, and this generates a new state $s_2$. 
+% Then, following Definition~\ref{def:pssav}, the status of the furnace (\textit{kit-fur-status}) w.r.t. $s_1$ or $s_2$ in \textit{kitchen} can be expressed as $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_1) \rightarrow \textit{false})$ maps to  $kitchen$, or
+% $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_2) \rightarrow \textit{true})$ maps to $kitchen$, or 
+% $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_1) \rightarrow \textit{true})$ maps to $\mathit{un}$ such that $kitchen, \mathit{un} \in \mathit{Places}$. Some updates, e.g., an action that changes the location of a \textit{fact} like the robot \textit{holding} a cup and \textit{moving} to an adjacent room, are manually handled to make the planning process sound.
+
+%%%%%%%%%%%%%% discussion ends here
+
 \begin{definition}
-    \textbf{(Place Specific State Attribute-Value.)} A {\em grounded} state-variable function {\em aka} state attribute and its value in a given state is associated with a place, that is, $f_{pssav}: (f_{svs} :(?g_1(gr_1),...,?g_k(gr_k),\mathcal{S}) \rightarrow ?g_{k+1}(gr_{k+1})) \rightarrow \mathit{Places' \cup \{un\} \equiv Places}$
+    \textbf{(Place Specific State Attribute Function.)} A {\em grounded} state-variable function {\em aka} state attribute in a given state is associated with a place or, in a more general way, it is expressed as, $f_{pssa}: (f_{svs}(?g_1(gr_1),...,?g_k(gr_k),\mathcal{S})) \rightarrow 
+    % \mathit{Places' \cup \{un\} \equiv 
+    Places$
     \label{def:pssav}
 \end{definition}
-Here, $\mathit{pssav}$ stands for {\em place-specific state attribute-value}, captures place specific attribute-value pair for a given state. $\mathit{Places'}$ maps to the real places, while $\mathit{un}$ is for \textit{undefined}, and they together represent $\mathit{Places}$.
+Here, $\mathit{pssa}$ stands for {\em place-specific state attribute}, and it captures place specific attribute for a given state. 
+% $\mathit{Places'}$ maps to the real places, while $\mathit{un}$ is for \textit{undefined}, and they together represent $\mathit{Places}$.
 
 We associate each attribute of a state and its exact value in that state to a \textit{place}. 
 For example, suppose that, being in $s_1$, the robot switches on the furnace placed in the kitchen, and this generates a new state $s_2$. 
-Then, following Definition~\ref{def:pssav}, the status of the furnace (\textit{kit-fur-status}) w.r.t. $s_1$ or $s_2$ in \textit{kitchen} can be expressed as $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_1) \rightarrow \textit{false})$ maps to  $kitchen$, or
-$f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_2) \rightarrow \textit{true})$ maps to $kitchen$, or 
-$f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_1) \rightarrow \textit{true})$ maps to $\mathit{un}$ such that $kitchen, \mathit{un} \in \mathit{Places}$. Some updates, e.g., an action that changes the location of a \textit{fact} like the robot \textit{holding} a cup and \textit{moving} to an adjacent room, are manually handled to make the planning process sound.
+Then, following Definition~\ref{def:pssav}, the status of the furnace (\textit{kitch-fur-status}) w.r.t. 
+% $s_1$ or 
+$s_2$ in in the kitchen can be expressed as 
+% $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}} (\textit{furnace}, s_1))$ maps to  $kitchen$, or
+$f_{\textit{kitch-fur-status}} (f_{\textit{TurnOn}} (\textit{furnace}, s_2))$, and it maps to $kitchen$ such that $kitchen \in \mathit{Places}$.
+% or 
+% $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_1) \rightarrow \textit{true})$ maps to $\mathit{un}$ such that $kitchen, \mathit{un} \in \mathit{Places}$. Some updates, e.g., an action that changes the location of a \textit{fact} like the robot \textit{holding} a cup and \textit{moving} to an adjacent room, are manually handled to make the planning process sound.
 
 % and $\mathit{un} \in \mathit{Places}$.
 % Currently,  are being handled manually,
@@ -380,19 +404,33 @@ $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_1) \righ
 % \end{definition}
 % These relations help to describe the world state by expressing where the state-variables are effective and observable. Currently, the locations has to be updated manually in the action's effects.
 
-Our main intention behind associating each state-attribute and its corresponding value in that state to a place is to \textit{define} observability conventions appear explicitly in the domain model. 
+The motivation behind associating each state-attribute of a state to a place is to \textit{define} observability conventions, appearing explicitly in the domain model. 
 % In the current context, 
-A state-attribute (with its corresponding value in a state) is either \textit{observable} ($\observable$) or \textit{inferrable} ($\inferable$). 
-``Learning'' the exact status of a attribute, the agent needs to be at the explicitly associated place with the attribute. Which is done using our novel situation assessment technique (described next). E.g., the human visits $s_2$ and assesses/observes that the furnace is {\sc{on}}. And, to infer a state variable, the agent needs to be \textit{co-present} with another agent who achieves that attribute. E.g., the human needs to be in the kitchen when the robot adds some salt to the pasta, to infer that there is salt in it. More formally:
+A state-attribute (in a state) is classified as either \textit{observable} ($\observable$) or \textit{inferrable} ($\inferable$). 
+To ``learn'' the exact \textit{status} of an attribute: 
+% (w.r.t. a state), 
+Either the agent needs to be at the  place associated with the attribute such that this attribute is observable and the agent performs situation assessment (described next). 
+Or, if the agent is co-present with another agent who is \textit{acting} and \textit{achieving} the current status (\textit{i.e.}, the effect of the action being executed), while with the help of our situation assessment procedure the agent infers this fact (that is inferrable, of course).
+Or, the agent is communicated about the exact value of this attribute explicitly. Note that attribute values belonging to both these classes can be communicated explicitly. 
+
+% Which is done using our situation assessment technique (described next). E.g., the human visits $s_2$ and assesses/observes that the furnace is {\sc{on}}. And, to infer a state variable, the agent needs to be \textit{co-present} with another agent who achieves that attribute. E.g., the human needs to be in the kitchen when the robot adds some salt to the pasta, to infer that there is salt in it. 
+
+To work it out more formally:
 
 % We introduce two new fun
 \begin{definition}
-\textbf{(Observability type function.) (ref to Obesrvability of fluents section)}
-The observability type of each \textit{state-varibale symbol} is defined by the function $obs(f_{\textit{svs}}, s) \rightarrow o \in\{\observable, \inferable\}$.
+\textbf{(Place Based Observability Function.)} 
+% (ref to Obesrvability of fluents section)}
+The place based observability function maps each state attribute {\em aka} a grounded \textit{state-variable function} 
+to either $\observable$ or $\inferable$; or a general way to express it is, $f_{\textit{pbof}}: (f_{svs}(?g_1(gr_1),...,?g_k(gr_k)
+% ,\mathcal{S}
+)) \rightarrow 
+    \{\inferable, \observable\}$.
 \end{definition}
-For now, we assume the observability types are constant and initially defined.
+% For now, we assume the observability types are constant and initially defined.
+Here, \textit{pbof} represents the \textit{place based observability function}.
 
-Explanation $\observable$ and $\inferable$.
+% Explanation $\observable$ and $\inferable$.
 
 
 \textbf{****************************}
@@ -672,7 +710,7 @@ Task description in HTN depicted in Fig.~\ref{fig:htn}
 \begin{figure*}
     \centering
     \includegraphics[width=\linewidth]{figures/example_cook.png}
-    \caption{Caption}
+    \caption{TODO: show co-presence, (w/): indicate from what process (SA, COM, Inf) belief update comes from, visually show situation assesment process (black point ?)}
     \label{fig:scenarios}
 \end{figure*}
 
@@ -682,6 +720,7 @@ Task description in HTN depicted in Fig.~\ref{fig:htn}
 In this section we focus on the plans obtained with and without our contribution in three different situations. First, both the human and the robot are initially in the kitchen, but the pasta is in the other room, thus the human will have to leave the kitchen. We consider first the case where the robot starts (A) and then when the human starts (B). The third situation includes an initial belief divergence. This time the pasta is already in the kitchen (robot could have brought them before the human arrives) but the human thinks they are still in the other room (C).  
 
 For each situation (A,B,C), Fig.~\ref{fig:scenarios} depicts the plan computed and the updates of the human beliefs, both with (right side) and without (left side) the contribution. For legibility purposes when the actions computed are the same with and without the contribution they are merged.
+
 % 72
 \textbf{Scenario (A):} The plans obtained with and without the contribution are the same, however it's interesting to notice that the human beliefs are updated in the same way. In this scenario the human will not observe the "turn on pot fire" action of the robot. Without the contribution the agents are omniscient, so the human instantly knows about the effects of the robot action even being in the same room. With the contribution, we plan that the human will not observe the robot action thus their beliefs isn't updated. However, we predict that when coming back in the kitchen the human will assess the effects of the robot action and update their beliefs.
 
@@ -697,15 +736,15 @@ We ran the planner, both with and without the contribution, on every possible in
 
 \begin{tabular}{|c|c|c|c|c|}
     \hline
-    \textbf{Problem} & \textbf{S w/} & \textbf{S w/o} & \textbf{NA} & \textbf{IDL}\\
+    \textbf{Pb} & \textbf{S w/ } & \textbf{S w/o} & \textbf{NA} & \textbf{IDL}\\
     \hline
-    Pasta cooking & 100\% & 25.7\% & 70.5\% & 29.5\%\\
+    Pasta & 100\% & 25.7\% & 70.5\% & 29.5\%\\
     \hline
     Other & -\% & -\% & -\% & -\%\\
     \hline 
 \end{tabular}
 
-With the contribution the planner always find a valid plan that may include communication. When there are no initial belief divergence the planner without the contribution always finds a valid plan. However, the plan generated will always the agents as omniscient which may later lead to ambiguities when executing the plan in real life. Most of the scenarios that include belief divergence leads to non-valid plans without the contribution. Inactivity deadlocks occur when the human thinks the stove is off or that there is no salt, although it's already done, the robot will never do the corresponding actions again and the human beliefs will never be updated. Hence, the precondition of the "pour pasta" action will never be met.
+With the contribution the planner always find a valid plan that may include communication. Without the contribution, when there are no initial belief divergence, the planner always finds a valid plan. However, the plan generated will always consider the agents as omniscient which may later lead to ambiguities when executing the plan in real life. Most of the scenarios that include belief divergence leads to non-valid plans without the contribution. Inactivity deadlocks occur when the human thinks the stove is off or that there is no salt, although it's already done, the robot will never do the corresponding actions again and the human beliefs will never be updated. Hence, the precondition of the "pour pasta" action will never be met.
 
 % \begin{itemize}
 %     \item w/o always working when there is no belief divergence initially. However, the plan generated will always the agents as omniscient which may later lead to ambiguities when executing the plan in real life. 
@@ -717,10 +756,7 @@ With the contribution the planner always find a valid plan that may include comm
 
 \subsection{Interesting case}
 
-An interesting case to focus on is a scenario close to (C) with a belief divergence on the pasta location. Both agents are in the kitchen and the pasta is in the other room, but the human thinks the pasta is in the kitchen. Without the contribution we estimate that the human will try to grab pasta in the kitchen which will fails in real life. [...] 
-
-
-
+An interesting case to focus on is a scenario close to (C) with a belief divergence on the pasta location. Both agents are in the kitchen and the pasta is in the other room, but the human thinks the pasta is in the kitchen. Without the contribution we estimate that the human will try to grab pasta in the kitchen which will fails in real life. In reality the human will be able to assess that the pasta isn't in the kitchen. 
 
 \section{Discussion}
 % how do the results fill the gap ?
