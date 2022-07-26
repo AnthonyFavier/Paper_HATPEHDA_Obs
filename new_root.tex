@@ -242,7 +242,7 @@ the decision about communication is made by our algorithm.
 %
 
 The paper is structured as follows: We first build a relevant background to understand this framework and discuss the related work. We then discuss the methodology: which includes modeling and planning with communication actions. 
-After that, we present the results and show examples where handling the belief divergences is effective and how HATP-EHDA is ineffective under those scenarios. We compare the overall effectiveness of our approach and show that it uses communication when needed (avoids verbosity) in the process. 
+After that, we present the results and show examples where handling the belief divergences is effective and how HATP-EHDA is ineffective under those scenarios. We compare the overall effectiveness of our approach and show that it uses communication when needed (less \textit{verbosity}) in the process. 
 We conclude with a summary, discussion, and future work.
 
 \section{Background}
@@ -332,7 +332,7 @@ Most proposed approaches based on hierarchical task decomposition concepts to hu
 \section{Run-Time Observability Conventions}
 We formally model and use run-time observability conventions in the planning process, which are commonly understood at the time of plan execution in human-robot collaboration. 
 
-At a high-level, the formalization below is based on the standard state-variable representation (we refer the reader to~\cite{naubooks0014222}) with an abuse of the standard notations to maintain the flow of the discussion.
+At a high-level, the formalization below is based on the standard state-variable representation (we refer the reader to~\cite{naubooks0014222}) such that we abuse of the standard notations slightly, sometimes to maintain the flow of the discussion.
 
 \subsection{A General Understanding of Common Ground}
 To describe an environment a set of \textit{constant symbols} is used. 
@@ -353,7 +353,7 @@ For example, to model agents' location in a state, we use $f_{\textit{AgtAt}}:(?
 Each such possible \textit{instantiation} of defined state variable functions, represents $s_i$ partially, and it is also called as a characteristic attribute of $s_i$.     
 
 % If a variable is of the form $f_{svs_1}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ and $gr_1$ contains just one element in it, then we simplify it to $f_{svs_1}^{gr_1}: (\mathcal{S}) \rightarrow ?g_2 (gr_2)$ or, for a given state $s \in \mathcal{S}$, , we further compress it to: $f_{svs_1}^{gr_1,s} \rightarrow const \text{ such that } const \in gr_2$. 
-If a variable is of the form $f_{svs_1}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ and $gr_1$ contains just one element in it, then we simplify it to $f_{svs_1}: (\mathcal{S}) \rightarrow ?g_2 (gr_2)$ or, for a given state $s \in \mathcal{S}$, we will further compress it to, $f_{svs_1}^{s} \rightarrow ?g_2 (gr_2)$. 
+If a variable is of the form $f_{svs_1}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ such that $gr_1$ contains \textit{only} one element in it, then we simplify this expression to, $f_{svs_1}: (\mathcal{S}) \rightarrow ?g_2 (gr_2)$ or, for a given state $s \in \mathcal{S}$, we further compress it to, $f_{svs_1}^{s} \rightarrow ?g_2 (gr_2)$. 
 
 Suppose $s \in \mathcal{S}$ is the real state with the ground truth. As per our assumptions, the belief state of the robot w.r.t. the real-world is always the real world state, i.e., $B_{\varphi_r}^s = s$, and the human belief w.r.t. $s$ is $B_{\varphi_h}^s$ --- that is estimated when the robot takes the human's perspective. Each state variable function instantiation with respect to a belief state, $B_{\varphi_r}^s$ ($B_{\varphi_h}^s$), represents the truth value of that state attribute with the \textit{perspective} of that particular agent: $\varphi_r$ ($\varphi_h$). (Both perspectives are managed by the robot in our setting.) 
 
@@ -482,14 +482,14 @@ In this context, we assume that the robot does not need to be co-present with th
 \subsection{Via Situation Assessment}
 
 % This work abstractly employs in planning the main ideas of situation assessment based on spatial reasoning and observability.  (we said it!)
-The agent \textit{assesses} the current situation of the environment (from its current location) with the help of spatial reasoning, its own frame of reference, and the observability model defined earlier. Consequently, it \textit{updates} its existing belief with the relevant the ground truth. 
+The agent \textit{assesses} the current situation of the environment, from its current location --- that is \textit{discrete} and \textit{symbolic}, with the help of spatial reasoning, its own frame of reference, and the observability model defined earlier. Consequently, it \textit{updates} its existing belief with the relevant ground truth. 
 % Note that this also enables the agent to learn an \textit{observable} attribute's value achieved by another agent previously while now the agent shares its \textit{place} with the attribute (Definition~\ref{def:pssav}). 
 
 \textcolor{red}{(FORMAL expression needed? or not? - based on Def~\ref{def:pssav})}
 
-The robot is always aware of the ground reality hence, technically, the idea 
+Note that the robot is always aware of the ground reality hence, technically, the idea 
 % of situation assessment 
-is effective only for the human agent. Here, the robot takes the human's perspective and performs spatial reasoning as per their frame of reference or their current location in the environment. The human's belief is updated w.r.t. what they can see as ground truth (assessed by the robot) in the environment. Note that this enables the human agent to learn an \textit{observable} attribute's value achieved by the robot previously, while currently the human shares their location with the attribute (refer to Definition~\ref{def:pssav}). 
+is effective only for the human agent. Here, the robot takes the human's perspective and performs spatial reasoning as per their frame of reference or their current location in the environment. The human's belief is updated w.r.t. what they can see as ground truth (\textit{assessed} by the robot) in the environment. Note that this enables the human agent to learn an \textit{observable} attribute's value achieved by the robot previously, while currently the human shares their location with the attribute (refer to Definition~\ref{def:pssav}). 
 % 
 % It predicts the situation and update the belief maintained for the human.
 % assessment a collaborative human agent 
@@ -506,10 +506,35 @@ is effective only for the human agent. Here, the robot takes the human's perspec
 % Thanks to spatial reasoning, one can now define and plan with execution time observability conventions in a principled way. 
 % We keep an account on agents' belief divergence that can occur in practice due to spatial reasoning and perspective taking. 
 
-The agent examines and updates its belief when relevant ground truth is learnt after the execution of every action. Technically, robot performs it both for the human agent and itself.
+The agent examines and updates its belief when relevant ground truth is learnt after the execution of every action. Technically, robot performs it for both the human agent and itself.
 
-\subsection{Communication}
-...
+\subsection{When Being Communicated}
+The agent updates its belief when learns the ground truth after some other agent communicates with it, explicitly, a state attribute-value. 
+Communication takes place via action modeled (described next), specified explicitly in the agents' joint-task model.
+
+Again, as the robot is always aware of the real world, it ``decides'' to communicate  an attribute and its value to the human agent, if and when needed, while the human belief is updated accordingly. Note that, with each communication action, only one attribute's value gets updated in the human belief.
+
+% In the next section
+% it needs to make decision "if", "when", and "what" to communicate with these explicit actions.
+
+\section{Planning With Communication Actions}
+% As human's belief can diverge from the ground-truth, the robot need
+For an agent to make a decision on "if", "when", and "what" to communicate with another agent, it first needs to establish a common protocol with that agent even before planning.  
+In this work, we establish such protocols by modeling explicit communication actions that appear in the joint-task model.
+
+\subsection{Modeling Communication Actions}
+Suppose there is a state-variable function $f_{svs_i}^s$, such that $f_{svs_i}^{s} \rightarrow q$ for the given current state $s$.
+
+An agent $\varphi_i$ can \textit{communicate} this attribute-value pair to another agent $\varphi_j$, if the following conditions meet as its precondition: 
+(1) for the agent $\varphi_i$, its belief state satisfies $f_{svs_i}^{B_{\varphi_i}^s} \rightarrow q$. And, for $\varphi_j$, its belief state diverges on this fact, i.e., $f_{svs_i}^{B_{\varphi_j}^s} \rightarrow r \text{ and } q \neq r$. 
+(2) 
+
+\textcolor{red}{***}
+
+\subsection{Decision Making With Communication}
+Now that we have defined and described all the important tools earlier, here we describe our new planning approach and also explain how these independent components/tools are used in this algorithm. 
+
+
 
 \textbf{**** }
 
@@ -517,7 +542,7 @@ The agent examines and updates its belief when relevant ground truth is learnt a
 
 \textbf{**** }
 
-\textbf{unpolished text below}
+\textcolor{red}{unpolished text below}
 
 \textbf{**** }
 
@@ -729,19 +754,15 @@ The returned refinement in Alg.~\ref{alg:ap_ref_all} contains the subtasks obtai
 \section{Results}
 % what results did you get ?
 
-%TODO
-% small cartoon: to show difference between obs and inf
-% robot and human, human not looking 
-% move object 
-% add salt
-Explicitly say that previous version of hatpehda do not handle belief divergences at planning level, it could if specification is given in the domain. That's why fails here but were able to handle them in specific scenario (example previous paper/thesis).
+
+** Explicitly say that previous version of hatpehda do not handle belief divergences at planning level, it could if specification is given in the domain. That's why fails here but were able to handle them in specific scenario (example previous paper/thesis).**
 
 While considering the same problem, we compared the plans obtained using HATPEHDA without and with our contribution. First, we give some details about the problem description solved by the two planner, with and without our contribution. Secondly, we present some relevant situations (combinations of initial state) producing interesting plans. Eventually we run the planner, with and without the contribution, on every possible initial state on two different problems (Currently one only).  
 
 \subsection{Problem description}
 
 This problem consist of cooking collaboratively some pasta. The scene is visually represented in Fig.~\ref{fig:scene}.
-The robot and the human have different role in this joint task depicted in the HTNs in Fig.~\ref{fig:htn}. The robot is in charge of adding salt to the water pot and to turn on the pot fire (turn on the stove). The human agent has to grab the pasta and pour some in the pot once the fire is on and the salt added. 
+The robot and the human have different role in this joint task depicted in the HTNs in Fig.~\ref{fig:htn}. The robot is in charge of adding salt to the water pot and to turn on the pot fire (turn on the stove). The human agent has to grab the pasta and pour some in the pot. The pasta can be poured only once the fire is on and the salt added. 
 
 Domain description:
 
@@ -815,16 +836,15 @@ For each situation (A,B,C), Fig.~\ref{fig:scenarios} depicts the plan computed a
 \subsection{Quantitative results}
 
 We ran the planner, both with and without the contribution, on every possible initial state of two different problem. The first one is the pasta cooking problem that corresponds to 512 different initial states. The second one is **** and corresponds to ** different initial states. The table below shows different results obtained with and without the contribution. The success rate (S) is shown in both cases. With the contribution the ratio of successful plans including a communication action is shown (Com). Without the contribution a planning failure can occur in two cases. First, if a human estimated action is not applicable (NA) in reality  or if an inactivity deadlock (IDL) has been reached, i.e. if there is a succession of at least four WAIT or IDLE actions. The ratio of failed planning due to non-applicable human action and due to inactivity deadlocks are given in the table as well.
-
 \begin{tabular}{|c||c|c||c|c|c|}
     \hline
     & \multicolumn{2}{|c||}{\textbf{With contrib.}} & \multicolumn{3}{c|}{\textbf{Without contrib.}}\\
     \hline
     \textbf{Pb} & \textbf{S} & \textbf{Com} & \textbf{S} & \textbf{NA} & \textbf{IDL}\\
     \hline
-    Pasta (512) & 100\% & 52.3\% & 25.7\% & 70.5\% & 29.5\%\\
+    Pasta-512 & 100\% & 52.3\% & 25.7\% & 70.5\% & 29.5\%\\
     \hline
-    Other & -\% & -\% & -\% & -\% & -\%\\
+    Other-N & -\% & -\% & -\% & -\% & -\%\\
     \hline 
 \end{tabular}
 
@@ -845,6 +865,11 @@ Without the contribution, when there are no initial belief divergence, the plann
 % how do the results fill the gap ?
 
 Point out ambiguities (created both by the lack of situation assessment and belief alignment) in the plans without contribution. Then, explain how we removed them. 
+
+With the contribution 
+
+Without the contribution, when there are no initial belief divergence, the planner always finds a valid plan. However, the plan generated will always consider the agents as omniscient which may later lead to ambiguities when executing the plan in real life. Most of the scenarios that include belief divergence leads to non-valid plans without the contribution which explains the 25.7\% success rate. Inactivity deadlocks occur when the human thinks the stove is off or that there is no salt although it's already done, the robot will never do the corresponding actions again and the human beliefs will never be updated. Hence, the precondition of the "pour pasta" action will never be met.
+
 
 \subsection{Interesting case}
 
