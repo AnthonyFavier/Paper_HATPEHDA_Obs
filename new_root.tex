@@ -149,7 +149,7 @@ The best current solver tackles such problems by the robot performing collaborat
 Moreover, the robot considers that a human cannot be supervised during plan execution like an artificial agent. And hence, to cater to that, in the planning phase, it emulates and predicts humans' actions, decisions, and reactions. 
 To improve this solver, we describe a new planning approach that models and uses novel {\em run-time observability conventions} by abstractly adapting  situation assessment concepts from the literature, which enable the planner to 
 % , and hence during planning, it 
-captures agent's relevant belief divergence that could arise in practice and affect plan execution. 
+captures agents' relevant belief divergences that could arise in practice and affect plan execution. 
 % during planning. 
 Our approach \textit{decides} ``if'' and ``when'' belief alignment is required during planning, which is achieved via explicit communication.
 % effectively, and. 
@@ -172,7 +172,7 @@ In the cases that interest us, the human agent is considered a fully cooperative
 %Even 
 It motivates us to consider one crucial aspect of human-robot collaborative planning: A robot should not only plan for human-robot joint (collaborative) actions but also predict and emulate human decisions and actions (and sometimes their reactions) to seamlessly achieve the task together. 
 The robot must put itself in the shoes of the human agent, helping the robot to \textit{prohibit} the human agent executing an action with a detrimental effect on the overall joint-task achievement, e.g., this action ends up consuming some resource essential to achieving the task. 
-Moreover, it also helps the robot to create a situation that will \textit{promote} an action to be executed by the human agent and is ``relevant'' to achieving the joint-task.       
+Moreover, it also helps the robot to create a situation that will \textit{promote} an action to be executed by the human agent and is \textit{relevant} to achieving the joint-task.       
 % In this setting, it is common to compute a policy for all agents using a central engine. This policy is executed by
 % the agents in a decentralized manner, and agent communication
 % is performed through explicit actions.
@@ -194,9 +194,10 @@ generates a policy tree comprising human and robot actions.
 The human is an uncontrollable agent,
 % , so even if they are rational and collaborative, 
 so it is hard to determine their ``next'' action upfront, which captures the impact of their mood or intention.
-Therefore, for a sound execution, after every robot action, the policy tree gets branched on all ``legal'' possible \text{choices} available to the human.
+Therefore, for a sound execution, after every robot action, the policy tree gets branched on all possible legal \textit{choices} available to the human agent.
 
-However, the planner makes some unrealistic assumptions. For example, an action performed by one agent would also impact the beliefs of other agents, i.e., it implicitly considers that those other agents always observe this agent acting and share the same perspective as this agent. However, in reality, a robot can act that can impact human's belief differently under different scenarios. For example, activities like the robot adding some salt to the pasta, or turning on the furnace, would impact the human's belief differently depending on whether the human is available in the kitchen at the time of action execution.   
+However, this planner makes some unrealistic assumptions. For example, an action performed by one agent would also impact the beliefs of other agents, i.e., it implicitly considers that those other agents always observe this agent acting and share the same perspective as this agent. 
+In reality, a robot can act that \textit{impacts} human's belief differently under different scenarios. For example, activities like the robot adding some salt to the pasta, or switching on the furnace in the kitchen, would impact the human's belief differently depending on whether or not the human is available in the kitchen at the time of action execution.   
 
 % HATP-EHDA assumes that if the robot executes an action, the human's belief gets updated, along with the robot's belief, or vice versa. It means that all the action execution is observable to both these agents. It is a \textit{major} drawback of the solver, since it is not always the case in reality. For example, in the pasta preparation scenario, suppose the human leaves the kitchen, and before they arrive back in the kitchen, the robot \textit{adds} some salt to the pasta, \textit{lids} the pot, and \textit{turns} on the furnace. 
 % Later, when the human arrives in the kitchen: What would be the new belief of the human? Certainly, they will observe that the furnace is {\sc on}, and also the pot is closed. But what about ``there is already some salt in pasta?'' Which creates divergence in the agents' belief states. 
@@ -208,14 +209,14 @@ However, the planner makes some unrealistic assumptions. For example, an action 
 
 % can handle different initial distinct beliefs
 % To make it more realistic, 
-We introduce a novel paradigm for implementing {\em execution time observability conventions} in the HATP-EHDA (planning) framework. The high-level idea to implement it is inspired by existing situation assessment reasoners which perform spatial reasoning and perspective taking ~\cite{flavell1992perspectives,trafton2005enabling,johnson2005perceptual,Sisbot2011SituationAF}. 
+We introduce a novel paradigm for implementing \textit{suitable conventions} understood during plan execution in the human-robot context; in HATP-EHDA --- a planning framework. The high-level idea to implement it is inspired by existing situation assessment reasoners which perform spatial reasoning and perspective taking ~\cite{flavell1992perspectives,trafton2005enabling,johnson2005perceptual,Sisbot2011SituationAF}. 
 % Based on this, 
 Our new planning approach 
 % (based on
 % by extending and 
 % improving 
 % HATP-EHDA) 
-handles divergences in human-robot individual beliefs (assessed via situation assessment), 
+handles divergences in human-robot individual beliefs (computed with the use of situation assessment), 
 % about the ground truth.
 %23dito
 % Our approach
@@ -237,7 +238,7 @@ Therefore, deciding ``How to communicate?'' is crucial, but it is equally signif
 We assume that a natural language-based speech modality is available, while 
 % if, when, and what to 
 % whether to communicate 
-the decision about communication is made by our algorithm. 
+whether to communicate or not is \textit{decided} by the algorithm. 
 % with communication actions.
 %
 
@@ -296,7 +297,7 @@ We do not add any further information in the individual task models during plan 
 }  
 \end{definition}
 
-The requirement from this solution tree is that for each branch, from the root to a leaf node, the sequence of primitive actions, say,  $\pi=(o_1^r,o_2^h,o_3^r,...,o_{k-1}^h,o_k^r)$ is a solution plan for the HATP problem ($\mathcal{P}_{hr}$). Here, each $o_i^h$ represents a choice (often out of several available choices) the human could make during execution.
+The requirement from this solution tree is that for each branch, from the root to a leaf node, the sequence of primitive actions, say,  $\pi=(o_1^r,o_2^h,o_3^r,...,o_{k-1}^h,o_k^r)$ is a solution plan for the HATP-EHDA problem ($\mathcal{P}_{hr}$). Here, each $o_i^h$ represents a choice (often out of several available choices) the human could make during execution.
 % , which means there exists a primitive decomposition $w_p_{hr}$ of the initial joint-task network $w_0$, and $\pi$ is an instance of it. 
 
 \paragraph{Situation Assessment.} In human psychology, especially in human-human interaction, spatial reasoning and perspective taking are crucial. 
@@ -313,11 +314,7 @@ In practice, we often build relations between objects and agents or objects and 
 
 % In human psychology, especially in human-human interaction, spatial reasoning and perspective taking are crucial. 
 
-This work abstractly employs in planning the main ideas of situation assessment based on spatial reasoning and observability. The goal is to predict the situation assessment of a collaborative human agent 
-% in order 
-to have a better estimate 
-% more accurate estimation 
-of their knowledge, and hence of their next possible actions, and thus, to produce better plans.
+This work abstractly employs in planning the main ideas of situation assessment based on spatial reasoning and observability. The goal is to predict the situation assessment of a collaborative human agent to have a better estimate of their knowledge and next possible actions, and thus, to produce better plans.
 
 \subsection{Related Work}
 A robot acting in an environment in the presence of a human needs to consider the evident constraints, e.g., plan pertinence and acceptance of its activities by the human while considering their course of joint-actions.
@@ -329,7 +326,7 @@ Most proposed approaches based on hierarchical task decomposition concepts to hu
 
 \textbf{*****}
 
-\section{Run-Time Observability Conventions}
+\section{Execution-Time Observability Conventions}
 We formally model and use run-time observability conventions in the planning process, which are commonly understood at the time of plan execution in human-robot collaboration. 
 
 At a high-level, the formalization below is based on the standard state-variable representation (we refer the reader to~\cite{naubooks0014222}) such that we abuse of the standard notations slightly, sometimes to maintain the flow of the discussion.
@@ -349,32 +346,32 @@ Suppose $\mathcal{S}$ is the complete state-space and $s \in \mathcal{S}$ repres
 \textbf{(State Variable Function.)} It is represented as: $f_{svs}:(?g_1 (gr_1), ?g_2 (gr_2), ..., ?g_k (gr_k),\mathcal{S})\rightarrow ?g_{k+1} (gr_{k+1})$. 
 \end{definition}
 Here, $svs$ is \textit{state-variable symbol} (or the attribute name), while each \textit{term} with ``$?$'' (a question mark symbol), can be instantiated with a constant symbol from its respective \textit{group} (mentioned inside ``$()$'') appears right besides the term. 
-For example, to model agents' location in a state, we use $f_{\textit{AgtAt}}:(?a (Agents), \mathcal{S}) \rightarrow ?r (Rooms)$, representing, for each agent and each possible, an a given legal state ($s_i \in \mathcal{S}$), we know where the agent is located in $s_i$. 
+For example, to model agents' location in a state, we use $f_{\textit{AgtAt}}:(?a (Agents), \mathcal{S}) \rightarrow ?r (Rooms)$, representing, for each agent and each possible, in a given legal state ($s_i \in \mathcal{S}$), we know where the agent is located in $s_i$. 
 Each such possible \textit{instantiation} of defined state variable functions, represents $s_i$ partially, and it is also called as a characteristic attribute of $s_i$.     
 
 % If a variable is of the form $f_{svs_1}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ and $gr_1$ contains just one element in it, then we simplify it to $f_{svs_1}^{gr_1}: (\mathcal{S}) \rightarrow ?g_2 (gr_2)$ or, for a given state $s \in \mathcal{S}$, , we further compress it to: $f_{svs_1}^{gr_1,s} \rightarrow const \text{ such that } const \in gr_2$. 
-If a variable is of the form $f_{svs_1}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ such that $gr_1$ contains \textit{only} one element in it, then we simplify this expression to, $f_{svs_1}: (\mathcal{S}) \rightarrow ?g_2 (gr_2)$ or, for a given state $s \in \mathcal{S}$, we further compress it to, $f_{svs_1}^{s} \rightarrow ?g_2 (gr_2)$. 
+If a variable is of the form $f_{svs_i}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ such that $gr_1$ contains \textit{only} one element in it, then we simplify this expression to, $f_{svs_i}: (\mathcal{S}) \rightarrow ?g_2 (gr_2)$ or, for a given state $s \in \mathcal{S}$, we further compress it to, $f_{svs_i}^{s} \rightarrow ?g_2 (gr_2)$. 
 
 Suppose $s \in \mathcal{S}$ is the real state with the ground truth. As per our assumptions, the belief state of the robot w.r.t. the real-world is always the real world state, i.e., $B_{\varphi_r}^s = s$, and the human belief w.r.t. $s$ is $B_{\varphi_h}^s$ --- that is estimated when the robot takes the human's perspective. Each state variable function instantiation with respect to a belief state, $B_{\varphi_r}^s$ ($B_{\varphi_h}^s$), represents the truth value of that state attribute with the \textit{perspective} of that particular agent: $\varphi_r$ ($\varphi_h$). (Both perspectives are managed by the robot in our setting.) 
 
 \begin{definition}
 \textbf{(Belief Divergence.)}
-Suppose that $f_{\textit{svs}}:(g_{(1)1},g_{(2)1},...,g_{(k)1},s)\rightarrow g_{(k+1)1}$, for a given legal current state $s$, is a possible {\em grounding} for a state-variable function. 
+Suppose that $f_{\textit{svs}_i}:(g_{(1)l},g_{(2)m},...,g_{(k)n},s) \rightarrow g_{(k+1)p}$, for a legal state $s$ and $g(i)$ is the $i^{th}$ group while $g(i)j$ is its $j^{th}$ element, represents a possible {\em grounding} for a state-variable function.
 % with the function symbol $\text{\em svs}$. 
-Belief divergence is caused if there exists an instantiation such that $f_{\textit{svs}}:(g_{(1)1},g_{(2)1},...,g_{(k)1},B_{\varphi_r}) = {g_{(k+1)1}}  \neq f_{\textit{svs}}:(g_{(1)1},g_{(2)1},...,g_{(k)1},B_{\varphi_h})$.
+Belief divergence is caused if there exists an instantiation such that $f_{\textit{svs}_i}:(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_r}) = {g_{(k+1)p}}  \neq f_{\textit{svs}_i}:(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_h})$.
 % , then the human belief diverges.  
 \end{definition} 
 % Consequently, belief divergence is caught.
 % Note that both the agents are always ``definite'' about their individual knowledge of the current state. (In our context, it is true unless the human somehow \textit{learns} the truth.)
-Note that we do not model uncertainties in the agents' individual knowledge. Moreover, even if there are belief divergences, the agents are convinced about their knowledge of the environment.
+Note that we do not model uncertainties in the individual agents' knowledge. So, even if there are belief divergences, the agents are convinced about their individual belief in the ground truth.
 
 \subsection{Place-Based Observability}
-We now define place based observability following the standard (run-time) observability conventions based on situation assessment.
+We now define place-based observability \textit{inspired by} standard execution time observability conventions based on situation assessment.
 
 \begin{definition}
 \textbf{(Places.)} Represented as $\mathit{Places}$, captures a group of constant symbols such that each member individually captures a pre-specified area in an environment declared by the domain modeler.  
 \end{definition}
-Agents are always situated in a place or moving between them. Two agents situated in a same place, $p \in \mathit{Places}$, at a time are said to be \textit{co-present}.
+Agents are always situated in a place or moving between two places. Two agents situated in the same place $p \in \mathit{Places}$; at a given time, are said to be \textit{co-present}.
 
 % OLD GENERAL Discussion %%%
 % \begin{definition}
@@ -392,24 +389,48 @@ Agents are always situated in a place or moving between them. Two agents situate
 %%%%%%%%%%%%%% discussion ends here
 
 \begin{definition}
-    \textbf{(Place Specific State Attribute Function.)} A {\em grounded} state-variable function {\em aka} state attribute in a given state is associated with a place or, in a more general way, it is expressed as, $f_{pssas}: (f_{svs}(?g_1(gr_1),...,?g_k(gr_k),\mathcal{S})) \rightarrow 
+    \textbf{(Place Specific State Attribute Function.)} A {\em grounded} state-variable function {\em aka} a state attribute of a given state is explicitly associated with a place or, to make it more general, it can also be expressed as, $f_{loc}: (f_{svs_i}(?g_1(gr_1),...,?g_k(gr_k),\mathcal{S})) \rightarrow 
     % \mathit{Places' \cup \{un\} \equiv 
     Places$
     \label{def:pssav}
 \end{definition}
-Here, $\mathit{pssas}$ stands for {\em place-specific state attribute symbol}, and it captures place specific attribute for a given state. 
+Here, $\mathit{loc}$ is a location specific symbol for {\em place specific attribute}, while the function captures the associated place wr.t. a state attribute, $f_{svs_i}(...)$.
+% for a given state. 
+
+Defining it this way helps capture and maintain the explicit places associated with \textit{only} the state attributes of our interests. 
+These explicit mappings suggest that an attribute is effective (or \textit{observable}) in its dedicate \textit{place}, and which \textit{may} change over a course of action(s). 
+Such changes are possible, say, due to an action such when applied, changes its \textit{place} of being effective, e.g., the robot \textit{holding} a cup and \textit{moving} to an adjacent room. Such updates are currently manually handled.
+% to make the planning sound.
+
+% Further details appear in the latter part of the paper.  
 % $\mathit{Places'}$ maps to the real places, while $\mathit{un}$ is for \textit{undefined}, and they together represent $\mathit{Places}$.
 
-We associate each attribute of a state and its exact value in that state to a \textit{place}. 
-For example, suppose that, being in $s_1$, the robot switches on the furnace placed in the kitchen, and this generates a new state $s_2$. 
-Then, following Definition~\ref{def:pssav}, the status of the furnace (\textit{kitch-fur-status}) w.r.t. 
-% $s_1$ or 
-$s_2$ in in the kitchen can be expressed as 
-% $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}} (\textit{furnace}, s_1))$ maps to  $kitchen$, or
-$f_{\textit{kitch-fur-status}} (f_{\textit{TurnOn}} (\textit{furnace}, s_2))$, and it maps to $kitchen$ such that $kitchen \in \mathit{Places}$.
-% or 
-% $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_1) \rightarrow \textit{true})$ maps to $\mathit{un}$ such that $kitchen, \mathit{un} \in \mathit{Places}$. 
-Relevant place updates for some specific state attributes, e.g., an action that changes the place of a state attribute like the robot \textit{holding} a cup and \textit{moving} to an adjacent room, are manually handled to make the planning process sound.
+% We introduce two new fun
+\begin{definition}
+\textbf{(State Variable Observability Function.)} 
+% (ref to Obesrvability of fluents section)}
+The state variable observability function maps each state attribute {\em aka} a grounded \textit{state-variable function} 
+to either $\observable$ or $\inferable$; or a more general way to express it is, $f_{\textit{obs}}: (f_{svs_i}(?g_1(gr_1),...,?g_k(gr_k),\mathcal{S}
+)) \rightarrow 
+    \{\inferable, \observable\}$.
+    \label{def:svof}
+\end{definition}
+% For now, we assume the observability types are constant and initially defined.
+Here, \textit{obs} represents a \textit{observability} symbol to capture \textit{state-variable observability} such that a state-variable function, for a legal state $s\in\mathcal{S}$, is classified as either \textit{observable} ($\observable$) or \textit{inferable} ($\inferable$). In this work, we generalize it, assuming that a state-attribute is either \textit{observable} or \textit{inferrable}, and hence, relaxing individual state based restrictions, i.e., $f_{\textit{obs}}: (f_{svs_i}(?g_1(gr_1),...,?g_k(gr_k))) \rightarrow 
+    \{\inferable, \observable\}$.
+
+% An \textit{observable} state attribute is an attribute that can be observed by an agent to update their beliefs with the observed value. 
+% An \textit{inferable} state attribute is an attribute that can't be observed but whose value can be inferred in certain condition. (salt example to illustrate ? mention observing action executino ? cartoon ?) %BELOW
+
+When a state-variable function ($f_{svs_i}(...)$) belongs to the class $\observable$, it means, an agent can assess/observe the correct knowledge of its \textit{exact} status in a given state $s_l$, if the agent fulfils certain requirements w.r.t. $s_l$. 
+But when we say a state-variable function ($f_{svs_j}(...)$) belongs to the class $\inferable$, that means, unlike the former case, an agent cannot observe it directly. But, under certain scenarios, the agent can definitely predict/infer its \textit{exact} status in $s_l$.   
+
+% Consider some realistic scenarios to discuss these two cases: 
+For example, suppose the robot \textit{switches-on} the furnace kept the kitchen, the furnace turns {\sc on}, and it is an \textit{observable} fact. So, if the human agent visits the kitchen in the future, they can see the furnace is {\sc on}.     
+After the switch-on action, suppose now the robot \textit{adds} some salt in the pasta. Naturally, \textit{salt-in-pasta} needs to be inferred as the human cannot ``directly'' observe it. 
+However, such inference only happens when the human agent ``observes'' the robot adding salt to the pasta, i.e., both agents need to be co-present in the kitchen throughout this process; otherwise, the human will miss the \textit{salt-in-pasta} fact. 
+
+A more formal take on the usage of these important concepts for updating agents' individual belief appears in the following section.   
 
 % and $\mathit{un} \in \mathit{Places}$.
 % Currently,  are being handled manually,
@@ -423,30 +444,7 @@ Relevant place updates for some specific state attributes, e.g., an action that 
 % \end{definition}
 % These relations help to describe the world state by expressing where the state-variables are effective and observable. Currently, the locations has to be updated manually in the action's effects.
 
-The motivation behind associating each state-attribute of a state to a place is to \textit{define} observability conventions, appearing explicitly in the domain model. 
-% In the current context, 
-A state-attribute (in a state) is classified as either \textit{observable} ($\observable$) or \textit{inferrable} ($\inferable$). 
-To ``learn'' the \textit{value} of an attribute: 
-% (w.r.t. a state), 
-Either the agent needs to be at the place associated with the attribute such that this attribute is observable and the agent performs situation assessment (described next). 
-Or, if the agent is co-present with another agent who is \textit{acting} and \textit{achieving} the current status (\textit{i.e.}, the effect of the action being executed), while with the help of our situation assessment procedure the agent infers this fact (that is inferrable, of course).
-Or, the agent is communicated about the exact value of this attribute explicitly. Note that attributes belonging to both these classes can be communicated explicitly. 
-% 
-% Which is done using our situation assessment technique (described next). E.g., the human visits $s_2$ and assesses/observes that the furnace is {\sc{on}}. And, to infer a state variable, the agent needs to be \textit{co-present} with another agent who achieves that attribute. E.g., the human needs to be in the kitchen when the robot adds some salt to the pasta, to infer that there is salt in it. 
-% 
-To discuss it more formally:
 
-% We introduce two new fun
-\begin{definition}
-\textbf{(State Variable Observability Function.)} 
-% (ref to Obesrvability of fluents section)}
-The state variable observability function maps each state attribute {\em aka} a grounded \textit{state-variable function} 
-to either $\observable$ or $\inferable$; or a more general way to express it is, $f_{\textit{svos}}: (f_{svs}(?g_1(gr_1),...,?g_k(gr_k),\mathcal{S}
-)) \rightarrow 
-    \{\inferable, \observable\}$.
-\end{definition}
-% For now, we assume the observability types are constant and initially defined.
-Here, \textit{svos} represents the \textit{state variable observability symbol} such that a state-variable function is classified as either $\observable$ or $\inferable$ for all legal states of $\mathcal{S}$.
 
 % Explanation $\observable$ and $\inferable$.
 
@@ -460,36 +458,87 @@ Here, \textit{svos} represents the \textit{state variable observability symbol} 
 For each agent, there are four ways its belief about the environment can be updated. They are described as follows:
 
 \subsection{When It Acts}
-This is the most simplest case out of the four. When the agent executes an action its belief is updated based on the action's effect. The current state attributes appearing in the action's effect will be updated with the new values as per this action, while the remaining attributes keep their same old values.  
+This is the simplest case out of the four. When the agent executes an action its belief is updated based on the action's effect. The current state attributes appearing in the action's effect will be updated with the new values as per this action, while the remaining attributes keep their same old values.  
 % Formally, if the current real state is $s_1$, and the agent (e.g., the robot) executes $a_1$ and generates a new state $s_2$, then the updated belief state is,
 % $B_{\varphi_r}^{s_2} = B_{\varphi_r}^{s_1}$ + replaced by the new assignment to the... (we need to introduce many more notations to do it this way) 
 
-\subsection{Being an Observant}
+\subsection{It Being an Observant}
 Let us first define action observability.
 
 \paragraph{Action Observability.}
-An action being executed by one agent is \textit{observable} to all other agents co-present with the former throughout the action execution. 
-Therefore, we state that if an agent observes an action being executed (and co-present throughout with the acing agent), with the help of situation assessment, infers the \textit{inferrable effect} or the inferrable state attributes associated to this action.
+An action being executed by an agent is \textit{observed} by all other agents co-present with the former, throughout the execution of this action.
+% execution. 
+Therefore, we state that if an agent observes an action being executed, 
+% (and co-present throughout with the acing agent), with the help of situation assessment, 
+the agent infers each \textit{inferable} effect associated to this action.
+% or the inferable state attributes associated to this action.
+% i.e., 
+Consequently, the agent can immediately update its current belief such that each of the affected attributes by the action receives a new value.  
+% with the new value for each state-attribute  affected inferable} state attribute.
 
-If the agent 
+% If the agent 
 % is \textit{co-present} with another agent and 
-{\em observes} another agent executing an action throughout,
+% {\em observes} another agent executing an action throughout,
 % If this is the case, 
-then the agent will immediately update its belief with all the inferrable effects associated with this action  post its execution. 
+% then the agent will immediately update its belief with all the \textit{inferable} effects associated with this action post its execution. 
 
-In this context, we assume that the robot does not need to be co-present with the human to assess the inferrable and (or) observable effects of the human actions. Moreover, we keep it simple and consider that, in such cases, humans have deterministic decisions to make. Therefore, the robot's belief will always update with the effects of human actions. More complex cases are a part of future work where the robot's belief can diverge from the ground reality, too. 
+% In this context, we assume that the robot does not need to be co-present with the human to assess the inferable and (or) observable effects of the human actions. Moreover, we keep it simple and consider that, in such cases, humans have deterministic decisions to make. Therefore, the robot's belief will always update with the effects of human actions. More complex cases are a part of future work where the robot's belief can diverge from the ground reality, too. 
+
+However, when the human agent executes an action while not being observable by the robot, we keep this scenario quite simple, considering that humans make only deterministic decisions. 
+Therefore, the robot does not need to be co-present with them to get the right effect of their actions. Also, the robot's belief is always updated with both \textit{inferable} and \textit{observable} effects. More complex cases are part of our future work where the robot's belief can diverge from the ground reality, too. 
 
 \subsection{Via Situation Assessment}
 
 % This work abstractly employs in planning the main ideas of situation assessment based on spatial reasoning and observability.  (we said it!)
-The agent \textit{assesses} the current situation of the environment, from its current location --- that is \textit{discrete} and \textit{symbolic}, with the help of spatial reasoning, its own frame of reference, and the observability model defined earlier. Consequently, it \textit{updates} its existing belief with the relevant ground truth. 
+The agent \textit{assesses} the current situation of the environment from its location, 
+% --- that is \textit{discrete} and \textit{symbolic}, 
+with the help of spatial reasoning, its own frame of reference, and the observability model defined earlier. Consequently, the agent \textit{updates} its own existing belief with the relevant ground truth. 
 % Note that this also enables the agent to learn an \textit{observable} attribute's value achieved by another agent previously while now the agent shares its \textit{place} with the attribute (Definition~\ref{def:pssav}). 
 
-\textcolor{red}{(FORMAL expression needed? or not? - based on Def~\ref{def:pssav})}
+(Based on Definition~\ref{def:pssav}) We can always associate specific state attributes to \textit{places}. 
+For example, suppose that, being in the state $s_1$, the robot switches on the furnace placed in \textit{kitchen}, and this generates a new state $s_2$. Also, assume that $f_{\textit{TurnOn}}^{s_i} \text{ s.t.  } s_i \in \mathcal{S}$ is $\observable$ (Definition~\ref{def:svof}).   
+% Then, 
+% following Definition~\ref{def:pssav}, 
+% the \textit{status} of the furnace (\textit{kitch-fur-status}), i.e. 
+Then, the \text{place specific attribute function}, $f_{loc} : (...)$, w.r.t. the states
+$s_1$ and 
+$s_2$ can be expressed as, 
+% $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}} (\textit{furnace}, s_1))$ maps to  $kitchen$, or
+$f_{\textit{loc}} (f_{\textit{TurnOn}}^{s_1} )$ and $f_{\textit{loc}} (f_{\textit{TurnOn}}^{s_2} )$, respectively, and both map to $\textit{kitchen} \in Places$.
+% such that $kitchen \in \mathit{Places}$.
+% or 
+% $f_{\textit{kit-fur-status}} (f_{\textit{TurnOn}}: (\textit{furnace}, s_1) \rightarrow \textit{true})$ maps to $\mathit{un}$ such that $kitchen, \mathit{un} \in \mathit{Places}$. 
+% Relevant place updates for some specific state attributes, e.g., an action that changes the place of a state attribute like the robot \textit{holding} a cup and \textit{moving} to an adjacent room, are manually handled to make the planning process sound.
+
+Consider the following scenario: The search progresses from $s_2$, along $s_1, s_2, ...$, such that the next action applicable in it is, the agent $(\varphi_h)$ \textit{moving} to the kitchen. This generates a new state $s_3$, and hence $f_{\textit{loc}} (f_{\textit{AgtAt}}(\varphi_h, s_3) )$ maps to $kitchen$, but so does  $f_{\textit{loc}} (f_{\textit{TurnOn}}^{s_3})$. 
+% maps to $kitchen$, too. 
+In such cases, $\varphi_h$ assesses the \textit{status} of the furnace, i.e., the exact value of $f_{\textit{TurnOn}}^{s_3}$ in $s_3$, which is {\sc on}, and updates its belief.  
+
+
+% The motivation behind associating each state-attribute of a state to a place is to \textit{define} observability conventions, appearing explicitly in the domain model. 
+% % In the current context, 
+% A state-attribute (in a state) is classified as either \textit{observable} ($\observable$) or \textit{inferrable} ($\inferable$). 
+% To ``learn'' the \textit{value} of an attribute: 
+% % (w.r.t. a state), 
+% Either the agent needs to be at the place associated with the attribute such that this attribute is observable and the agent performs situation assessment (described next). 
+% Or, if the agent is co-present with another agent who is \textit{acting} and \textit{achieving} the current status (\textit{i.e.}, the effect of the action being executed), while with the help of our situation assessment procedure the agent infers this fact (that is inferrable, of course).
+% Or, the agent is communicated about the exact value of this attribute explicitly. Note that attributes belonging to both these classes can be communicated explicitly. 
+
+%%%old relevant text above 
+
+% 
+% Which is done using our situation assessment technique (described next). E.g., the human visits $s_2$ and assesses/observes that the furnace is {\sc{on}}. And, to infer a state variable, the agent needs to be \textit{co-present} with another agent who achieves that attribute. E.g., the human needs to be in the kitchen when the robot adds some salt to the pasta, to infer that there is salt in it. 
+% 
+% To discuss it more formally:
+
+% \textcolor{red}{(FORMAL expression needed? or not? - based on Def~\ref{def:pssav})}
 
 Note that the robot is always aware of the ground reality hence, technically, the idea 
 % of situation assessment 
-is effective only for the human agent. Here, the robot takes the human's perspective and performs spatial reasoning as per their frame of reference or their current location in the environment. The human's belief is updated w.r.t. what they can see as ground truth (\textit{assessed} by the robot) in the environment. Note that this enables the human agent to learn an \textit{observable} attribute's value achieved by the robot previously, while currently the human shares their location with the attribute (refer to Definition~\ref{def:pssav}). 
+is effective only for the human agent. Here, the robot takes the human's perspective and performs spatial reasoning as per their frame of reference or their current location in the environment. 
+The human's belief is updated w.r.t. what they can see as ground truth (assessed by the robot) in the environment. 
+This enables $\varphi_h$ to learn an \textit{observable} attribute's value achieved earlier by the robot.
+% while currently the human shares their location with the attribute (refer to Definition~\ref{def:pssav}). 
 % 
 % It predicts the situation and update the belief maintained for the human.
 % assessment a collaborative human agent 
@@ -506,20 +555,23 @@ is effective only for the human agent. Here, the robot takes the human's perspec
 % Thanks to spatial reasoning, one can now define and plan with execution time observability conventions in a principled way. 
 % We keep an account on agents' belief divergence that can occur in practice due to spatial reasoning and perspective taking. 
 
-The agent examines and updates its belief when relevant ground truth is learnt after the execution of every action. Technically, robot performs it for both the human agent and itself.
+The agent examines and updates its belief when relevant ground truth is learnt via situation assessment, performed ``immediately'' after the execution of each action. Hence, technically, the robot performs situation assessment for both the human agent and itself.
 
-\subsection{When Being Communicated}
+\subsection{When It is Being Communicated}
 The agent updates its belief when learns the ground truth after some other agent communicates with it, explicitly, a state attribute-value. 
-Communication takes place via action modeled (described next), specified explicitly in the agents' joint-task model.
+Communication takes place via actions modeled as predefined communication protocol (described next). 
+% and they are specified explicitly in the agents' joint-task model -- $\mathrm{HTN_r}$ and $\mathrm{HTN_h}$.
 
-Again, as the robot is always aware of the real world, it ``decides'' to communicate  an attribute and its value to the human agent, if and when needed, while the human belief is updated accordingly. Note that, with each communication action, only one attribute's value gets updated in the human belief.
+Again, the robot is always aware of the ground truth. Therefore, it ``decides'' to communicate a state-attribute and its \textit{true} value to the human agent, if and when the robot \textit{foresees} that it is required. 
+As a result, the human belief is updated accordingly. 
+We note that with each communication action, only {\em one} attribute-value pair gets communicated and hence only one attribute is updated in the human belief.
 
 % In the next section
 % it needs to make decision "if", "when", and "what" to communicate with these explicit actions.
 
 \section{Planning With Communication Actions}
 % As human's belief can diverge from the ground-truth, the robot need
-For an agent to make a decision on "if", "when", and "what" to communicate with another agent, it first needs to establish a common protocol with that agent even before planning.  
+For an agent to make a decision for "if", "when", and "what" to \textit{communicate} to another agent, it first needs to establish a common protocol with that agent even before planning.  
 In this work, we establish such protocols by modeling explicit communication actions that appear in the joint-task model.
 
 \subsection{Modeling Communication Actions}
