@@ -1012,14 +1012,14 @@ Before we present the domains in use and the empirical results, we make crucial 
 
 \section{Empirical Evaluation**}
 
-** Explicitly say that previous version of hatpehda do not handle belief divergences at planning level, it could if specification is given in the domain. That's why fails here but were able to handle them in specific scenario (example previous paper/thesis).**
+% It's important to note that the previously submitted planner maintain distinct agent beliefs but do not handle belief divergences at planning level. Some scenarios of belief divergence are presented in \cite{coffee_ex_buisan_thesis} but the robot communication is explicitly modeled adoc for this scenario. We propose to handle belief divergence but at the planning level, being domain independent.
 
-While considering the same problem, we compared the plans obtained using HATPEHDA without and with our contribution. First, we give some details about the problem description solved by the planner, with and without our contribution. Secondly, we present some relevant situations (combinations of initial state) producing interesting plans. Eventually we run the planner, with and without the contribution, on every possible initial state on two different problems (Currently one only).  
+While considering a same problem, we compared the plans obtained using the planner with and without our contribution. First, we give some details about the problem description solved by the planner, with and without our contribution. Secondly, we present some relevant situations (combinations of initial state) producing interesting plans. Eventually we run the planner, with and without the contribution, a large set of initial state on two different problems.  
 
 \subsection{Problem description}
 
 This problem consist of cooking collaboratively some pasta. The scene is visually represented in Fig.~\ref{fig:scene}.
-The robot and the human have different role in this joint task. The robot is in charge of adding salt to the water pot and to turn on the stove. The human agent has to grab the pasta and pour some in the pot. The pasta can be poured only once the fire is on and the salt added. 
+The robot and the human have different role in this joint task. The robot is in charge of adding salt to the water pot and to turn on the stove. The human agent has to grab the pasta and pour some in the pot. The pasta can be poured only once the stove is on and the salt added. 
 
 Domain description:
 
@@ -1092,21 +1092,38 @@ For each situation (A,B,C), Fig.~\ref{fig:scenarios} depicts the plan computed a
 
 \subsection{Quantitative results}
 
-We ran the planner, both with and without the contribution, on every possible initial state of two different problem. The first one is the pasta cooking problem that corresponds to 512 different initial states. The second one is **** and corresponds to ** different initial states. The table below shows different results obtained with and without the contribution. The success rate (S) is shown in both cases. With the contribution the ratio of successful plans including a communication action is shown (Com). Without the contribution a planning failure can occur in two cases. First, if a human estimated action is not applicable (NA) in reality  or if an inactivity deadlock (IDL) has been reached, i.e. if there is a succession of at least four WAIT or IDLE actions. The ratio of failed planning due to non-applicable human action and due to inactivity deadlocks are given in the table as well.
+Let's consider two planning problems. The first one is the pasta cooking problem already introduced. The second one consists in preparing three boxes collaboratively. To be ready a box needs to be filled with a defined number of balls and to have a sticker. When ready a box needs to be sent. Only the human can send boxes and only the robot can apply stickers. Both agents can fill the boxes by picking balls from a bucket, but it can run out of balls. To prevent such case, when there is only one ball left, the human first moves to another room to grab more balls and then comes back to refill the bucket. Stickers are observable but the number of ball inside a box is only inferable.
+Therefore, belief divergences can occur by filling the boxes while the human is away.
+
+We ran the planner, with and without the contribution, on both problems. 
+For each problem we generated a total of 512 different initial states including 448 (87.5\% of 512) states with initial belies divergence, and so 64 states where both agent beliefs are initially aligned.
+In both problem the human can miss observable and inferable effects of robot actions. 
+
+IMPORTANT: I had to modify the algorithm! Now when an agent performs an action, the planning fails if it is not applicable with the other agent's beliefs \textit{(either H action not applicable with R beliefs, thus not applicable in reality. Either R action not applicable with H beliefs, due to a false belief, thus even if ok in reality it may damage the trust towards the robot. For instance, H thinks there is already salt in the pot and sees R add "again" salt.)}
+With contribution only when getting next possible H actions we look for relevant divergence. Now also, when R acting, before apply action to acting agent beliefs, we check if R action has same effects in H beliefs (checking if H action has same effects with R beliefs already checked).
+
+The success rate (S) is shown in both cases. With the contribution the ratio of successful plans including a communication action is shown (Com). Without the contribution a planning failure can occur in two cases. First, if a human estimated action is not applicable (NA) in reality  or if an inactivity deadlock (IDL) has been reached, i.e. if there is a succession of at least four WAIT or IDLE actions. The ratio of failed planning due to non-applicable human action and due to inactivity deadlocks are given in the table as well.
+
+The results obtained with all these runs are given in the table below. 
+
 \begin{tabular}{|c||c|c||c|c|c|}
     \hline
     & \multicolumn{2}{|c||}{\textbf{With contrib.}} & \multicolumn{3}{c|}{\textbf{Without contrib.}}\\
     \hline
     \textbf{Pb} & \textbf{S} & \textbf{Com} & \textbf{S} & \textbf{NA} & \textbf{IDL}\\
     \hline
-    Pasta-512 & 100\% & 52.3\% & 25.7\% & 70.5\% & 29.5\%\\
+    Pasta & 100\% & 54.9\% & 18.6\% & 77.0\% & 23.0\%\\
     \hline
-    Other-N & -\% & -\% & -\% & -\% & -\%\\
+    Box & 100\% & 68.8\% & 25.0\% & 83.3\% & 16.7\%\\
     \hline 
 \end{tabular}
 
-With the contribution the planner always find a valid plan and 52.3\% of them includes a communication action. 
-Without the contribution, when there are no initial belief divergence, the planner always finds a valid plan. However, the plan generated will always consider the agents as omniscient which may later lead to ambiguities when executing the plan in real life. Most of the scenarios that include belief divergence leads to non-valid plans without the contribution which explains the 25.7\% success rate. Inactivity deadlocks occur when the human thinks the stove is off or that there is no salt although it's already done, the robot will never do the corresponding actions again and the human beliefs will never be updated. Hence, the precondition of the "pour pasta" action will never be met.
+**With the contribution belief divergences can occur during the plan taking into account observability. Since without the contribution observability isn't considered agents are considered omniscient which can create ambiguities in scenarios where observability matters.**
+
+With the contribution the planner always find a valid plan and in average about 62\% of them includes a communication action. Considering that 87.5\% of the scenarios includes an initial belief divergence, we note that the robot doesn't communicate systematically and that the estimated situation assessment solves a relevant part of the divergences.
+
+Without the contribution, when there are no initial belief divergence, the planner always finds a valid plan. However, the plan generated will always consider the agents as omniscient which may later lead to ambiguities when executing the plan in real life. Most of the scenarios that include belief divergence leads to non-valid plans without the contribution which explains the 21.8\%  average success rate. 
+Inactivity deadlocks occur when the human has a belief divergence on an inferable fact that makes them wait for a robot action which will never occur since the fact is already true (H waiting for R to add salt although there is already salt).
 
 % \begin{itemize}
 %     \item w/o always working when there is no belief divergence initially. However, the plan generated will always the agents as omniscient which may later lead to ambiguities when executing the plan in real life. 
@@ -1122,11 +1139,6 @@ Without the contribution, when there are no initial belief divergence, the plann
 % how do the results fill the gap ?
 
 Point out ambiguities (created both by the lack of situation assessment and belief alignment) in the plans without contribution. Then, explain how we removed them. 
-
-With the contribution 
-
-Without the contribution, when there are no initial belief divergence, the planner always finds a valid plan. However, the plan generated will always consider the agents as omniscient which may later lead to ambiguities when executing the plan in real life. Most of the scenarios that include belief divergence leads to non-valid plans without the contribution which explains the 25.7\% success rate. Inactivity deadlocks occur when the human thinks the stove is off or that there is no salt although it's already done, the robot will never do the corresponding actions again and the human beliefs will never be updated. Hence, the precondition of the "pour pasta" action will never be met.
-
 
 \subsection{Interesting case}
 
