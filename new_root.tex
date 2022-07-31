@@ -321,7 +321,7 @@ Without loss of generality the framework assumes that only one agent \textit{dec
 We do not add any further information to the individual task models during plan elaboration. This also means that the framework starts with building the whole search-space by considering all possible, feasible decompositions~\cite{buisan:hal-03684211}. 
 Later, it can use/adapt off-the-shelf graph-search algorithms (e.g., a variant of well-known approaches like $A^*$, $AO^*$, etc.), and uses social cost, plan legibility, acceptability, etc., in the search process to extract a \textit{joint solution plan} for both the human and the robot. 
 
-The joint solution plan this architecture generates is formalized in the following definition (by extending Definition~\ref{def:htn-sol-plan} for HATP/EHDA):
+The joint solution plan this framework generates is formalized in the following definition (by extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA problem):
 \begin{definition}
 (\textbf{Joint Solution Plan}.) 
 {It is a solution for $\mathcal{P}_{hr}$, represented as a tree or a graph, i.e., $G=(V,E)$. Each vertex ($v \in V$) represents the robot's belief state, starting from the root node $s_0^r$. Each edge ($e \in E$) represents a primitive action that is either a robot's action $o^{r}$ or a human's action $o^{h}$. $G$ gets branched on the possible choices ($o^{h}_1$, $o^{h}_2$, ..., $o^{h}_m$). 
@@ -401,7 +401,8 @@ It then builds representations of the environment from their perspective, which 
 %%%Following this line of work based on ToM,%%% 
 For achieving a collaborative task as a team, the framework proposed in~\cite{devin2016implemented} allows the robot to estimate the mental state of the human agent, which contains not only the human's belief but their actions, goals, and plans. It supports the robot's capabilities to do spatial reasoning w.r.t. the human and track their activities. In particular, it shows how to manage the execution of shared plans such that the human and robot perform collaborative object manipulation tasks. And how the robot can adapt to human decisions and actions and \textit{inform} them when needed without disturbing them for those facts that are observable or inferrable.     
 
-However, this work is motivated by the main ideas of ToM~\cite{devin2016implemented} and situation assessment based on spatial reasoning and observability; and abstractly employs them during planning. It enables the planner to capture the evolution of agents' individual belief states, supports explicit reasoning on human mental state, and deals with relevant belief divergence arising in practice.
+This work is motivated by the main ideas of ToM~\cite{devin2016implemented} and situation assessment based on spatial reasoning and observability; and abstractly employs them during planning. 
+As a result, enabling the solver to capture the evolution of agents' individual belief states, supporting explicit reasoning on human mental state, and dealing with relevant belief divergence arises in practice.
 
 % However, this work abstractly employs the main ideas of ToM from~\cite{devin2016implemented}, situation assessment based on spatial reasoning and observability during human-aware task planning. The goal is to predict the situation assessment of a collaborative human agent, by taking their perspective and doing spatial reasoning, to manage relevant belief divergences and for that having a better estimate of their knowledge at a given stage, predicting their next possible actions, and thus, produce better plans.
 
@@ -1004,7 +1005,11 @@ TODO
 % \textcolor{red}{\textbf{unpolished text (END)}}
 
 \section{Empirical Evaluation}
-Before we present the domains in use and the empirical results, we make crucial distinctions between the existing planning approach and our approach. We note that the current planner can, in principle, handle agents' belief divergences, but ``not during planning'' unlike the solver we present. To achieve it, this uses a more cumbersome technique that intervenes, by updating the task networks to be precise, of the joint task model while using triggers~\cite{thesisBuisan21}.     
+Before we describe the domains used and the empirical results, we make some important distinctions between the existing planning system and our approach. The current solver, in principle, can handle agents' individual belief divergences, but ``not during planning'' unlike this new approach. To achieve it, existing solver uses a more cumbersome technique that intervenes, by updating the task networks to be precise, of the joint task model/specifications while using triggers~\cite{thesisBuisan21}. 
+% 
+% note that the existing system is not sound as it claims to handle human decision and action or whatever... but in principal, is able to produce unsound plan. This will appear in the theoretical guarantees... not in the main text
+% Also, they must divergence must be part of the initial belief. 
+% as there in no way robot .     
 
 ***
 
