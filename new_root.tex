@@ -235,7 +235,7 @@ via communication.
 
 % Communication paradigms like text, visual, speech, etc., are prerequisites for building a communication protocol among multiple agents. However, 
 Effective use of a communication modality is essential to achieve the motivation behind their development, say, a seamless collaboration. However, in reality, communication incurs some costs. 
-While in human-robot interaction (HRI), communicating too much or too little can disturb a task achievement process. 
+Moreover, in human-robot interaction (HRI), communicating too much or too little can disturb a task achievement process. 
 Hence, deciding ``How to communicate?'' is crucial, but it is equally vital to decide: ``If'', ``When'', and ``What'' to communicate. 
 Assume that a speech modality is available while the 
 \textit{decisional} aspect of communication is handled by the new solver with an enhanced reasoning system on the human mental state.
@@ -345,8 +345,8 @@ Here, every \textit{precedence}, \textit{before} constraints, \textit{after} con
 
 \subsection{The HATP/EHDA Framework}
 % We now shift the discussion to 
-The framework comprises a dual-HTN-based task specification model.   
-For ease of exposition, consider a team of a single human and a single robot. Two categories: The robot model, $\mathrm{HTN}_{r}$, represents the task specifications for a controllable agent, while $\mathrm{HTN}_{h}$, represents the model for the human partner, who is an uncontrollable one but the planner has its model
+It comprises a dual-HTN-based task specification model.   
+For ease of exposition, consider a team of a single human and a single robot. Two categories: the robot model, $\mathrm{HTN}_{r}$, represents the task specifications for a controllable agent, while $\mathrm{HTN}_{h}$, represents the model for the human, who is an uncontrollable one but the planner has its model
 representation and relevant interpretations to predict and emulate their decisions, actions, and reactions. 
 % Hierarchical modeling of human-centred activities has been exploited in human-computer interaction in the literature~\cite{annett1967task,paterno2004concurtasktrees,martinie2019analysing}.
 
@@ -355,10 +355,10 @@ representation and relevant interpretations to predict and emulate their decisio
 % due to the page limit constraint. 
 % More details on this are provided in~\cite{thesisBuisan21,buisan:hal-03684211}. 
 
-Here, we restrict the architecture's description just to what is relevant to this work, which is about collaborative planning, by briefly discussing its capabilities to capture other scenarios. The architecture supports the robot to act in the presence of a human agent even when they do not have a shared task to decompose/achieve in the beginning. Or, it can also support the robot planning for both agents by asking the human to help it occasionally, can manage the creation of shared goals, handle human's reactions modeled explicitly via triggers, etc. More details on triggers are available in~\cite{ingrand1996prs,AlamiCFGI98}.   
+We restrict the framework's description to what is relevant but briefly discuss its ability to capture a broad class of scenarios. It supports the robot to act in the presence of a human agent even when they do not share a task to achieve in the beginning. Or, it can also support the robot planning for both agents by asking the human to help it occasionally, can manage the creation of shared tasks, handle human's reactions modeled explicitly via triggers, etc. More details on triggers  in~\cite{ingrand1996prs,AlamiCFGI98}.   
 
-A brief working description of HATP/EHDA is as follows: The structure manipulated by the planner is the \textit{agent}~\cite{thesisBuisan21,buisan:hal-03684211}. More precisely, as we also said earlier, two-agent model will be represented, the human and the robot. 
-Each agent has its own \textit{belief state}, \textit{action model}, \textit{task network}, \textit{plan}, and \textit{triggers}. 
+A brief working description of HATP/EHDA is: The structure manipulated by the solver is the \textit{agent}~\cite{thesisBuisan21,buisan:hal-03684211}. More precisely, as we said earlier, a two-agent model will be represented, \textit{the human} and \textit{the robot}. 
+Each type has its own belief state, action model, task network, plan, and triggers. 
 % In the interest of this paper: 
 We are interested in solving the HATP/EHDA problem, $\mathcal{P}_{hr}$, in which both agents start with a joint task network to decompose, which means they have a shared initial network $w_0$ to start with.
 % , in their respective task models.
@@ -370,14 +370,17 @@ The planner has to use their action models and beliefs to decompose the tasks in
 % Decomposing a non-primitive task, updating the current network with new constraints, etc., are generalized accordingly for the two-agent scenario.
 
 % Without loss of generality the framework assumes that only one agent \textit{decides} to act at a time, while it also decides ``which action to execute?'', e.g., \textit{cook}, \textit{noop}, \textit{add-salt}, \textit{delay}, etc., and similarly, followed by other agent(s). 
-Without loss of generality, the framework assumes a single agent decides to act at a time and ``which action to execute?'', e.g., \textit{add salt}, \textit{cook}, \textit{delay}, etc., and similarly, other agents follow. Despite this round-robin approach: For handling its broad horizon, the framework uses specific actions to synchronize agents' joint plans. \textit{IDLE} is concatenated to its plan when an agent's task network is empty. And, \textit{WAIT} is concatenated to its plan when not having an applicable action.
+Without loss of generality the framework assumes a single agent \textit{decides} to act at a time and, also ``which action to execute?'', e.g., add salt, cook, delay, etc., and similarly, other agents follow. In this round-robin approach: to support its broad horizon, the framework uses specific actions to synchronize agents' joint plans. \textit{IDLE} is concatenated to its plan when an agent's task network is empty. And, \textit{WAIT} is concatenated to its plan when not having an applicable action.
 % Despite the turn-taking fashion, the planning process isn't purely sequential since two "synchronisation" special actions are modeled. The IDLE action is inserted in the agent's plan when their agenda(task network ?) is empty. And the WAIT action is used when the agent currently has no applicable action to perform.
 % after the other.
 % in planning and execution. 
-We do not add any further information to the individual task models during plan elaboration. This also means that the framework starts with building the whole search-space by considering all possible, feasible decompositions~\cite{buisan:hal-03684211}. 
-Later, it can use/adapt off-the-shelf graph-search algorithms (e.g., a variant of well-known approaches like $A^*$, $AO^*$, etc.), and uses social cost, plan legibility, acceptability, etc., in the search process to extract a \textit{joint solution plan} for both the human and the robot. 
+We do not add any further information to the individual task models during plan elaboration. 
+% This also means that 
+First, the framework builds the whole search space by considering all possible, feasible decompositions~\cite{buisan:hal-03684211}. 
+Then, it can adapt off-the-shelf graph search algorithms, e.g., the well-known algorithms like $A^*$ and $AO^*$, and consider social cost, plan legibility, acceptability, etc., to search for a \textit{joint solution plan} for the agents. 
 
-The joint solution plan this framework generates is formalized in the following definition (by extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA problem):
+% The joint solution plan this framework generates is formalized in the following definition (by extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA problem):
+A joint solution plan generated is defined as follows (by extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA case):
 \begin{definition}
 (\textbf{Joint Solution Plan}.) 
 {It is a solution for $\mathcal{P}_{hr}$, represented as a tree or a graph, i.e., $G=(V,E)$. Each vertex ($v \in V$) represents the robot's belief state, starting from the root node $s_0^r$. Each edge ($e \in E$) represents a primitive action that is either a robot's action $o^{r}$ or a human's action $o^{h}$. $G$ gets branched on the possible choices ($o^{h}_1$, $o^{h}_2$, ..., $o^{h}_m$). 
@@ -1105,7 +1108,7 @@ Consider the first domain. We discuss the plans obtained in three different scen
 % existing one of the HATP/EHDA 
 % We used two solvers, the existing one of the HATP/EHDA framework and the proposed one, such that they are tested and compared on both domains. 
 % To better assess the effectiveness of the new method, we consider  \textit{three} boxes to be prepared and sent. 
-The HATP/EHDA framework's current solver and ours are tested and compared on two domains in Table~\ref{tab:q_results}. We consider (in box domain) \textit{three} boxes to be prepared and sent. While in both, we generated 512 different initial states, including 448 (87.5\%) with divergent initial agents' beliefs and 64 states where both agent beliefs are fully aligned initially. A total of 2048 plans were generated.
+The HATP/EHDA framework's current solver and ours are tested and compared on two domains in Table~\ref{tab:q_results}. We consider (in box domain) \textit{three} boxes to be prepared and sent. While in both, we generated 512 different initial states, including 448 (87.5\%) with divergent initial agents' beliefs and 64 states where both agent beliefs are fully aligned initially. Overall, 2048 plans were generated.
 % In each domain, we generated 512 different initial states, including 448 (87.5\%) with divergent initial agents' beliefs, and 64 states where both agent beliefs are fully aligned, initially. Thus, we computed a total of 2048 plans.
 
 
