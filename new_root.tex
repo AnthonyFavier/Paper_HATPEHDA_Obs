@@ -313,7 +313,6 @@ This work estimates the evolution of the agents' beliefs and decides ``if'' and 
 
 
 \section{Relevant Background}
-
 Background on the HTN and HATP/EHDA frameworks is presented, providing only relevant definitions and discussing problem models and planning frameworks to understand this work. Situation assessment is then briefly introduced. 
 % We build a background on the HTN and HATP/EHDA frameworks, providing only relevant definitions and discussing problem models and planning frameworks to understand this work. Situation assessment is then briefly introduced. 
 \subsection{Hierarchical Task Networks}
@@ -370,7 +369,9 @@ The planner has to use their action models and beliefs to decompose the tasks in
 % In the interest of this work: The agents start with a joint task network, means they have a shared $w_0$ to start with in their respective task models: $\mathrm{HTN}_{h}$ and $\mathrm{HTN}_{r}$ (their models' internal components, if needed, use agent-specific \textit{subscripts} or \textit{superscripts}). The new problem, $\mathcal{P}_{hr}$, is composed of these two networks. 
 % Decomposing a non-primitive task, updating the current network with new constraints, etc., are generalized accordingly for the two-agent scenario.
 
-Without loss of generality the framework assumes that only one agent \textit{decides} to act at a time, while it also decides ``which action to execute?'', e.g., \textit{cook}, \textit{noop}, \textit{add-salt}, \textit{delay}, etc., and similarly, followed by other agent(s). 
+% Without loss of generality the framework assumes that only one agent \textit{decides} to act at a time, while it also decides ``which action to execute?'', e.g., \textit{cook}, \textit{noop}, \textit{add-salt}, \textit{delay}, etc., and similarly, followed by other agent(s). 
+Without loss of generality, the framework assumes a single agent decides to act at a time and ``which action to execute?'', e.g., \textit{add salt}, \textit{cook}, \textit{delay}, etc., and similarly, other agents follow. Despite this round-robin approach: For handling its broad horizon, the framework uses specific actions to synchronize agents' joint plans. \textit{IDLE} is concatenated to its plan when an agent's task network is empty. And, \textit{WAIT} is concatenated to its plan when not having an applicable action.
+% Despite the turn-taking fashion, the planning process isn't purely sequential since two "synchronisation" special actions are modeled. The IDLE action is inserted in the agent's plan when their agenda(task network ?) is empty. And the WAIT action is used when the agent currently has no applicable action to perform.
 % after the other.
 % in planning and execution. 
 We do not add any further information to the individual task models during plan elaboration. This also means that the framework starts with building the whole search-space by considering all possible, feasible decompositions~\cite{buisan:hal-03684211}. 
@@ -405,6 +406,8 @@ In practice, we often build relations between objects and agents or objects and 
 % In human psychology, especially in human-human interaction, spatial reasoning and perspective taking are crucial. 
 
 This work abstractly employs the main ideas of situation assessment based on spatial reasoning and observability during planning. The goal is to predict the situation assessment of a collaborative human agent to have a better estimate of their knowledge and next possible actions, and thus, produce better plans.
+
+
 
 
 % ***
@@ -536,7 +539,7 @@ But when we say a state-variable function ($f_{svs_j}(...)$) belongs to the clas
     \caption{
     % The robot adds sugar to the cup before pushing it while the human is not mindful. The position of the cup is \textit{observable}, so the human can update their belief after observing it. However, since sugar-in-cup is only \textit{inferrable}, and the human was not attentive (\textit{i.e.}, not ``co-present''), the human cannot tell whether sugar is added in the cup.
     % While  
-    Human is not attentive when Robot \textit{adds} sugar to the cup before \textit{pushing} it forward. \textit{Assessing} the new situation after the two actions, Human can only ``know'' the cup's new position (\textit{observable}), but not \textit{SugarInCup} (\textit{inferrable}).
+    Human is not attentive when Robot adds sugar to the cup before pushing it forward. \textit{Assessing} the new situation after the two actions, Human can only ``know'' the cup's new position (\textit{observable}), but not \textit{SugarInCup} (\textit{inferrable}).
     }
     \label{fig:obs_attr}
 \end{figure}
@@ -594,7 +597,7 @@ The simplest case. If the agent executes an action, its belief is updated based 
 \subsection{It Being an Observant}
 % Let us first define action observability.
 
-\paragraph{Action Observability.}
+\subsubsection{Action Observability.}
 % An action being executed by an agent is \textit{observed} by all other agents co-present with the former, throughout the execution of this action.
 % % execution. 
 % Therefore, we state that if an agent observes an action being executed, 
@@ -751,10 +754,7 @@ Suppose an agent applies an action: First, the belief states of all agents co-pr
     \includegraphics[width=0.85\linewidth]{figures/example_cook.png}
     \caption{
     Shows the plans obtained in three scenarios: Each scenario presents two plans --- on the left, obtained by the old solver, and on the right, obtained via the proposed solver. The latter depicts more realistic and appropriate belief updates (as proposed to be tackled).
-    % Plans obtained for three different scenarios, with and without our contribution, depicting more realistic belief updates of some relevant facts. The existing planning system systematically updates the agents' beliefs while our approach considers observability to do so. 
-    % The figure shows three types of human belief updates: [COM] when being explicitly communicated a fact by the robot, [INF] when attending an action with inferrable effects and [SA] when assessing observable facts in the environment. 
     Case~(A): the plans are the same, but the updates in the human belief are more realistic with our approach. Case~(B): the human has no certainty on {\em SaltInPot}, while ours decides to communicate to remove the ambiguity. And, Case~(C): the initial belief divergence induces an ``invalid'' plan, but our approach predicts that the human agent will \textit{assess the situation} and update their belief with all the facts without being communicated. (Other minor details are outlined in the figure.)
-    % In (A) the plans are the same but the human belief updates are more realistic with our approach. In (B) the human has no certainty that the salt has been added, our approach communicates to remove the ambiguity. In (C), the initial belief divergence induce a non valid plan, but our approach predicts that the human will assess the situation and fix the divergence themselves, without communication.
     }
     \label{fig:scenarios}
 \end{figure*}
@@ -763,9 +763,9 @@ Suppose an agent applies an action: First, the belief states of all agents co-pr
 % There are two new phases in our algorithm 
 % that differs from the underlying planner's algorithm, 
 The following essential changes in the existing algorithm support efficient communication in planning. 
-(Recall the sender-receiver combination discussed earlier.) The approach identifies whether the receiver's belief divergence is \textit{relevant}, and thus if the receiver's belief needs to be corrected.
+(Recall the sender-receiver pair discussed earlier.) The approach identifies whether the receiver's belief divergence is \textit{relevant}, and thus if the receiver's belief needs to be corrected.
 % Second, to identify all state attributes w.r.t. the ground truth where the receiver agent's belief differs, and to decide which all must be communicated (to communicate minimally and avoid verbosity), to make sure that the remaining divergences in the updated receiver's belief are \textit{not} effective. 
-If so, all state attributes where the receiver agent's belief differs w.r.t. the ground truth are identified. Then, we decide which of these state attributes and their exact values must be transmitted by the sender (\textit{i.e.}, the robot), supporting the idea of communicating minimally and avoiding verbosity. Once we determine that, the receiver's (\textit{i.e.}, human's) belief gets updated accordingly, ensuring that the remaining false knowledge of the receiver's updated belief is \textit{not} effective, which also means, the belief divergence is not relevant anymore. 
+If so, all state attributes where the receiver agent's belief differs w.r.t. the ground truth are identified. Then, we decide which of these state attributes and their exact values must be transmitted by the sender (\textit{i.e.}, the robot), supporting the idea of communicating minimally and avoiding verbosity. Once we determine that, the receiver's (\textit{i.e.}, human's) belief gets updated accordingly, ensuring that the remaining false knowledge of the receiver's updated belief is \textit{not effective}, which also means that the belief divergence is not relevant anymore. 
     
 
 % \subsection{Relevant Belief Divergence}
@@ -779,41 +779,45 @@ If so, all state attributes where the receiver agent's belief differs w.r.t. the
 % \end{figure}
 
 \begin{itemize}
-    \item \textbf{Relevant Belief Divergence.} 
-    % Currently, our reasoning is myopic.
-    % That is w
-    If at a given stage, the human agent, based on their own belief, can perform a set of actions that differs from 
-    % the set of actions 
+    \item \textbf{Relevant Belief Divergence.}
+    At a given stage, if the human agent, based on their own belief, can perform a set of actions that differs from 
     the one 
     the human could perform w.r.t. to the robot's belief (or the ground reality), then we say that such divergence in their belief is \textit{relevant}.
     % 
     A divergence is also declared as \textit{relevant} if an action has different effects w.r.t the other agent's belief.
-    However, currently, our reasoning system is myopic. We do not evaluate in a principled way the impact of \textit{different} actions that humans could execute (based on their wrong belief), or of \textit{different} effects, with their overall positive and detrimental effects on achieving the joint task. Therefore, we ``decide'' to align the agent's beliefs using communication actions whenever the belief divergence is relevant.
-    However, a smarter approach would be to analyze the history of plan trace(s) or agents' future actions to decide whether their beliefs should get aligned or not, or for that matter, how much to communicate, but it is currently out of the scope of this work. 
+    However, currently, our reasoning system is myopic: We do not evaluate in a principled way the impact of \textit{different} actions that humans could execute (based on their wrong belief), or of \textit{different} effects, with their overall positive and detrimental effects on achieving the joint task. At this stage, it simply ``decides'' to align the agent's beliefs using communication actions whenever the belief divergence is relevant.
+    However, a smarter approach would probably be to analyze the history of plan trace(s) or agents' future actions to decide whether their beliefs should get aligned or not, or for that matter, how much to communicate, but it is currently out of the scope of this work. 
     % This we intend to tackle in future.
     % .  
     % But, for now, 
     
     \item \textbf{Communicate Only The Required Facts.}
-    Now that we decided to align the human's belief with the ground reality, we need to decide on the \textit{essential} changes (in the human's belief) at this stage to be made such that the impact/relevance of the human's updated belief (that may still be wrong) becomes ineffective. (In the worst case, the robot would communicate all the divergent state attribute-value pairs, and their belief states will be perfectly aligned.) 
-    The subroutine we use to decide which all communication actions will appear in the robot's executable plan; is described in the following steps:
+    % Now that we decided to align the human's belief with the ground reality, 
+    It ``decide'' the \textit{essential} changes in the human's belief at this stage to be made such that the relevance of their updated belief (which could still be diverging) becomes ineffective. 
+    (In the worst case, the robot communicates all the divergent attribute-value pairs, and their belief states are perfectly aligned.) The subroutine used to decide which all communication actions will appear in the robot's executable plan; is described in the following steps:
     \begin{enumerate}
-        \item Store all the state attributes and their values such that these variables' values differ in the human's belief as compared to the ground reality. 
+        \item 
+        % Store all the state attributes and their values such that
+        \textit{Store} each attribute and its value if the attribute's value differs in the human's belief from the robot's belief. 
+        % these variables' values differ in the human's belief as compared to the ground reality. 
         % I.e. $$
-        \item For each of these attributes, form a $\textit{comm-action}_i$ as per the described communication action model earlier. We assume that all these new communication actions are equally costly. 
-        \item From the current stage of planning, say from the state $s_i$, follow the Breadth-First Search (BFS) ordering. 
-        The source is $B_{\varphi_h}^{s_i}$, such that each $\textit{comm-action}_i$ changes and aligns \textit{exactly} one state attribute such that its updated value satisfies the ground truth. 
-        The applicability of $\textit{comm-action}_i$  generates a new belief state, following the standard state transition rules in classical planning, i.e., 
-        $B_{\varphi_h}^{s_i,1} = \gamma(B_{\varphi_h}^{s_i}, \textit{comm-action}_i)$. 
-        We follow the BFS ordering until an updated human belief is reached, where the remaining belief divergence is ineffective. 
-        We then \textit{retrieve} all the communication actions used from the root until the current belief state.   
+        \item For each stored attribute-value pair, \textit{build} a communication action, $\textit{comm-action}_i$, based on the model described earlier. They are considered equally costly.  
+        \item 
+        % From the current stage of planning, say from the state $s_i$, follow the Breadth-First Search (BFS) ordering. 
+        At a given stage (of planning), e.g., the ground truth $s_i$, follow the Breadth-First Search ordering. 
+        The \textit{source} is $B_{\varphi_h}^{s_i}$, and each $\textit{comm-action}_i$ changes and aligns \textit{exactly} one attribute while its updated value satisfies the ground truth. If $\textit{comm-action}_i$ is applied, generates a new belief state (following the regular state transition rules), using: $B_{\varphi_h}^{s_i,1} = \gamma(B_{\varphi_h}^{s_i}, \textit{comm-action}_i)$.
+        % The source is $B_{\varphi_h}^{s_i}$, such that each $\textit{comm-action}_i$ changes and aligns \textit{exactly} one state attribute such that its updated value satisfies the ground truth. 
+        % The applicability of $\textit{comm-action}_i$  generates a new belief state, following the standard state transition rules in classical planning, i.e., 
+        % $B_{\varphi_h}^{s_i,1} = \gamma(B_{\varphi_h}^{s_i}, \textit{comm-action}_i)$. 
+        It \textit{continues} until the very first (updated) human belief is \textit{chosen} to expand while the remaining belief divergence in it is ineffective. 
+        We then \textit{retrieve} all the actions used from the root until the current belief state.   
     \end{enumerate}
     
     % \textcolor{red}{*** to be continued ***}
 \end{itemize}
 
 
-Based on this new approach, the robot uses the \textit{required} communication actions after each stage of plan elaboration (keep in mind the HATP/EHDA framework's plan elaboration process). 
+Following our approach, the robot uses the required communication actions after each stage of plan elaboration, i.e., HATP/EHDA's plan elaboration. 
 It then uses the predefined communication modality to interact with the human agent during execution via these communication actions. 
 
 % \section{Soundness and Completeness***}
@@ -1066,13 +1070,19 @@ A box filled with a fixed number of balls with a sticker pasted on is considered
 
 
 \subsection{Experiments}
-First, some qualitative results in the cooking pasta domain, mentioning important \textit{subtleties} that the old solver misses out on, while how our approach systematically catches them, updates belief, and effectively manages belief divergences. Next, we discuss quantitative results obtained and compare the old and new solvers in both domains.
+% First, some qualitative results in the cooking pasta domain, mentioning important \textit{subtleties} that the old solver misses out on, while how our approach systematically catches them, updates belief, and effectively manages belief divergences.
+First, qualitative analysis in the first domain mentions important \textit{subtleties} the old solver misses out, and how ours is aware of them, updates belief, and effectively manages divergences. We then discuss quantitative results obtained on two domains and compare the solvers.
+% Next, we discuss quantitative results obtained and compare the old and new solvers in both domains.
 
 \subsubsection{Qualitative Analysis}
 Consider the first domain. We discuss the plans obtained in three different scenarios as shown in Figure~\ref{fig:scenarios}. Assume that both the agents are in \textit{Kitchen} and the pasta is in \textit{Room}. Scenario~(A) captures the agents' plans when the robot starts while Scenario~(B) shows when the human starts. Let us change the scenario: Suppose, in hindsight, the pasta is moved to \textit{kitchen} such that the robot knows it, while the human still has the old belief. For this, Scenario~(C) captures the plans obtained when the human starts. 
 % Each case shows two plans: In the left 
 \begin{itemize}
-    \item \textbf{Scenario~(A):} The same plan is generated by the solvers. But, notice that both solvers updated the human's belief differently depending on whether the human is co-present with the robot. E.g., turning on the stove ideally (realistically) should not affect the human belief state if not co-present, and this is not the case with the old solver. It considers agents omniscient -- results in the human instantly knowing everything once achieved. With the new approach, the human returns to the kitchen and assesses that the stove is {\sc on}. And the human belief is updated.
+    \item \textbf{Scenario~(A):} 
+    % The same plan is generated by the solvers. But, notice that both solvers updated the human's belief differently depending on whether the human is co-present with the robot. E.g., turning on the stove ideally (realistically) should not affect the human belief state if not co-present, and this is not the case with the old solver. 
+    Although the solvers generate similar plans, they update the human's belief differently if and when the human and robot are co-present. E.g., turning on the stove ideally (realistically) does not affect the human's mental state, which is not the case for the old solver. It considers agents omniscient, so the human knows everything immediately once achieved. 
+    Our solver predicts it when the human returns to the kitchen and assesses that the stove is {\sc on}, and their belief gets updated.
+    % It considers agents omniscient -- results in the human instantly knowing everything once achieved. With the new approach, the human returns to the kitchen and assesses that the stove is {\sc on}. And the human belief is updated.
     \item \textbf{Scenario~(B):} The human leaves the kitchen and hence, practically, is unaware of the changes achieved in the environment by the two robot's actions --- \textit{turn-on} the stove and \textit{add} salt to the pot. The old solver generated almost the same plan as in Scenario (A), and the human knew that the stove was {\sc on}, and salt was added.
     With our contributions --- 
     % it performs 
@@ -1081,34 +1091,48 @@ Consider the first domain. We discuss the plans obtained in three different scen
     % it 
     that it is a relevant divergence that needs to be handled via communication. 
     % This divergence was ineffective after the robot communicates it to the human.
-    \item \textbf{Scenario~(C):} In the updated scenario, using the old approach, the human moves to \textit{Room} to grab the pasta, but in reality, the action \textit{fails} as it is not a legal action w.r.t. the robot's belief or the ground truth. But, the way our planning system works, the human agent assesses the environment and updates their belief state, knowing that the pasta is in the kitchen. Hence no communication is required to align their belief. The rest is self-evident.
+    \item
+    % \textbf{Scenario~(C):} In the updated scenario, using the old approach, the human moves to \textit{Room} to grab the pasta, but in reality, the action \textit{fails} as it is not a legal action w.r.t. the robot's belief or the ground truth. But, the way our planning system works, the human agent assesses the
+    \textbf{Scenario~(C):}
+    With old solver, the human moves to \textit{Room} to \textit{grab} the pasta, but in reality, being an illegal action w.r.t. the robot's belief or the ground truth, it \textit{fails}. 
+    But, in our case, the human agent assesses the environment to update their belief state, knowing the pasta is in the kitchen. 
+    % Also, no communication is required for this update. 
+    Hence, no communication is required.
+    % environment and updates their belief state, knowing that the pasta is in the kitchen. Hence no communication is required to align their belief. The rest is self-evident.
 \end{itemize}
 
 \subsubsection{Quantitative Studies}
 % existing one of the HATP/EHDA 
-We used two solvers, the existing one of the HATP/EHDA framework and the proposed one, such that they are tested and compared on both domains. 
-To better assess the effectiveness of the new method, we consider  \textit{three} boxes to be prepared and sent.  
-In each domain, we generated 512 different initial states, including 448 (87.5\%) with divergent initial agents' beliefs, and 64 states where both agent beliefs are fully aligned, initially. Thus, we computed a total of 2048 plans.
+% We used two solvers, the existing one of the HATP/EHDA framework and the proposed one, such that they are tested and compared on both domains. 
+% To better assess the effectiveness of the new method, we consider  \textit{three} boxes to be prepared and sent. 
+The HATP/EHDA framework's current solver and ours are tested and compared on two domains in Table~\ref{tab:q_results}. We consider (in box domain) \textit{three} boxes to be prepared and sent. While in both, we generated 512 different initial states, including 448 (87.5\%) with divergent initial agents' beliefs and 64 states where both agent beliefs are fully aligned initially. A total of 2048 plans were generated.
+% In each domain, we generated 512 different initial states, including 448 (87.5\%) with divergent initial agents' beliefs, and 64 states where both agent beliefs are fully aligned, initially. Thus, we computed a total of 2048 plans.
 
 
-Obtained results are shown in Table~\ref{tab:q_results}.
+% Obtained results are shown in Table~\ref{tab:q_results}.
 % , and its caption is straightforward. 
 % The success rate, \textit{S}, is shown in both cases. 
-Without our contributions: A planning failure occurs due to, 
-first, an action appearing in the plan not applicable in another agent's belief state, including the ground truth.
-Second, an inactivity deadlock is reached, which is assumed to be the case after a succession of at least four \textit{WAIT} and (or) \textit{IDLE} actions. 
-Such deadlocks can occur when the human has a belief divergence, making them wait for the robot's actions that never execute (e.g., the human waits for the robot to add salt but \textit{SaltInPot} already holds for it).
-Along with the success rate (\textit{S}), the \textit{ratio} of the number of failed plans due to a non-applicable action (\textit{NA}) and due to an inactivity deadlock (\textit{IDL}) appear in the table, too.
-Using our approach, the \textit{ratio} of successful plans with a communication action is presented under \textit{Com}.
+% Without our contributions: A planning failure occurs due to, 
+% first, an action appearing in the plan not applicable in another agent's belief state, including the ground truth.
+% Second, an inactivity deadlock is reached, which is assumed to be the case after a succession of at least four \textit{WAIT} and (or) \textit{IDLE} actions. 
+Without our contributions, a planning failure occurs due to: 
+First, an action of a plan not applicable in another agent's belief state, including the ground truth.
+Second, if an inactivity deadlock occurs, which is assumed to be the case after a succession of at least four \textit{WAIT} and (or) \textit{IDLE} actions. 
+% Such deadlocks can occur when the human has a belief divergence, making them wait for robot's actions that never happen (e.g., the human waits for the robot to add salt but \textit{SaltInPot} already holds for it).
+% Along with the success rate (\textit{S}), the \textit{ratio} of the number of failed plans due to a non-applicable action (\textit{NA}) and due to an inactivity deadlock (\textit{IDL}) appear in the table, too.
+A deadlock occurs when the human has a belief divergence and waits for a never-happening robot's action, e.g., waiting for \textit{add salt}, but \textit{SaltInPot} is already achieved.
+For the old solver, the success rate (\textit{S}), the \textit{ratios} of the number of failed plans due to a inapplicable action (\textit{NA}) and an inactivity deadlock (\textit{IDL}) appear in the table.
+% Using our approach, the \textit{ratio} of successful plans with a communication action is presented under \textit{Com}.
+For ours, the \textit{ratio} of successful plans with a communication action is presented under \textit{Com}.
 
-As the existing solver does not handle belief divergence in planning, the applicability of actions is never an issue w.r.t. another agent's belief. Therefore, if the \textit{IDL} case occurs, it is understood that the task specification is erroneous. However, we handle belief divergences in planning, captured and supported by our \textit{observability} based tools, employed in our solver, developed to cater to more realistic scenarios.
+As the existing solver does not handle belief divergence in planning, the applicability of actions is never an issue w.r.t. another agent's belief. Therefore, if the \textit{IDL} case occurs, it is understood that the task specification is erroneous. 
+% However, we handle belief divergences in planning, captured and supported by our \textit{observability} based tools, employed in our solver, developed to cater to more realistic scenarios.
 
 Our solver always finds legal plans, and on average, \textit{approx.} 62\% of them use \textit{communication}.
-We note that the robot doesn't need to communicate compulsively/systematically as the situation assessment helps solve a relevant part of the divergences (87.5\% of the scenarios have divergent beliefs initially).
-For the old solver, if no initial belief divergence exists, it always finds a legal plan, considering the agents omniscient. E.g., Figure~\ref{fig:scenarios}(A). However, sometimes, this causes problems during execution.
-Most scenarios with initial belief divergence induce actions not applicable in another agent's belief (or the ground truth),
-% , obviously the case as the 21.8\% success rate on average.
-which is reflected in the 21.8\% success rate on average.
+Moreover, the robot doesn't need to communicate systematically as assessing situations handles a major part of the divergences (87.5\% of the scenarios have divergent beliefs initially).
+For the old solver, if no initial belief divergence exists, it always finds a legal plan, considering the agents omniscient. 
+E.g., Fig.~\ref{fig:scenarios}(A). However, sometimes, this causes problems in practice.
+Scenarios beginning with distinct beliefs induce actions often not applicable in another agent's belief state (or the ground truth), evident by the (average) 21.8\% success rate.
 
 % \usepackage{multirow}
 \begin{table}
@@ -1133,15 +1157,16 @@ which is reflected in the 21.8\% success rate on average.
     \caption
     {
     \label{tab:q_results}
-    Comparison of the two solvers on the two domains. For each domain: for the \textit{old solver}, the success rate (\textit{S}), the ratio of failed plans due to a non-applicable action (\textit{NA}), and the ratio of failed plans due to an inactivity deadlock case (\textit{IDL}), while for \textit{our solver}, the success rate (\textit{S}) and the ratio of plans including a communication action (\textit{Com}).
+    % Comparison of the two solvers on the two domains. 
+    In each domain: for the \textit{old solver}, the success rate (\textit{S}), the ratio of failed plans due to a non-applicable action (\textit{NA}), and the ratio of failed plans due to an inactivity deadlock case (\textit{IDL}), while for \textit{our solver}, the success rate (\textit{S}) and the ratio of plans including a communication action (\textit{Com}).
     }
 \end{table}
 
 \section{Discussion}
-The run-time observability conventions, especially action observability, are crucial for planning. Ignoring them leads to difficulty in practice, sometimes. 
-E.g., Fig.~\ref{fig:scenarios}(B) depicts that human knowledge about \textit{SaltInPot} is ambiguous in reality. This paper describes a far more realistic way to estimate the evolution of human belief during planning, using the situation assessment discussed in \textit{qualitative analysis} of the experiments. Explicit reasoning on the human mental state detects and prevents ambiguous situations with communication actions while also prohibiting the robot from being mouthy, as shown in \textit{quantitative studies}. 
+Modeling and using run-time observability conventions is crucial for planning, and ignoring them may lead to difficulty in practice. 
+E.g., Fig.~\ref{fig:scenarios}(B) showing human knowing \textit{SaltInPot}, is ambiguous in reality. We describe a far more realistic way to estimate the evolution of human belief during planning, using the situation assessment discussed in \textit{Qualitative Analysis}. Explicit reasoning on the human mental state detects and prevents ambiguous situations with communication while also prohibiting the robot from being mouthy, as shown in \textit{Quantitative Studies}. 
 % A plan failure is considered a great risk, and our approach produces consistent and more robust plans.
-Compared to the old solver, overall, our approach produces \textit{consistent} and more \textit{robust} plans.
+Compared to the old process, this produces \textit{consistent} and more \textit{robust} plans overall.
 
 Note that our approach does not \textit{refute} something believed by an agent through situation assessment. 
 For example, suppose the human 
