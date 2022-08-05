@@ -156,7 +156,7 @@ We consider the human-aware task planning problem where human-robot teams are gi
 The best current solver tackles it by modeling a team as independent agents, such that a robot plans for the human's and robot's (joint) tasks. 
 Moreover, the robot knows that humans cannot be administered like artificial agents, so it emulates and predicts the human's decisions, actions, and reactions. 
 To improve this solver, we describe a new approach based on modeling standard {\em execution-time observability} conventions based abstractly on situation assessment. Using it in planning helps the solver capture the evolution of individual agents' (human's \& robot's) beliefs and deal with their relevant belief divergences that could arise in practice and affect plan execution. 
-It anticipates the evolution of the agents' beliefs, decides ``if'' and ``when'' belief alignment is needed and achieves it with communication that answers ``what" to propagate.
+It anticipates the evolution of the agents' beliefs, decides ``if'' and ``when'' belief alignment is needed, and achieves it with communication that answers ``what" to propagate.
 These changes improve the solver's overall performance: (a) communication is effectively used, and (b) robust for more realistic and challenging problems.
 \end{abstract}
 
@@ -299,7 +299,7 @@ At each stage, a set of communication \textit{actions} could be computed by a (s
 % %%%%%
 
 \subsection{Hierarchical Task Networks}
-Generalized basic terminologies and definitions related to HTNs are presented, e.g., task network, problem and solution definitions~\cite{naubooks0014222}.  
+Generalized basic terminologies and definitions related to HTNs are presented, e.g., task network, problem, and solution definitions~\cite{naubooks0014222}.  
 
 % \begin{definition} 
 % \paragraph{Task Network.} {
@@ -1081,7 +1081,7 @@ Consider the first domain. We discuss the plans obtained in three different scen
     \item
     % \textbf{Scenario~(C):} In the updated scenario, using the old approach, the human moves to \textit{Room} to grab the pasta, but in reality, the action \textit{fails} as it is not a legal action w.r.t. the robot's belief or the ground truth. But, the way our planning system works, the human agent assesses the
     \textbf{Scenario~(C):}
-    With old solver, the human moves to \textit{Room} to \textit{grab} the pasta, but in reality, being an illegal action w.r.t. the robot's belief or the ground truth, it \textit{fails}. 
+    With the old solver, the human moves to \textit{Room} to \textit{grab} the pasta, but in reality, being an illegal action w.r.t. the robot's belief or the ground truth, it \textit{fails}. 
     But, in our case, the human agent assesses the environment to update their belief state, knowing the pasta is in the kitchen. 
     % Also, no communication is required for this update. 
     Hence, no communication is required.
