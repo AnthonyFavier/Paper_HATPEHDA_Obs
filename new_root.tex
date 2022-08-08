@@ -46,10 +46,10 @@
 	showstringspaces=false,tabsize=2,breaklines=true}
 \floatstyle{ruled}
 \newfloat{listing}{tb}{lst}{}
-\floatname{listing}{Listing}
+\floatname{listing}{Listing} 
 %
 %\nocopyright
-%
+
 % PDF Info Is REQUIRED.
 % For /Title, write your title in Mixed Case.
 % Don't use accents or commands. Retain the parentheses.
@@ -152,12 +152,7 @@ Robust Planning for Human-Robot Joint Tasks \\ with Explicit Reasoning on Human 
 \maketitle
 
 \begin{abstract}
-We consider the human-aware task planning problem where human-robot teams are given a joint task with a known objective to achieve. 
-The best current solver tackles it by modeling a team as independent agents, such that a robot plans for the human's and robot's (joint) tasks. 
-Moreover, the robot knows that humans cannot be administered like artificial agents, so it emulates and predicts the human's decisions, actions, and reactions. 
-To improve this solver, we describe a new approach based on modeling standard {\em execution-time observability} conventions based abstractly on situation assessment. Using it in planning helps the solver capture the evolution of individual agents' (human's \& robot's) beliefs and deal with their relevant belief divergences that could arise in practice and affect plan execution. 
-It anticipates the evolution of the agents' beliefs, decides ``if'' and ``when'' belief alignment is needed, and achieves it with communication that answers ``what" to propagate.
-These changes improve the solver's overall performance: (a) communication is effectively used, and (b) robust for more realistic and challenging problems.
+We consider the human-aware task planning problem where human-robot teams are given a joint task with a known objective to achieve. The best current solver tackles it by modeling a team as independent agents, such that the robot plans for the human's and robot's (joint) tasks. Moreover, the robot knows that humans cannot be administered like artificial agents, so it emulates and predicts the human's decisions, actions, and reactions. To improve this solver, we describe a new approach based on modeling standard {\em execution-time observability} conventions based abstractly on situation assessment. Using it in planning helps the solver capture the evolution of individual agents' (human's \& robot's) beliefs and deal with their relevant belief divergences that could arise in practice and affect plan execution. It anticipates the evolution of the agents' beliefs, decides ``if'' and ``when'' belief alignment is needed and achieves it with communication that answers ``what" to propagate. These changes improve the solver's overall performance: (a) communication is effectively used, and (b) robust for more realistic and challenging problems.
 \end{abstract}
 
 \section{Introduction}
@@ -168,11 +163,13 @@ Consider a scenario where you (the \textit{human} agent) want to prepare, togeth
 Sometimes, some components needed for pasta preparation might be accessible only to you (the robot) from your (its) current position, while some are accessible to both. 
 Like this subclass of collaborative tasks, its multiple instantiations exist across many real-world domains, e.g., homes, offices, hospitals, etc.
 
-Naturally, you would want to work together without being bothered too much. You can be too lazy to do something, assuming that the robot will do it instead, even if it takes longer to achieve the task. Here, we consider the human agent fully cooperative and rational but cannot be administered like an artificial agent (\textit{fully controllable}). 
-So, if they have several ways to achieve a goal or accomplish a task, the robot cannot dictate to them the one to choose. However, it can still act to influence their choices, thus eliciting future actions. 
+Naturally, you would want to work with the robot without being bothered too much; or being lazy to do something, assuming the robot will do it instead, even if it takes longer to achieve the task. Here, we consider the human agent cooperative and rational but cannot be administered like an artificial agent (\textit{fully controllable}). So, if they have several ways to achieve a goal or accomplish a task, the robot cannot dictate to them the one to choose. However, it can still act to influence their choices, thus eliciting future actions. 
 
 %Even 
-The earlier example outlines a crucial point about human-robot collaboration: The robot should not only plan for agents' joint actions but also predict and emulate human decisions, actions, and reactions, to achieve a joint task seamlessly. It must put itself in the shoes of the human to \textit{prohibit} them from executing an action with a detrimental effect on the overall task accomplishment, e.g., this action consumes resources essential to achieving this task. Moreover, it can ``create'' circumstances that \textit{promote} actions to be performed by humans and is \text{relevant} to achieving the joint task.                 
+The earlier example outlines a crucial point about human-robot collaboration: The robot should not only plan for agents' joint actions but also predict and emulate human decisions, actions, and reactions, to achieve a joint task seamlessly. 
+% It must put itself in the shoes of the human to \textit{prohibit} them from executing an action with a detrimental effect on the overall task accomplishment, e.g., this action consumes resources essential to achieving this task. Moreover, it can ``create'' circumstances that \textit{promote} actions to be performed by humans and is \text{relevant} to achieving the joint task.            
+It must put itself in the shoes of the human in order to better predict their decisions based on an accurate estimation of their beliefs; this would open the possibility for the robot to “create” circumstances that promote actions to be performed by humans and relevant to achieving the joint task or to prevent them from making errors based on false, or not up to date or inaccurate beliefs.
+
 % In this setting, it is common to compute a policy for all agents using a central engine. This policy is executed by
 % the agents in a decentralized manner, and agent communication
 % is performed through explicit actions.
@@ -181,24 +178,24 @@ The earlier example outlines a crucial point about human-robot collaboration: Th
 % Considering these above scenarios: 
 % There has been a series of 
 Human task modeling and human-aware task planning to build a framework focusing on human-robot collaboration and (partially) handling the issues of our interests are discussed~\cite{alami2006toward,montreuil2007planning,alili2009planning,alili2009task,lallement2014hatp,de2015hatp,lallement2018hatp}.
-However, a more suitable planning architecture was recently proposed~\cite{BuisanA21,buisan:hal-03684211}.
+However, a more elaborate planning architecture was recently proposed~\cite{BuisanA21,buisan:hal-03684211}.
 The work introduced the \textit{first} architecture of its type, discussing the abilities and a broad spectrum of the framework.
-It is named HATP/EHDA, which stands for human-aware task planning by emulating human decisions and actions. This research, of course, raises several interesting, non-trivial questions to be investigated. Principled answers to these questions will improve the proposed HATP/EHDA framework toward task-level autonomy for human-robot interaction or human-robot collaboration, to be precise. 
+It is named HATP/EHDA, which stands for human-aware task planning by emulating human decisions and actions. This new scheme raises several interesting, non-trivial questions to be investigated. Principled answers to these questions will improve the proposed HATP/EHDA framework toward task-level autonomy for human-robot interaction or human-robot collaboration, to be precise. 
 % that we intend to investigate incrementally.
 
 The architecture comprises a \textit{dual}-HTNs (Hierarchical Task Networks~\cite{naubooks0014222}), which is a joint task specification model: 
 % One HTN is for the human, and the other is for the robot. 
-Considers a domain modeler available with expertise in human-human collaboration and human psychology to describe dual-HTNs specifications for the collaborative planning. 
+Considers a domain modeler available to describe dual-HTNs specifications for the collaborative planning. 
 The joint model describes agents'  capabilities, initial beliefs, shared tasks, world dynamics, understanding of common ground, etc. Moreover, the modeler implicitly captures hypothetical variables to represent human's mood, intentions, etc., and are non-trivial to manage. It is important to note that both these models are with the robot, while the robot plans their joint actions based on the specification models, predicts, and emulates human actions, decisions, and reactions.    
 
 % HATP/EHDA is the state-of-the-art planner~\cite{buisan:hal-03684211}, 
 % Without loss of generality, it assumes that agents \textit{decide} to act (e.g., pushing a heavy box, moving, noop, idle, etc.) one after the other. 
 We note that HATP/EHDA is an extension of the HATP framework(s) --- having only one search thread for a shared plan, resulting in two coordinated plan streams. 
 But, HATP/EHDA proposes a two-threaded search process, generating a policy tree comprising agents' actions. 
-The human agent is uncontrollable, so it is not trivial to determine their ``next'' action upfront, which captures the impact of their mood, intention, etc.
+The human agent is uncontrollable, so it is not trivial to determine their ``next'' action upfront, which captures the impact of their mental state, intention,  etc.
 Therefore, for a sound execution, after every robot action: The policy tree branches on all possible legal \textit{choices} available to the human.
 
-However, being in its early stage of development, currently, the planner makes some unrealistic assumptions. E.g., an action performed by an agent would also impact the beliefs of other agents, i.e., considering other agents are always aware of the action execution and sharing the same perspective as the actor. 
+However, being in its early stage of development, currently, the planner makes some simplistic assumptions. E.g., an action performed by an agent would also impact the beliefs of other agents, i.e., considering other agents are always aware of the action execution and sharing the same perspective as the actor. 
 In reality, a robot can act that \textit{influences} human's belief differently under different scenarios. For example, adding salt to the pasta or switching on the furnace (in the kitchen) would impact the human's belief state differently depending on whether the human is ``co-present'' in the kitchen at the time of action execution.   
 
 % HATP/EHDA assumes that if the robot executes an action, the human's belief gets updated, along with the robot's belief, or vice versa. It means that all the action execution is observable to both these agents. It is a \textit{major} drawback of the solver, since it is not always the case in reality. For example, in the pasta preparation scenario, suppose the human leaves the kitchen, and before they arrive back in the kitchen, the robot \textit{adds} some salt to the pasta, \textit{lids} the pot, and \textit{turns} on the furnace. 
@@ -250,7 +247,7 @@ We note that HATP does not represent humans as \textit{regular} agents with sepa
 
 Other approaches are distantly related to what we do, consider an external human model (e.g., Agent Markov Models (AMMs)~\cite{unhelkar2020decision,UnhelkarLS19}), which predicts human activities, and hence the robot plans accordingly~\cite{hoffman2007effects,unhelkar2020decision,UnhelkarLS19}. Such systems can determine actions that influence human's future actions. While some systems interact with humans even when they are non-collaborating~\cite{buckingham2020robot}.
 
-In human psychology, especially in human-human interaction or collaboration, spatial reasoning and perspective taking are crucial~\cite{flavell1992perspectives,tversky1999speakers}. Through them, a person can mimic the mind of other persons to understand their point of view. Indeed, Theory of Mind (ToM) refers to the ability to ascribe distinct mental states to other people and update them by reasoning about their perceptions and goals~\cite{premack1978does,baron1985does}.
+In human psychology, especially in human-human interaction or collaboration, spatial reasoning and perspective taking are crucial~\cite{flavell1992perspectives,tversky1999speakers}. Through them, a person can mimic the mind of another person to understand their point of view. Indeed, Theory of Mind (ToM) refers to the ability to ascribe distinct mental states to other people and update them by reasoning about their perceptions and goals~\cite{premack1978does,baron1985does}.
 
 Ideas from psychology got employed in many human-robot contexts. In Robotics, often, ToM focuses on perspective taking and belief management such that a robot reasons out what humans can perceive~\cite{berlin2006perspective,milliez2014framework} and builds representations of the environment from their perspective, which sometimes helps solve ambiguous tasks, predict human behavior, etc.
 \citeauthor{johnson2005perceptual} (\citeyear{johnson2005perceptual}) propose a method based on visual perspective taking for a robot recognizing an action executed by another robot. 
@@ -268,9 +265,10 @@ They achieve it by monitoring the divergence between the robot knowledge and the
 Recent work deals with an explicit usage of communication actions in planning~\cite{BuisanSA20,nikolaidis2018planning,roncone2017transparent,sanelli2017short,UnhelkarLS20}. 
 E.g., in~\cite{roncone2017transparent,UnhelkarLS20}, the authors represent and plan with explicit communication actions, considering them as regular POMDP actions, such that execution policies generated contain communication actions.
 
-However, this work estimates the evolution of the agents' beliefs and decides ``if'' and ``when'' belief alignment is necessary for planning. Belief alignment is achieved via explicit communication actions, answering ``what" to communicate. 
-The solver does not use these actions (not applicable for the deliberation process) like classical (non-) primitive tasks. It uses them to minimally align an agent's belief with the ground reality so that the belief divergence does not impact the overall task achievement. 
-At each stage, a set of communication \textit{actions} could be computed by a (slightly modified) Breadth-First Search based planning subroutine and inserted into the sender's plan.
+However, this work estimates the evolution of the agents' beliefs and decides ``if'' and ``when'' \textit{belief alignment} is necessary for planning. 
+And, it is achieved via explicit communication actions, answering ``what" to communicate. 
+Our solver does not use these actions (for the deliberation process) like (non-) primitive tasks but to minimally align an agent's belief with the ground reality so that the belief divergence does not impact the overall task achievement. 
+At each stage, if needed, a \textit{sequence} of communication actions is \textit{computed} by a modified Breadth-First Search planning subroutine and \textit{appended} to the sender's plan. We provide clarification on this when we formalize our contributions. 
 
 
 \section{Relevant Background}
@@ -317,7 +315,7 @@ An operator $o \in O$ is a primitive task described as $o=(name(o), pre(o), \tex
 
 A \textit{task} consists of a task symbol and a list of parameters. It is called a \textit{primitive} task if its task symbol is an operator name and its parameters match, otherwise, it is a \textit{non-primitive} task. A primitive task is assumed to be directly \textit{executable}, while to execute a non-primitive task, we need to decompose it into sub-tasks using \textit{methods}. 
 
-A method ($m \in M$) is a 4-tuple $m=(name(m),task(m),subtasks(m),constr(m))$ which are method name, a non-primitive task, a set of sub-tasks, and a set of constraints, respectively. $m$ is relevant for a task $t$, if for a parameter substitution $\sigma$, $\sigma(t) = task(m)$. There could be different methods relevant for a single task $t$, decomposing it differently. $(subtasks(m),constr(m))$ is a task network in $m$.      
+A method ($m \in M$) is a 4-tuple $m=(name(m),task(m),subtasks(m),constr(m))$ which are method name, a non-primitive task, a set of sub-tasks, and a set of constraints, respectively. $m$ is relevant for a task $t$, if for a parameter substitution $\sigma$, $\sigma(t) = task(m)$. There could be different methods relevant for a single task $t$, decomposing it differently, depending on the context. $(subtasks(m),constr(m))$ is a task network in $m$.      
 
 Suppose $m$ is an instantiated method, and $task(m)=t_u$ then $m$ decomposes $u$ into $subtasks(m')$, producing a new task network, $\delta(w,u,m)=((U-\{u\})\cup subtasks(m'),C'\cup constr(m'))$.
 % Here, every \textit{precedence}, \textit{before} constraints, \textit{after} constraints, and \textit{between} constraints between tasks are carefully maintained (after each decomposition).
@@ -333,7 +331,7 @@ Here, every \textit{precedence}, \textit{before}, \textit{after}, and \textit{be
 \subsection{The HATP/EHDA Framework}
 % We now shift the discussion to 
 The framework comprises a dual-HTN-based task specification model.   
-For ease of exposition, consider a team of a single human and a single robot. Two categories: the robot model, $\mathrm{HTN}_{r}$, represents the task specifications for a controllable agent, while $\mathrm{HTN}_{h}$, represents the model for the human, who is an uncontrollable one but the planner has its model
+For ease of exposition, consider a team of a single human and a single robot. Two categories: the robot model, $\mathrm{HTN}_{r}$, represents the task specifications for the  controllable agent, while $\mathrm{HTN}_{h}$, represents the model for the human, who is an uncontrollable one but the planner has its model
 representation and relevant interpretations to predict and emulate their decisions, actions, and reactions. 
 % Hierarchical modeling of human-centred activities has been exploited in human-computer interaction in the literature~\cite{annett1967task,paterno2004concurtasktrees,martinie2019analysing}.
 
@@ -361,14 +359,14 @@ While doing so, it also updates the belief state of each agent and models their 
 
 % Without loss of generality the framework assumes that only one agent \textit{decides} to act at a time, while it also decides ``which action to execute?'', e.g., \textit{cook}, \textit{noop}, \textit{add-salt}, \textit{delay}, etc., and similarly, followed by other agent(s). 
 Without loss of generality the framework assumes a single agent \textit{decides} to act at a time and, also ``which action to execute?'', e.g., add salt, cook, delay, etc., and similarly, other agents follow. 
-In this round-robin fashion (to include a broad spectrum of problems), it uses specific actions to synchronize agents' plans. \textit{IDLE} is inserted into its plan when an agent's task network is empty, and \textit{WAIT} when it does not have regular applicable actions.
+In this round-robin fashion (to include a broad spectrum of problems), it uses specific actions to synchronize agents' plans. {\em IDLE} is inserted into its plan when an agent's task network is empty, and {\em WAIT} when it does not have regular applicable actions.
 % Despite the turn-taking fashion, the planning process isn't purely sequential since two "synchronisation" special actions are modeled. The IDLE action is inserted in the agent's plan when their agenda(task network ?) is empty. And the WAIT action is used when the agent currently has no applicable action to perform.
 % after the other.
 % in planning and execution. 
 We do not add any more information to their task models during plan elaboration. 
 % This also means that 
 First, the framework builds the whole search space by considering all possible, feasible decompositions~\cite{buisan:hal-03684211}. 
-Then, it can adapt off-the-shelf graph search algorithms, e.g., the well-known algorithms like $A^*$ and $AO^*$, and consider social cost, plan legibility, acceptability, etc., to search for a \textit{joint solution plan} for the agents. 
+Then, it can adapt off-the-shelf graph search algorithms, e.g., the well-known algorithms like $A^*$ and $AO^*$, and consider social cost, plan legibility, acceptability~\cite{alili2009task},etc. to search for a \textit{joint solution plan} for the agents. 
 
 % The joint solution plan this framework generates is formalized in the following definition (by extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA problem):
 A joint solution plan generated is defined as follows (extends Definition~\ref{def:htn-sol-plan} for the HATP/EHDA case).
@@ -585,13 +583,13 @@ and the human agent would know if they observed the robot act.
 % For each agent, there are four ways its belief about the environment can be updated. They are described as follows:
 An agent's belief can get updated in four ways as follows. 
 
-\subsection{When It Acts}
+\subsection{When Acting}
 % This is the simplest case out of the four. When the agent executes an action its belief is updated based on the action's effect. The current state attributes appearing in the action's effect will be updated with the new values as per this action, while the remaining attributes keep their same old values.
 The simplest case. If the agent executes an action, its belief is updated based on its effects. The state attributes appearing in the action's effect get updated with the new values, while the remaining attributes keep their same old values.
 % Formally, if the current real state is $s_1$, and the agent (e.g., the robot) executes $a_1$ and generates a new state $s_2$, then the updated belief state is,
 % $B_{\varphi_r}^{s_2} = B_{\varphi_r}^{s_1}$ + replaced by the new assignment to the... (we need to introduce many more notations to do it this way) 
 
-\subsection{It Being an Observant}
+\subsection{When Being an Observant}
 % Let us first define action observability.
 
 \subsubsection{Action Observability.}
@@ -691,7 +689,7 @@ This enables $\varphi_h$ to learn an \textit{observable} attribute's value achie
 
 The agent updates its belief with relevant ground truth learned via situation assessment, performed ``immediately'' after the execution of each action. So, technically, the robot performs situation assessment for the human and itself.
 
-\subsection{When It is Being Communicated}
+\subsection{When Being Communicated}
 Its belief gets updated by learning ground truth when another agent communicates an attribute-value pair. Communication occurs via a \textit{distinct set} of actions, modeled as a predefined communication protocol for a pair of sender-receiver agents. 
 % and they are specified explicitly in the agents' joint task model -- $\mathrm{HTN_r}$ and $\mathrm{HTN_h}$.
 
@@ -750,7 +748,7 @@ Suppose an agent applies an action: First, the belief states of all agents co-pr
     \centering
     \includegraphics[width=0.78\linewidth]{figures/example_cook.png}
     \caption{
-    Shows the plans obtained in three scenarios: Each scenario presents two plans --- on the left, obtained by the old solver, and on the right, obtained via the proposed solver. The latter depicts more realistic and appropriate belief updates (as proposed to be tackled).
+    Shows the plans obtained in three scenarios: Each scenario presents two plans --- on the left, obtained by the old solver, and on the right, obtained via the proposed solver. The latter depicts more realistic and appropriate belief updates focusing on two attributes.
     Case~(A): the plans are the same, but the updates in the human belief are more realistic with our approach. Case~(B): the human has no certainty on {\em SaltInPot}, while ours decides to communicate to remove the ambiguity. And, Case~(C): the initial belief divergence induces an ``invalid'' plan, but our approach predicts that the human agent will \textit{assess the situation} and update their belief with all the facts without being communicated. (Other minor details are outlined in the figure.)
     }
     \label{fig:scenarios}
@@ -759,7 +757,8 @@ Suppose an agent applies an action: First, the belief states of all agents co-pr
 \subsubsection{Communication in Planning}
 % There are two new phases in our algorithm 
 % that differs from the underlying planner's algorithm, 
-The following essential changes in the existing algorithm support efficient communication in planning. 
+The following essential changes in the existing algorithm support efficient planning with communication.
+% in planning. 
 (Recall the sender-receiver pair discussed earlier.) The approach identifies whether the receiver's belief divergence is \textit{relevant}, and thus if the receiver's belief needs to be corrected.
 % Second, to identify all state attributes w.r.t. the ground truth where the receiver agent's belief differs, and to decide which all must be communicated (to communicate minimally and avoid verbosity), to make sure that the remaining divergences in the updated receiver's belief are \textit{not} effective. 
 If so, all state attributes where the receiver agent's belief differs w.r.t. the ground truth are identified. Then, we decide which of these state attributes and their exact values must be transmitted by the sender (\textit{i.e.}, the robot), supporting the idea of communicating minimally and avoiding verbosity. Once we determine that, the receiver's (\textit{i.e.}, human's) belief gets updated accordingly, ensuring that the remaining false knowledge of the receiver's updated belief is \textit{not effective}, which also means that the belief divergence is not relevant anymore. 
@@ -792,7 +791,8 @@ If so, all state attributes where the receiver agent's belief differs w.r.t. the
     \item \textbf{Communicate Only The Required Facts.}
     % Now that we decided to align the human's belief with the ground reality, 
     It ``decide'' the \textit{essential} changes in the human's belief at this stage to be made such that the relevance of their updated belief (which could still be diverging) becomes ineffective. 
-    (In the worst case, the robot communicates all the divergent attribute-value pairs, and their belief states are perfectly aligned.) The subroutine used to decide which all communication actions will appear in the robot's executable plan; is described in the following steps:
+    % In the worst case, the robot communicates all the divergent attribute-value pairs, and their belief states are perfectly aligned. 
+    The subroutine used to decide which all communication actions will appear in the robot's executable plan; is described in the following steps:
     \begin{enumerate}
         \item 
         \textit{Store} each attribute and its value if the attribute's value differs in the human's belief from the robot's belief. 
@@ -802,7 +802,6 @@ If so, all state attributes where the receiver agent's belief differs w.r.t. the
          
         At a given stage (of planning), e.g., the ground truth $s_i$, follow the Breadth-First Search ordering. 
         The \textit{source} is $B_{\varphi_h}^{s_i}$, and each $\textit{comm-action}_i$ changes and aligns \textit{exactly} one attribute while its updated value satisfies the ground truth. If $\textit{comm-action}_i$ is applied, generates a new belief state (following the regular state transition rules), using: $B_{\varphi_h}^{s_i,1} = \gamma(B_{\varphi_h}^{s_i}, \textit{comm-action}_i)$.
-        
         It continues until the first (updated) belief is \textit{selected} to expand s.t. its remaining divergence is ineffective. We then \textit{retrieve} all the actions used from the root until the current belief state.   
     \end{enumerate}
 
@@ -1043,7 +1042,7 @@ These \textit{retrieved} communication actions are utilized after each stage of 
 % Before we describe the domains used for the experiments and results, first, we make a \textit{high-level} distinction between the existing and new approaches. 
 % In principle, the existing solver can handle agents' individual belief divergences, but ``not during planning'' unlike our approach. To achieve that, the existing solver can use a cumbersome technique that intervenes by updating the (collaborative) task networks of the joint task model/specifications while using triggers.
 
-Before we describe the two domains used (to compare the old and new approaches) for the experiments and the results, first, we make a \textit{high-level} distinction between the existing and new approaches. 
+Before we describe the two domains used for the experiments and the results to compare the old and new approaches, we first make a \textit{high-level} distinction between the existing and new approaches. 
 In principle, the existing solver can handle agents' individual belief divergences, but ``not during planning'' unlike our approach. To achieve that, the existing solver can use a cumbersome technique that intervenes by updating the (collaborative) task networks of the joint task model/specifications while using triggers.
 
 % We consider two domains to compare the two approaches.
@@ -1082,7 +1081,7 @@ Consider the first domain. We discuss the plans obtained in three different scen
     % \textbf{Scenario~(C):} In the updated scenario, using the old approach, the human moves to \textit{Room} to grab the pasta, but in reality, the action \textit{fails} as it is not a legal action w.r.t. the robot's belief or the ground truth. But, the way our planning system works, the human agent assesses the
     \textbf{Scenario~(C):}
     With the old solver, the human moves to \textit{Room} to \textit{grab} the pasta, but in reality, being an illegal action w.r.t. the robot's belief or the ground truth, it \textit{fails}. 
-    But, in our case, the human agent assesses the environment to update their belief state, knowing the pasta is in the kitchen. 
+    In our case, the human agent assesses the environment to update their belief state, knowing the pasta is in the kitchen. 
     % Also, no communication is required for this update. 
     Hence, no communication is required.
     % environment and updates their belief state, knowing that the pasta is in the kitchen. Hence no communication is required to align their belief. The rest is self-evident.
@@ -1154,12 +1153,12 @@ E.g., Fig.~\ref{fig:scenarios}(B) showing human knowing \textit{SaltInPot}, is a
 % A plan failure is considered a great risk, and our approach produces consistent and more robust plans.
 Compared to the old process, this produces \textit{consistent} and more \textit{robust} plans overall.
 
-Note that our approach does not \textit{refute} something believed by an agent through situation assessment. 
-For example, suppose the human 
+Our approach does not \textit{refute} something believed by an agent through situation assessment. 
+E.g., for some $s_i \in \mathcal{S}$, if the human 
 % believes that the pasta is in \textit{Kitchen}, and which is \textit{not} the case. 
-\textit{wrongly} believes that the pasta is in \textit{Kitchen}. The situation assessment does not help refute this, while the human is in \textit{Kitchen}. 
-The reason is that $f_{\textit{pasta-not-in-kitchen}}^{s_i}(...)$, $\forall s_i \in \mathcal{S}$, is not modeled explicitly as an attribute. 
-And hence such issues do not affect the solver's completeness as far as the situation assessment is concerned. Moreover, the solver handles them as a \textit{relevant} divergence to be aligned. Followed by the human is communicated with correct updates.
+wrongly believes that the pasta is in \textit{Kitchen}. The situation assessment does not help refute this, while the human is in \textit{Kitchen}. 
+The reason is that $f_{\textit{pasta-not-in-kitchen}}^{s_i}(...)$ is not modeled explicitly as an attribute. 
+And hence such issues do not affect the solver's \textit{completeness} as far as the situation assessment is concerned. Moreover, our solver handles them as a \textit{relevant} divergence to be aligned. Followed by the human is communicated with correct updates.
 % Such an issue does not affect our solver's \textit{completeness} since these situations are handled as \textit{relevant} divergences to be aligned, and hence, the human agent is communicated.
 
 \section{Summary} 
