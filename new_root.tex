@@ -737,7 +737,7 @@ This enables $\varphi_h$ to learn an \textit{observable} attribute's value achie
 % Thanks to spatial reasoning, one can now define and plan with execution time observability conventions in a principled way. 
 % We keep an account on agents' belief divergence that can occur in practice due to spatial reasoning and perspective taking. 
 
-(The agent updates its belief with relevant ground truth learned via situation assessment, performed ``immediately'' after the execution of each action. So, technically, the robot performs situation assessment for the human and itself.)
+The agent updates its belief with relevant ground truth learned via situation assessment, performed ``immediately'' after the execution of each action. So, technically, the robot performs situation assessment for the human and itself.
 
 \subsubsection{4. When Being Communicated:}
 Its belief gets updated by learning ground truth when another agent communicates an attribute-value pair. Communication occurs via a \textit{distinct set} of actions, modeled as a predefined communication protocol for a pair of sender-receiver agents. 
@@ -750,17 +750,44 @@ We note that each action communicates only {\em one} attribute-value pair, so ju
 % In the next section
 % it needs to make decision "if", "when", and "what" to communicate with these explicit actions.
 
+\subsubsection{Updates Workflow}
+For each action, post its execution, the workflow for updating agents' beliefs is: (1.) the acting agent's belief is updated; (2.)
+for the co-present agents, their beliefs are updated based on what they \textit{infer};
+and (3.) \textit{situation assessment} updates their beliefs with respective \textit{observable} facts. 
+% To make it unambiguous, say the \textit{first} action executed is a \textit{dummy} with no precondition and effect.
+To update initial observable facts, first a dummy action is executed with no precondition and effect.
+
+\section{Reasoning on Human Mental State}
+The human and robot agents carry individual, distinct belief states w.r.t. the ground truth (s.t. $\mathit{B}_{\varphi_r}$ is aligned with it), while the two can be either different or aligned. 
+However, the agents act as if they are certain about their knowledge.  
+Since the robot plans for both, it reasons about their distinct beliefs and manages the evolution of their individual beliefs. E.g., the robot adding salt to the pasta while the human being co-present or not can grow their belief states differently. 
+
+To produce a legal joint-plan, the robot is fine with such a divergence unless it has an \textit{adverse} effect, e.g., the human acting based on their false belief.
+At a stage, if the human agent, based on $\mathit{B}_{\varphi_h}$, can perform a set of actions that differs from what they could perform w.r.t. to $\mathit{B}_{\varphi_r}$ (or the ground reality), then we say that such divergent beliefs are \textit{relevant} to be \textit{tackled}.
+A divergence is also declared as \textit{relevant} if an action has different effects w.r.t. the other agent's belief.
+
+One approach to tackle it could be to trace back to the action that creates this divergence and {\sc delay} it for future, if and when possible. E.g., the robot delays adding salt until the human arrives in the kitchen. 
+Second, communicating relevant divergences to the human agent, and is our main focus in this work. However, delaying may not always find a solution, but it could reduce communication requirements. (Our preliminary thoughts and results are in Appendix~C.)
+
+Formally evaluating the impact of different actions that humans could execute (based on wrong $\mathit{B}_{\varphi_h}$), or of different effects, with their overall positive and detrimental effects on achieving the joint task can be interesting.
+An approach might be to analyze the history of plan trace(s) or agents' future actions to decide whether their beliefs should get aligned or not, or for that matter, how much to communicate, but it is currently out of the scope of this work. 
+
 \section{Planning With Communication Actions}
 % \label{sec:planningwcomm}
 % As human's belief can diverge from the ground-truth, the robot need
 % For an agent to decide ``if'', ``when'' and ``what'' to \textit{communicate} to another agent, it first needs to establish a common protocol with that agent even before planning.  
 % In this work, 
-We establish protocols between each sender-receiver agents pair for communication (and one may use speech modality), and model explicit communication actions between them. 
+We establish protocols between each \textit{sender-receiver} agents pair for communication, 
+% (and one may use speech modality), 
+and model explicit communication actions between them. 
 % They appear in their joint task model, 
-However, we note that these actions are different than agents' (non-) primitive actions, and they are used only in special circumstances during planning.
+Note that these actions are different than agents' (non-) primitive actions.
+% , and to be used in only special circumstances during planning.
+% , 
+% and they are used only in special circumstances during planning.
 
 \subsection{Modeling Communication Actions} 
-We give a generic communication action model in this context. 
+% We give a generic communication action model in this context. 
 % which will later be used for the case, when the robot is aware of the ground truth, while the human's belief diverges from the real world.
 % 
 Suppose there exists a state-variable function, $f_{svs}:(?g_1 (gr_1), ?g_2 (gr_2), ..., ?g_k (gr_k),\mathcal{S}) \rightarrow ?g_{k+1} (gr_{k+1})$ such that,
@@ -768,7 +795,7 @@ Suppose there exists a state-variable function, $f_{svs}:(?g_1 (gr_1), ?g_2 (gr_
 % Such that, 
 for the current world state $s \in \mathcal{S}$, the corresponding state attribute, $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},s)$ maps to $q$.
 
-An agent $\varphi_i$ can \textit{communicate} this attribute-value pair to another agent $\varphi_j$, if the following conditions meet as action precondition: 
+An agent $\varphi_i$ can communicate this attribute-value pair to another agent $\varphi_j$, if the following conditions meet as action precondition: 
 (1) For $\varphi_i$, its belief state satisfies the fact being communicated, i.e.,
 $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_i}^s) = q$, and (2) $\varphi_j$'s belief state does not satisfy this truth, i.e., $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_j}^s) = r$ such that $r \neq q$.
 The effect of this action is that now 
@@ -786,27 +813,41 @@ $\varphi_j$'s belief is updated, i.e., $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g
 
 % \textcolor{red}{to be continued ******}
 
-\subsection{Planning with Reasoning on Human Mental State }
-Now that we have defined and described all essential tools, we describe the new approach and explain how these tools are utilized by it. 
-First, we note that we put an effort to make our main contributions to have a ``generic'' description. Hence, they are not limited to only our intended HATP/EHDA architecture, which we plan to enhance in this paper.
+% \subsection{Planning with Reasoning on Human Mental State}
+\subsection{The New Planning Approach}
+% Now that we have defined and described all essential tools, we describe the new approach and explain how these tools are utilized by it. 
+% First, we note that we \textit{put} an effort to make our main contributions to have a ``generic'' description. Hence, they are not limited to only our intended HATP/EHDA framework, which we plan to enhance in this paper.
 % in this work.
 
 % The solver is based on the HATP/EHDA framework that is the underlying planner~\cite{buisan:hal-03684211}. 
 % However, 
-We only describe the \textit{main changes} made to enhance the underlying solver. 
-Suppose an agent applies an action: First, the belief states of all agents co-present with this agent get updated with the action's inferrable effect. Later, the \textit{situation assessment} process is used for every other agent to assess the changes (captured via observable state attributes). As a result, their beliefs are updated by the observable effects if the required conditions are satisfied. We discussed these subroutines in detail in earlier sections.
-
-
-
-\subsubsection{Communication in Planning}
+% Only the required changes in the \textit{old solver} are discussed for planning with communication. 
+%
+% Suppose an agent applies an action: First, the belief states of all agents co-present with this agent get updated with the action's inferrable effect. Later, the \textit{situation assessment} process is used for every other agent to assess the changes (captured via observable state attributes). 
+% As a result, their beliefs are updated by the observable effects if the required conditions are satisfied. We already discussed these subroutines in detail in earlier sections.
+% 
+% 
+% 
+% \subsubsection{Communication in Planning}
 % There are two new phases in our algorithm 
 % that differs from the underlying planner's algorithm, 
-The following essential changes in the existing algorithm support efficient planning with communication.
+% The following essential changes in the existing algorithm support efficient planning with communication.
 % in planning. 
-(Recall the sender-receiver pair discussed earlier.) The approach identifies whether the receiver's belief divergence is \textit{relevant}, and thus if the receiver's belief needs to be corrected.
+% (Recall the sender-receiver pair discussed earlier.) 
+% The approach identifies whether the receiver's belief divergence is \textit{relevant}, and thus if the receiver's belief needs to be corrected.
+% At this stage, suppose belief \textit{updates workflow} is already called, and the sender has reasoned out and decided to tackle the receiver's divergent beliefs.
+At a given stage of planning, e.g., the ground truth ($s_i$), we assume that \textit{Updates Workflow} was already called, and then the sender reasoned out and decided to \textit{tackle} the receiver's divergent beliefs. 
+% unaligned $\mathit{B}_{\varphi_r}$ and $\mathit{B}_{\varphi_r}$.
+% 
 % Second, to identify all state attributes w.r.t. the ground truth where the receiver agent's belief differs, and to decide which all must be communicated (to communicate minimally and avoid verbosity), to make sure that the remaining divergences in the updated receiver's belief are \textit{not} effective. 
-If so, all state attributes where the receiver agent's belief differs w.r.t. the ground truth are identified. Then, we decide which of these state attributes and their exact values must be transmitted by the sender (\textit{i.e.}, the robot), supporting the idea of communicating minimally and avoiding verbosity. Once we determine that, the receiver's (\textit{i.e.}, human's) belief gets updated accordingly, ensuring that the remaining false knowledge of the receiver's updated belief is \textit{not effective}, which also means that the belief divergence is not relevant anymore. 
-    
+% If so, 
+% Now, each attribute for which the receiver's knowledge differs w.r.t. the ground truth (or $\mathit{B}_{\varphi_r}$) is identified.
+% 
+% And, that at least one divergence (or one attribute-value pair) has an adverse effect. 
+% Therefore, only those essential ones need to be identified and aligned. 
+% Then, it decides which of these attributes and their values must be sent by the sender (\textit{i.e.}, the robot), supporting the idea of communicating minimally and avoiding verbosity. 
+% Once we determine that, the receiver's (\textit{i.e.}, human's) belief gets updated accordingly, ensuring that the remaining false knowledge of the receiver's updated belief is \textit{not effective}, which also means that the belief divergence is not relevant anymore. 
+
 
 % \subsection{Relevant Belief Divergence}
 % \subsection{Collect All the Belief Divergences}
@@ -819,51 +860,54 @@ If so, all state attributes where the receiver agent's belief differs w.r.t. the
 % \end{figure}
 
 % \begin{myitemize}
-\begin{itemize}
-    \item \textbf{Relevant Belief Divergence.}
-    At a given stage, if the human agent, based on their own belief, can perform a set of actions that differs from 
-    the one 
-    the human :could perform w.r.t. to the robot's belief (or the ground reality), then we say that such divergence in their belief is \textit{relevant}.
-    % 
-    A divergence is also declared as \textit{relevant} if an action has different effects w.r.t the other agent's belief.
-    However, currently, our reasoning system is myopic: We do not evaluate in a principled way the impact of \textit{different} actions that humans could execute (based on their wrong belief), or of \textit{different} effects, with their overall positive and detrimental effects on achieving the joint task. At this stage, it simply ``decides'' to align the agent's beliefs using communication actions whenever the belief divergence is relevant.
-    However, a smarter approach might be to analyze the history of plan trace(s) or agents' future actions to decide whether their beliefs should get aligned or not, or for that matter, how much to communicate, but it is currently out of the scope of this work. 
+% \begin{itemize}
+    % \item \textbf{Relevant Belief Divergence.}
+    % At a given stage, if the human agent, based on their own belief, can perform a set of actions that differs from 
+    % the one 
+    % the human :could perform w.r.t. to the robot's belief (or the ground reality), then we say that such divergence in their belief is \textit{relevant}.
+    % % 
+    % A divergence is also declared as \textit{relevant} if an action has different effects w.r.t the other agent's belief.
+    % However, currently, our reasoning system is myopic: We do not evaluate in a principled way the impact of \textit{different} actions that humans could execute (based on their wrong belief), or of \textit{different} effects, with their overall positive and detrimental effects on achieving the joint task. At this stage, it simply ``decides'' to align the agent's beliefs using communication actions whenever the belief divergence is relevant.
+    % However, a smarter approach might be to analyze the history of plan trace(s) or agents' future actions to decide whether their beliefs should get aligned or not, or for that matter, how much to communicate, but it is currently out of the scope of this work. 
     % This we intend to tackle in future.
     % .  
     % But, for now, 
     
-    \item \textbf{Communicate Only The Required Facts.}
-    % Now that we decided to align the human's belief with the ground reality, 
-    It ``decide'' the \textit{essential} changes in the human's belief at this stage to be made such that the relevance of their updated belief (which could still be diverging) becomes ineffective. 
+    % \item \textbf{Communicate Only The Required Facts.}
+    \subsubsection{Communicate Only The Required Facts.}
+    The new approach decides only the essential changes in the receiver's belief at this stage to be made. 
+    As the divergence is relevant, at least one attribute-value pair must exist in its belief, which is causing the adverse effect. So, the approach looks for such attribute-value pairs to be communicated so that the relevance of their updated belief (which could still be diverging) becomes ineffective, and for that following steps are followed. 
     % In the worst case, the robot communicates all the divergent attribute-value pairs, and their belief states are perfectly aligned. 
-    The subroutine used to decide which all communication actions will appear in the robot's executable plan; is described in the following steps:
+    % The subroutine used to decide which all communication actions will appear in the sender's executable plan; is described in the following steps:
     \begin{enumerate}
         \item 
-        \textit{Store} each attribute and its value if the attribute's value differs in the human's belief from the robot's belief. 
+        \textit{Store} each attribute and its value if the attribute's value differs in the receiver's belief from the sender's belief. 
     
-        \item For each stored attribute-value pair, \textit{build} a communication action, $\textit{comm-action}_i$, based on the model described earlier. They are considered equally costly.  
+        \item For them, \textit{build} actions, $\textit{comm-action}_i$, following the schema described earlier. Say, they are equally costly.  
+        
         \item 
-         
-        At a given stage (of planning), e.g., the ground truth $s_i$, follow the Breadth-First Search ordering. 
+        % At a given stage of planning, e.g., the ground truth $s_i$, 
+        (Follow Breadth-First Search) 
         The \textit{source} is $B_{\varphi_h}^{s_i}$, and each $\textit{comm-action}_i$ changes and aligns \textit{exactly} one attribute while its updated value satisfies the ground truth. If $\textit{comm-action}_i$ is applied, generates a new belief state (following the regular state transition rules), using: $B_{\varphi_h}^{s_i,1} = \gamma(B_{\varphi_h}^{s_i}, \textit{comm-action}_i)$.
-        It continues until the first (updated) belief is \textit{selected} to expand s.t. its remaining divergence is ineffective. We then \textit{retrieve} all the actions used from the root until the current belief state.   
+        It continues until the first (updated) belief is selected to expand s.t. its remaining divergence is \textit{ineffective}. We then \textit{retrieve} all the actions used from the root until the current belief state.   
     \end{enumerate}
 
 % \end{myitemize}    
-\end{itemize}
+% \end{itemize}
 
 
 % Following our approach, the robot uses the required communication actions after each stage of plan elaboration, i.e., HATP/EHDA's plan elaboration. 
 % It then uses the predefined communication modality to interact with the human agent during execution via these communication actions. 
 
-These \textit{retrieved} communication actions are utilized after each stage of HATP/EHDA's plan elaboration. 
+These retrieved actions are appended to the sender's plan.
+% after each stage of HATP/EHDA's plan elaboration. 
 
 
-\subsubsection{Delaying Actions to Avoid Divergences}
-To reduce communication, the framework should allow the robot to, sometimes, \textit{delay} its action(s) with an \textit{inferrable} effect. E.g., if the communication is too costly, the robot can refrain from \textit{adding} salt until the human arrives in the kitchen. 
+% \subsubsection{Delaying Actions to Avoid Divergences}
+% To reduce communication, the framework should allow the robot to, sometimes, \textit{delay} its action(s) with an \textit{inferrable} effect. E.g., if the communication is too costly, the robot can refrain from \textit{adding} salt until the human arrives in the kitchen. 
 
-When a belief divergence is \textit{relevant}, following the current branch, we trace it back to the stage where the action creating this divergence is applied. We then initiate another branch from this stage and let the robot {\em apply} \textit{DELAY}s until the agents are co-present while the rest continues like previously. If the agents never happen to be co-present, we delete this branch.
-The main idea here is to exploit our observability-based formalism more such that HATP/EHDA allows the robot to delay its actions in such scenarios. Of course, the trade-off between using communication and \textit{DELAY} actions will affect the final solution plan tree. Currently, we explore this aspect only prototypically, and it works only when the divergence is due to just one inferrable attribute.
+% When a belief divergence is \textit{relevant}, following the current branch, we trace it back to the stage where the action creating this divergence is applied. We then initiate another branch from this stage and let the robot {\em apply} \textit{DELAY}s until the agents are co-present while the rest continues like previously. If the agents never happen to be co-present, we delete this branch.
+% The main idea here is to exploit our observability-based formalism more such that HATP/EHDA allows the robot to delay its actions in such scenarios. Of course, the trade-off between using communication and \textit{DELAY} actions will affect the final solution plan tree. Currently, we explore this aspect only prototypically, and it works only when the divergence is due to just one inferrable attribute.
 
 
 \section{Formal Properties}
@@ -900,7 +944,7 @@ Note that for a domain like Blocksworld where explicit modeling of $\mathit{Plac
 \begin{theorem}
 % \label{planner:soundness}
 \textbf{(Soundness.)} The new solver is sound.
-\vspace{-0.07in}
+\vspace{-0.06in}
 \begin{proof}
 Following Definition~\ref{def:joint-sol-plan},
 % We will observe 
@@ -947,7 +991,7 @@ Implies, the joint solution plan is executable.
 % \label{planner:completeness}
 \textbf{(Completeness.)} The new planning algorithm is complete, provided the underlying mechanism can exhaustively generate all possible plan elaborations. 
 % \end{theorem}
-\vspace{-0.07in}
+\vspace{-0.06in}
 \begin{proof}
 Suppose a problem modeled based on our formalism has a solution, say, a joint solution tree, $\tau$ and is sound. 
 From $\tau$, remove all the communication and situation assessment steps, and say it generates $\tau'$. Now, relax the original problem, considering all the agents being always co-present and making all the propositions \textit{inferrable} everywhere. 
@@ -1200,15 +1244,20 @@ The car's hood needs to be \textit{closed} by the human at last.
 
 \subsection{Experiments}
 % First, some qualitative results in the cooking pasta domain, mentioning important \textit{subtleties} that the old solver misses out on, while how our approach systematically catches them, updates belief, and effectively manages belief divergences.
-First, qualitative analysis in the first domain to discuss important subtleties the old solver \textit{overlooks} and how ours is \textit{aware} of them, updates belief, and effectively manages divergences. 
-Then, quantitative studies compare the solvers in all three domains.
+% First, qualitative analysis in the first domain to discuss important subtleties the old solver \textit{overlooks} and how ours is \textit{aware} of them, updates belief, and effectively manages divergences. 
+% Then, quantitative studies compare the solvers in all three domains.
 
 % 
 \subsubsection{Qualitative Analysis}
 % Consider the first domain. We discuss the plans obtained in two different scenarios as shown in Figure~\ref{fig:scenarios}. Assume that both the agents are in \textit{Kitchen} and the pasta is in \textit{Room}. Scenario~(A) captures the agents' plans when the robot starts while Scenario~(B) shows when the human starts. Let us change the scenario: Suppose, in hindsight, the pasta is moved to \textit{kitchen} such that the robot knows it, while the human still has the old belief. For this, Scenario~(C) captures the plans obtained when the human starts. 
 
-We discuss the plans obtained in two scenarios of the first domain as shown in Figure~\ref{fig:scenarios}. Assume that both the agents are in \textit{Kitchen} and the human acts first. Scenario~(A) captures the agents' plans when the pasta is in \textit{Room}. 
-Scenario~(B) captures the plans when, in hindsight, the pasta is moved from \textit{Room} to \textit{Kitchen} such that the robot knows it, while the human still has the old belief.
+Qualitative analysis in the first domain to discuss important subtleties the old solver \textit{overlooks} and how ours is \textit{aware} of them, updates belief, and effectively manages divergences. 
+We discuss the plans obtained in two scenarios 
+% of the first domain 
+as shown in Figure~\ref{fig:scenarios}. Assume that both the agents are in \textit{Kitchen} and the human acts first. Scenario~(A) captures the agents' plans when the pasta is in \textit{Room}. 
+Scenario~(B) 
+% captures the plans when, 
+in hindsight, the pasta is moved from \textit{Room} to \textit{Kitchen} such that the robot knows it, while the human still has the old belief.
 
 % Each case shows two plans: In the left 
 \begin{itemize}
@@ -1337,18 +1386,22 @@ We formalize run-time observability conventions based abstractly on situation as
 We use this formalism to estimate the evolution of the human mental state and capture belief divergences. 
 A new planning approach is described, utilizes the estimation of human mental state to plan for robust and consistent human-robot joint activities such that a relevant belief divergence is tackled by explicitly modeled communication actions. Compared to the old, ours produces consistent and more robust plans. 
 
-A principled way to handle those conventions is crucial for robust planning, as, otherwise, it can lead to difficulty at run-time. 
+First of all, we \textit{put} an effort to make our main contributions to have a ``generic'' description. Hence, they are not limited to only our intended HATP/EHDA framework.
+% , which we plan to enhance in this paper.
+
+Also, a principled way to handle those conventions is vital for robust planning, as, otherwise, it can lead to difficulty at run-time. 
 E.g., Fig.~\ref{fig:scenarios}(A): the human knowing \textit{SaltInPot} is ambiguous. 
 Explicit reasoning on the human mental state detects ambiguous situations and removes them via communication while avoiding the robot from being mouthy.
 
-
-
-Our approach does not refute something believed by an agent through situation assessment. 
+Our formalism does not refute something believed by an agent through situation assessment. 
 E.g., for some $s_i \in \mathcal{S}$, if the human wrongly believes that the pasta is in \textit{Kitchen}. The situation assessment does not help refute this, while the human is in \textit{Kitchen}. 
 The reason is that $f_{\textit{pasta-not-in-kitchen}}^{s_i}(...)$ is not modeled explicitly as an attribute. 
-And hence such issues do not affect the solver's completeness as far as the situation assessment is concerned. Moreover, our solver handles them as a \textit{relevant} divergence to be aligned. Followed by the human is communicated with correct updates.
+And hence such issues do not affect the its completeness. 
+% as far as the situation assessment is concerned. 
+Moreover, our solver handles them as a \textit{relevant} divergence to be aligned. Followed by the human is communicated with correct updates.
 
-We informally introduced the option to delay robot's actions. We study this aspect separately and in a prototypical way. We have an initial success as we empirically found situations where it would be helpful and reduce overall communication requirements depending on the cost trade-offs. We intend to bring this idea to our elaboration process.
+% We informally introduced the option to delay robot's actions. We study this aspect separately and in a prototypical way. We have an initial success as we empirically found situations where it would be helpful and reduce overall communication requirements depending on the cost trade-offs. We intend to bring this idea to our elaboration process.
+
 % Such an issue does not affect our solver's \textit{completeness} since these situations are handled as \textit{relevant} divergences to be aligned, and hence, the human agent is communicated.
 
 % \section{Summary} 
