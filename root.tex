@@ -27,6 +27,20 @@
 \usepackage{adjustbox}
 \usepackage{multirow}
 
+% COMMENT FOLLOWING LINE TO SEE FINAL VERSION 
+\def\state{DRAFT}
+
+\ifx\state\undefined
+\usepackage[final]{changes}
+\else
+\usepackage[markup=underlined]{changes}
+\usepackage[marginparwidth=2.5cm]{geometry}
+\fi
+
+\usepackage{todonotes}
+\setcommentmarkup{\todo[color={authorcolor!20},size=\scriptsize]{#3: #1}}
+\newcommand{\note}[2][]{\added[#1,comment={#2}]{}}
+
 \usepackage{enumitem}
 \newlist{myitemize}{itemize}{1}
 \setlist[myitemize,1]{label=\textbullet,leftmargin=0pt}
@@ -159,11 +173,13 @@ We consider the human-aware task planning problem where human-robot teams are gi
 % With the increasing penetration of sensor networks, advancements in robotic technology, the Internet of Things (IoT), etc., multi-robot systems are becoming ubiquitous, and the complexity of the tasks these autonomous robots can handle individually or together as a team is constantly increasing.
 % However, robots collaborating and (or) interacting with humans, for example, a robot hands-over, a robot achieving a joint task with the help of a human or receiving some routine help from a human, etc., is seldom seen in our day-to-day life, but will soon become ubiquitous, too.   
 
-Consider a scenario where you (the \textit{human} agent) want to prepare, together with a robot, some pasta in your kitchen. This joint task comprises several components and activities, e.g., pasta packets are kept either in the kitchen or the living room, covering a pot (or a pan), turning a furnace on, salt, adding salt to the pasta, etc. 
+Consider a scenario where you (the \textit{human} agent) want to prepare, together with a robot, some pasta in your kitchen. This joint task comprises several components and activities, e.g., pasta packets are kept either in the kitchen or the living room, covering a pot (or a pan), turning a furnace on, \deleted[comment="I1"]{salt, }adding salt to the pasta, etc. 
 Sometimes, some components needed for pasta preparation might be accessible only to you (the robot) from your (its) current position, while some are accessible to both. 
 Like this subclass of collaborative tasks, its multiple instantiations exist across many real-world domains, e.g., homes, offices, hospitals, etc.
 
-Naturally, you would want to work with the robot without being bothered too much; or being lazy to do something, assuming the robot will do it instead, even if it takes longer to achieve the task. Here, we consider the human agent cooperative and rational but cannot be administered like an artificial agent (\textit{fully controllable}). So, if they have several ways to achieve a goal or accomplish a task, the robot cannot dictate to them the one to choose. However, it can still act to influence their choices, thus eliciting future actions. 
+\replaced[comment="I2"]{Naturally, during such task, you would want a pleasant and flexible cooperation with the robot. This involves behaviors like not being bothered too much by the robot or being able to delegate tasks to it, even if it's suboptimal.}
+{Naturally, you would want to work with the robot without being bothered too much; or being lazy to do something, assuming the robot will do it instead, even if it takes longer to achieve the task.}
+Here, we consider the human agent cooperative and rational but cannot be administered like an artificial agent (\textit{fully controllable}). So, if they have several ways to achieve a goal or accomplish a task, the robot cannot dictate to them the one to choose. However, it can still act to influence their choices, thus eliciting future actions. 
 
 %Even 
 The earlier example outlines a crucial point about human-robot collaboration: The robot should not only plan for agents' joint actions but also predict and emulate human decisions, actions, and reactions, to achieve a joint task seamlessly. 
@@ -177,15 +193,19 @@ It must put itself in the shoes of the human in order to better predict their de
 
 % Considering these above scenarios: 
 % There has been a series of 
-Human task modeling and human-aware task planning to build a framework focusing on human-robot collaboration and (partially) handling the issues of our interests are discussed~\cite{alami2006toward,montreuil2007planning,alili2009planning,alili2009task,lallement2014hatp,de2015hatp,lallement2018hatp}.
-However, a more elaborate planning architecture was recently proposed~\cite{BuisanA21,buisan:hal-03684211}.
-The work introduced the \textit{first} architecture of its type, discussing the abilities and a broad spectrum of the framework.
+\replaced[comment="I3"]{Human-aware task planning has been a topic of interest for many works which proposed and refined a framework called HATP (Human-
+Aware Task Planner)}
+{Human task modeling and human-aware task planning to build a framework focusing on human-robot collaboration and (partially) handling the issues of our interests are discussed}
+~\cite{alami2006toward,montreuil2007planning,alili2009planning,alili2009task,lallement2014hatp,de2015hatp,lallement2018hatp}.
+\note{7 works on HATP are cited here.. We should probably only cite 1 or 2.. Then cite more in related work.}
+However, a more elaborate planning architecture \added{, inspired by HATP, } was recently proposed~\cite{BuisanA21,buisan:hal-03684211}.
+The work introduced the \textit{first} architecture of its type, \replaced{and discusses}{discussing} the abilities and a broad spectrum of the framework.
 It is named HATP/EHDA, which stands for human-aware task planning by emulating human decisions and actions. This new scheme raises several interesting, non-trivial questions to be investigated. Principled answers to these questions will improve the proposed HATP/EHDA framework toward task-level autonomy for human-robot interaction or human-robot collaboration, to be precise. 
 % that we intend to investigate incrementally.
 
-The architecture comprises a \textit{dual}-HTNs (Hierarchical Task Networks~\cite{naubooks0014222}), which is a joint task specification model: 
+The architecture comprises a \textit{dual}-HTN\replaced[comment="I4"]{ architecture}{s} (Hierarchical Task Network\deleted{s}~\cite{naubooks0014222}), which is a joint task specification model: 
 % One HTN is for the human, and the other is for the robot. 
-Considers a domain modeler available to describe dual-HTNs specifications for the collaborative planning. 
+Considers a domain modeler available to describe dual-HTN\deleted{s} specifications for the collaborative planning. 
 The joint model describes agents'  capabilities, initial beliefs, shared tasks, world dynamics, understanding of common ground, etc. Moreover, the modeler implicitly captures hypothetical variables to represent human's mood, intentions, etc., and are non-trivial to manage. It is important to note that both these models are with the robot, while the robot plans their joint actions based on the specification models, predicts, and emulates human actions, decisions, and reactions.    
 
 % HATP/EHDA is the state-of-the-art planner~\cite{buisan:hal-03684211}, 
@@ -241,6 +261,7 @@ Task modeling evolved to introduce system interactions, produced and needed info
 Such models are used for designing or evaluating interactive systems, provide a task understanding, and inspire this work since they share a high-level architecture with HTNs. 
 
 Previous approaches are based on decomposing tasks hierarchically to human-aware task planning and assume a fully controllable and cooperative human agent willing to participate in achieving a joint-goal~\cite{alami2006toward,montreuil2007planning,alili2009planning,alili2009task,lallement2014hatp,de2015hatp,lallement2018hatp}. 
+\note{Too much HATP citation ?}
 Moreover, the agents are assumed to have established a shared goal before planning. 
 Later, the generated plan gets shared with the human before the execution~\cite{milliez2016using}.
 We note that HATP does not represent humans as \textit{regular} agents with separate decision processes, which may lead to diverging plans without robot communication.
@@ -249,7 +270,7 @@ Other approaches are distantly related to what we do, consider an external human
 
 In human psychology, especially in human-human interaction or collaboration, spatial reasoning and perspective taking are crucial~\cite{flavell1992perspectives,tversky1999speakers}. Through them, a person can mimic the mind of another person to understand their point of view. Indeed, Theory of Mind (ToM) refers to the ability to ascribe distinct mental states to other people and update them by reasoning about their perceptions and goals~\cite{premack1978does,baron1985does}.
 
-Ideas from psychology got employed in many human-robot contexts. In Robotics, often, ToM focuses on perspective taking and belief management such that a robot reasons out what humans can perceive~\cite{berlin2006perspective,milliez2014framework} and builds representations of the environment from their perspective, which sometimes helps solve ambiguous tasks, predict human behavior, etc.
+Ideas from psychology got employed in many human-robot contexts. In \replaced[comment="I5"]{robotics, ToM often}{Robotics, often, ToM} focuses on perspective taking and belief management such that a robot reasons out what humans can perceive~\cite{berlin2006perspective,milliez2014framework} and builds representations of the environment from their perspective, which sometimes helps solve ambiguous tasks, predict human behavior, etc.
 \citeauthor{johnson2005perceptual} (\citeyear{johnson2005perceptual}) propose a method based on visual perspective taking for a robot recognizing an action executed by another robot. 
 While~\citeauthor{milliez2014framework} (\citeyear{milliez2014framework}) propose visual and spatial perspective taking to find out {\em the referent} indicated by the human. 
 In~\cite{Sisbot2011SituationAF}, based on spatial reasoning and perspective taking, a reasoner generates online (symbolic) relations between agents and objects {\em co-present} in the environment. 
@@ -342,7 +363,9 @@ representation and relevant interpretations to predict and emulate their decisio
 
 We restrict the framework's description to what is relevant but briefly discuss its ability to capture a broad class of scenarios. It supports the robot to act in the presence of a human agent even when they do not share a task to achieve in the beginning. Or, it can also support the robot planning for both agents by asking the human to help it occasionally, can manage the creation of shared tasks, handle human's reactions modeled explicitly via triggers, etc. More details on triggers  in~\cite{ingrand1996prs,AlamiCFGI98}.   
 
-A brief working description of HATP/EHDA is as follows. The structure manipulated by the solver is \textit{agent}~\cite{thesisBuisan21,buisan:hal-03684211}. More precisely, we also said earlier that a two-agent model represented: the \textit{human} and the \textit{robot}. 
+A brief working description of HATP/EHDA is as follows. 
+The structure manipulated by the solver is \textit{agent}~\cite{thesisBuisan21,buisan:hal-03684211}.
+\replaced[comment="R1"]{Two \textit{agent} structures are used, one for the \textit{human} and one for the \textit{robot}, each includes a model of the corresponding agent.}{More precisely, we also said earlier that a two-agent model represented: the \textit{human} and the \textit{robot}. }
 Each model has its own belief state, action model, task network, plan, and triggers. We are interested in solving the HATP/EHDA problem, $\mathcal{P}_{hr}$, in which agents start with a joint task, i.e., a shared initial task network, $w_0$, to decompose.
 % , in their respective task models.
 % : $\mathrm{HTN}_{h}$ and $\mathrm{HTN}_{r}$ (their models' internal components, if needed, use agent-specific \textit{subscripts} or \textit{superscripts}). 
@@ -358,8 +381,8 @@ While doing so, it also updates the belief state of each agent and models their 
 % Decomposing a non-primitive task, updating the current network with new constraints, etc., are generalized accordingly for the two-agent scenario.
 
 % Without loss of generality the framework assumes that only one agent \textit{decides} to act at a time, while it also decides ``which action to execute?'', e.g., \textit{cook}, \textit{noop}, \textit{add-salt}, \textit{delay}, etc., and similarly, followed by other agent(s). 
-Without loss of generality the framework assumes a single agent \textit{decides} to act at a time and, also ``which action to execute?'', e.g., add salt, cook, delay, etc., and similarly, other agents follow. 
-In this round-robin fashion (to include a broad spectrum of problems), it uses specific actions to synchronize agents' plans. {\em IDLE} is inserted into its plan when an agent's task network is empty, and {\em WAIT} when it does not have regular applicable actions.
+\replaced[comment="R2"]{A major assumption of the framework is that agents acts alternatively and one at a time. However, the framework}{Without loss of generality the framework assumes a single agent \textit{decides} to act at a time and, also ``which action to execute?'', e.g., add salt, cook, delay, etc., and similarly, other agents follow. In this round-robin fashion (to include a broad spectrum of problems), it}
+uses specific actions to synchronize agents' plans. {\em IDLE} is inserted into its plan when an agent's task network is empty, and {\em WAIT} when it does not have regular applicable actions.
 % Despite the turn-taking fashion, the planning process isn't purely sequential since two "synchronisation" special actions are modeled. The IDLE action is inserted in the agent's plan when their agenda(task network ?) is empty. And the WAIT action is used when the agent currently has no applicable action to perform.
 % after the other.
 % in planning and execution. 
@@ -372,7 +395,7 @@ Then, it can adapt off-the-shelf graph search algorithms, e.g., the well-known a
 A joint solution plan generated is defined as follows (extends Definition~\ref{def:htn-sol-plan} for the HATP/EHDA case).
 \begin{definition}
 (\textbf{Joint Solution Plan}.) 
-{It is a solution for $\mathcal{P}_{hr}$, represented as a tree or a graph, i.e., $G=(V,E)$. Each vertex ($v \in V$) represents the robot's belief state, starting from the root node $s_0^r$. Each edge ($e \in E$) represents a primitive action that is either a robot's action $o^{r}$ or a human's action $o^{h}$. $G$ gets branched on the possible choices ($o^{h}_1$, $o^{h}_2$, ..., $o^{h}_m$). 
+{It is a solution for $\mathcal{P}_{hr}$, represented as a tree or a graph, i.e., $G=(V,E)$. Each vertex ($v \in V$) represents \replaced[comment="R3"]{the two \textit{agent} structures (\textit{robot} and \textit{human})}{the robot's belief state}, starting from the root node $s_0^r$. Each edge ($e \in E$) represents a primitive action that is either a robot's action $o^{r}$ or a human's action $o^{h}$. $G$ gets branched on the possible choices ($o^{h}_1$, $o^{h}_2$, ..., $o^{h}_m$). 
 % available for the human in the given state and its human's turn to act next.
 }  
 \end{definition}
@@ -385,7 +408,7 @@ Here, each $o_i^h$ represents a choice (often out of several choices) the human 
 
 \subsection{Situation Assessment} In human psychology, especially in human-human interaction, spatial reasoning and perspective taking are crucial. 
 % Using an existing approach from the literature, 
-In practice, we often build relations between objects and agents or objects and their environment to have natural human-robot collaboration, the way they have been used to gather the knowledge and capabilities of people around us. 
+In practice, we often build relations between \replaced[comment="R4"]{entities in the environment and estimate the knowledge and capabilities of agents around us to have a natural collaboration with them.}{objects and agents or objects and their environment to have natural human-robot collaboration, the way they have been used to gather the knowledge and capabilities of people around us.}
 
 % This work abstractly employs in planning the main ideas of situation assessment based on spatial reasoning. 
 % At planning time, now the robot keeps itself in human's shoes to predict human's belief and emulates their behavior. 
@@ -446,7 +469,7 @@ Each such possible \textit{instantiation} of defined state variable functions, r
 % If a variable is of the form $f_{svs_i}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ such that $gr_1$ contains \textit{only} one element in it, then we simplify this expression to, $f_{svs_i}: (\mathcal{S}) \rightarrow ?g_2 (gr_2)$ or, for a given state $s \in \mathcal{S}$, we further compress it to, $f_{svs_i}^{s} \rightarrow ?g_2 (gr_2)$. 
 If a variable is of the form $f_{svs_i}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ such that $gr_1$ contains \textit{only} one element in it, then, for a given state $s \in \mathcal{S}$, we simplify this expression to, $f_{svs_i}^{s} \rightarrow ?g_2 (gr_2)$. 
 
-Suppose $s \in \mathcal{S}$ is the real state with the ground truth. As per our assumptions, the belief state of the robot w.r.t. the real-world is always the real world state, i.e., $B_{\varphi_r}^s = s$, and the human belief w.r.t. $s$ is $B_{\varphi_h}^s$ --- that is estimated when the robot takes the human's perspective. Each state variable function instantiation with respect to a belief state, $B_{\varphi_r}^s$ ($B_{\varphi_h}^s$), represents the truth value of that state attribute with the \textit{perspective} of that particular agent: $\varphi_r$ ($\varphi_h$). (Both perspectives are managed by the robot in our setting.) 
+Suppose $s \in \mathcal{S}$ is the real state with the ground truth. As per our assumptions, the belief state of the robot w.r.t. the real-world is always the real world state, i.e., $B_{\varphi_r}^s = s$, and the human belief w.r.t. $s$ is $B_{\varphi_h}^s$ --- that is estimated when the robot takes the human's perspective. Each state variable function instantiation with respect to a belief state, $B_{\varphi_r}^s$ ($B_{\varphi_h}^s$), represents the truth value of that state attribute \added[comment="E2"]{(grounded state-variable function)} with the \textit{perspective} of that particular agent: $\varphi_r$ ($\varphi_h$). (Both perspectives are managed by the robot in our setting.) 
 
 \begin{definition}
 \textbf{(Belief Divergence.)}
@@ -466,7 +489,7 @@ We now define place-based observability criteria \textit{inspired by} some stand
 %based on situation assessment.
 
 \begin{definition}
-\textbf{(Places.)} Represented as $\mathit{Places}$, captures a group of constant symbols such that each member individually captures a pre-specified area in an environment declared by the domain modeler.  
+\textbf{(Places.)} Represented as $\mathit{Places}$, \added[comment="E1"]{it} captures a group of constant symbols such that each member individually captures a pre-specified area in an environment declared by the domain modeler.  
 \end{definition}
 Agents are always situated in a place or moving between two places. Two agents situated in a same place $p \in \mathit{Places}$; at a given time, are said to be \textit{co-present}.
 
@@ -486,7 +509,7 @@ Agents are always situated in a place or moving between two places. Two agents s
 %%%%%%%%%%%%%% discussion ends here
 
 \begin{definition}
-    \textbf{(Place Specific State Attribute Function.)} A {\em grounded} state-variable function {\em aka} a state attribute of a given state is explicitly associated with a place
+    \textbf{(Place Specific State Attribute Function.)} A \deleted[comment="E2"]{{\em grounded} state-variable function {\em aka} a} state attribute of a given state is explicitly associated with a place
     or, to make it more general, it can also be expressed as, 
     % which can be expressed as, 
     $f_{loc}: (f_{svs_i}(?g_1(gr_1),...,?g_k(gr_k),\mathcal{S})) \rightarrow Places$
@@ -510,7 +533,7 @@ Such mappings can change when an action changes the \textit{place} of effectiven
 \begin{definition}
 \textbf{(State Variable Observability Function.)} 
 % (ref to Obesrvability of fluents section)}
-The state variable observability function maps each state attribute {\em aka} a grounded \textit{state-variable function} 
+The state variable observability function maps each state attribute \deleted[comment="E2"]{{\em aka} a grounded \textit{state-variable function}} 
 to either $\observable$ or $\inferrable$; or a more general way to express it is, $f_{\textit{obs}}: (f_{svs_i}(?g_1(gr_1),...,?g_k(gr_k),\mathcal{S}
 )) \rightarrow 
     \{\inferrable, \observable\}$.
@@ -790,9 +813,9 @@ If so, all state attributes where the receiver agent's belief differs w.r.t. the
     
     \item \textbf{Communicate Only The Required Facts.}
     % Now that we decided to align the human's belief with the ground reality, 
-    It ``decide'' the \textit{essential} changes in the human's belief at this stage to be made such that the relevance of their updated belief (which could still be diverging) becomes ineffective. 
+    It ``decide\added[comment="P1"]{s}'' the \textit{essential} changes in the human's belief at this stage to be made such that the relevance of their updated belief (which could still be diverging) becomes ineffective. 
     % In the worst case, the robot communicates all the divergent attribute-value pairs, and their belief states are perfectly aligned. 
-    The subroutine used to decide which all communication actions will appear in the robot's executable plan; is described in the following steps:
+    The subroutine used to decide which \deleted[comment="P2"]{all} communication actions will appear in the robot's executable plan; is described in the following steps:
     \begin{enumerate}
         \item 
         \textit{Store} each attribute and its value if the attribute's value differs in the human's belief from the robot's belief. 
@@ -1054,7 +1077,7 @@ The human can add pasta, but only after salt gets added to the pot and the stove
 % The salt and the stove are located in the place \textit{Kitchen} and the pasta can be located either in \textit{Kitchen} or in \textit{Room}. The two agents operate in these two places.
 
 % Our discussion primarily focuses on two state attributes of this domain: For a given state, $s_i \in \mathcal{S}$, $f_{\textit{SaltInPot}}^{s_i} \in \{\textit{true, false}\}$ and $f_{\textit{stove}}^{s_i} \in \{\textit{on, off}\}$ such that only $f_{\textit{stove}}^{s_i}$ is \textit{inferrable}, rest all belong to the $\observable$ class.  
-Focus on the following two attributes: For a given state, $s_i \in \mathcal{S}$, $f_{\textit{SaltInPot}}^{s_i} \in \{\textit{true, false}\}$ and $f_{\textit{stove}}^{s_i} \in \{\textit{on, off}\}$ such that only $f_{\textit{stove}}^{s_i}$ is \textit{inferrable}, all others belong to $\observable$.
+Focus on the following two attributes: For a given state, $s_i \in \mathcal{S}$, $f_{\textit{SaltInPot}}^{s_i} \in \{\textit{true, false}\}$ and $f_{\textit{stove}}^{s_i} \in \{\textit{on, off}\}$ such that only \replaced[comment="EE1"]{$f_{\textit{SaltInPot}}^{s_i}$}{$f_{\textit{stove}}^{s_i}$} is \textit{inferrable}, all others belong to $\observable$.
 
 \subsubsection{Preparing Box Domain:}
 A box filled with a fixed number of balls with a sticker pasted on is considered prepared and needs to be sent. Both the agents can \textit{fill} the box with balls from a bucket, while only the robot can \textit{paste} a sticker and only the human can \textit{send} the box. The bucket can run out of balls, so when there is only one ball left, the human \textit{moves} to another room to \textit{grab} more balls and \textit{refill} it. A sticker pasted on the box is \textit{observable}, while the number of balls in the box is \textit{inferrable}. All other state attributes are \textit{observable}.   
@@ -1149,7 +1172,7 @@ Scenarios beginning with distinct beliefs induce actions often not applicable in
 
 \section{Discussion}
 Modeling and using run-time observability conventions is crucial for planning, and ignoring them may lead to difficulty in practice. 
-E.g., Fig.~\ref{fig:scenarios}(B) showing human knowing \textit{SaltInPot}, is ambiguous in reality. We describe a far more realistic way to estimate the evolution of human belief during planning, using the situation assessment discussed in \textit{Qualitative Analysis}. Explicit reasoning on the human mental state detects and prevents ambiguous situations with communication while also prohibiting the robot from being mouthy, as shown in \textit{Quantitative Studies}. 
+E.g., Fig.~\ref{fig:scenarios}(B) showing human knowing \textit{SaltInPot}, is ambiguous in reality. We describe a far more realistic way to estimate the evolution of human belief during planning, using the situation assessment discussed in \textit{Qualitative Analysis}. Explicit reasoning on the human mental state detects and prevents ambiguous situations with communication while also prohibiting the robot from being \replaced[comment="D1"]{too verbose}{mouthy}, as shown in \textit{Quantitative Studies}. 
 % A plan failure is considered a great risk, and our approach produces consistent and more robust plans.
 Compared to the old process, this produces \textit{consistent} and more \textit{robust} plans overall.
 
@@ -1158,7 +1181,7 @@ E.g., for some $s_i \in \mathcal{S}$, if the human
 % believes that the pasta is in \textit{Kitchen}, and which is \textit{not} the case. 
 wrongly believes that the pasta is in \textit{Kitchen}. The situation assessment does not help refute this, while the human is in \textit{Kitchen}. 
 The reason is that $f_{\textit{pasta-not-in-kitchen}}^{s_i}(...)$ is not modeled explicitly as an attribute. 
-And hence such issues do not affect the solver's \textit{completeness} as far as the situation assessment is concerned. Moreover, our solver handles them as a \textit{relevant} divergence to be aligned. Followed by the human is communicated with correct updates.
+And hence such issues do not affect the solver's \textit{completeness} as far as the situation assessment is concerned. Moreover, our solver handles them as a \textit{relevant} divergence to be aligned. \replaced[comment="D2"]{Thus, the human is just communicated with correct updates.}{Followed by the human is communicated with correct updates.}
 % Such an issue does not affect our solver's \textit{completeness} since these situations are handled as \textit{relevant} divergences to be aligned, and hence, the human agent is communicated.
 
 \section{Summary} 
@@ -1300,5 +1323,9 @@ A new planning approach is described, utilizes this better estimation of human m
 % \end{itemize}
 
 \bibliography{bib.bib}
+
+\clearpage
+\listofchanges[style=compactsummary]
+
 
 \end{document}
