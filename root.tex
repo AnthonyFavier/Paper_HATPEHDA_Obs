@@ -167,7 +167,9 @@ Robust Planning for Human-Robot Joint Tasks \\ with Explicit Reasoning on Human 
 
 \begin{abstract}
 We consider the human-aware task planning problem where a human-robot team is given a shared task with a known objective to achieve. Recent approaches tackle it by modeling it as a team of independent, rational agents, where the robot plans for both agents' (shared) tasks. However, the robot knows that humans cannot be administered like artificial agents, so it emulates and predicts the human's decisions, actions, and reactions. 
-Based on earlier work~\cite{buisan:hal-03684211}, we describe a novel approach to solve such problems, which models and uses {\em execution-time observability conventions}. 
+Based on earlier approaches,
+% ~\cite{buisan:hal-03684211}, 
+we describe a novel approach to solve such problems, which models and uses {\em execution-time observability conventions}. 
 Abstractly, this modeling is based on situation assessment, which helps our approach capture the evolution of individual agents' beliefs and anticipate belief divergences that arise in practice.
 It decides {\em if} and {\em when} belief alignment is needed and achieves it with communication.
 These changes improve the solver's performance: (a) communication is effectively used, and (b) robust for more realistic and challenging problems.
@@ -226,7 +228,7 @@ HATP allows only one search thread for a shared plan, resulting in two coordinat
 However, HATP/EHDA proposed a two-threaded search process, generating a policy tree comprising both agents' actions. 
 The human agent is \textit{uncontrollable}, so it is not trivial to determine their exact ``next'' feasible action for the overall joint task. It captures the impact of their mental state, mood, intention, etc.  
 % Although a human is assumed to be a collaborative and rational agent, jointly working towards a common goal, their next move towards achieving the task, cannot be decided beforehand.
-Also, it is important to note that both the robot's and human's HTNs are within the robot. At each stage, it must plan its joint actions following the specifications while predicting, managing, and emulating human decisions, goals, beliefs, etc.
+Also, it is important to note that both the robot's and human's HTNs are within the robot. At each stage, it must plan their joint actions following the specifications while predicting, managing, and emulating human's decisions, goals, beliefs, etc.
 % Therefore, for a sound execution, after every robot action: The policy tree branches on all possible legal \textit{choices} available to the human.
 
 However, the current implementation of the HATP/EHDA framework
@@ -403,10 +405,11 @@ While doing so, it also updates the belief state of each agent and models their 
 
 % Without loss of generality the framework assumes that only one agent \textit{decides} to act at a time, while it also decides ``which action to execute?'', e.g., \textit{cook}, \textit{noop}, \textit{add-salt}, \textit{delay}, etc., and similarly, followed by other agent(s). 
 % \replaced[comment="R2"]{
-A simplifying assumption is that the agents \textit{act alternatively} and only one is \textit{allowed} to act at a time.
-Hence, the framework would face problems dealing with real concurrent actions (CAs)~\cite{CrosbyJR14}, especially when they are \textit{interacting}~\cite{ShekharB20}. 
-Therefore, the framework is sound and complete only for   the problem specifications where action concurrency is carefully handled. Later, one can find a sound \textit{parallelization} of the agent's plans after post-processing, e.g., managing the causal links and synchronizing agents' action orderings. 
-On the other hand, it is not trivial to deal with interacting actions in the HATP/EHDA framework, and dealing with them is out of the scope of this work and a part of our future work.  
+A simplifying assumption is that agents \textit{act} alternatively, while only one is \textit{allowed} to act at a time.
+Hence, the framework may face problems dealing with real concurrent actions~\cite{CrosbyJR14}, especially when they are \textit{interacting}~\cite{ShekharB20}. 
+As a result, the framework is sound and complete only for the problem specifications in which action concurrency is handled carefully. 
+Later, one can find a sound \textit{parallelization} of the agent's plans (by respecting the flexibility proposed for the human agent) in the post-processing phase, e.g., by managing the causal links and synchronizing agents' action orderings. 
+Note that it is not trivial to formally handle interacting actions in the current HATP/EHDA framework, and out of the scope of this work, and it is a part of our future work.  
 
 % Despite the turn-taking fashion, the planning process isn't purely sequential since two "synchronisation" special actions are modeled. The IDLE action is inserted in the agent's plan when their agenda(task network ?) is empty. And the WAIT action is used when the agent currently has no applicable action to perform.
 % after the other.
@@ -420,24 +423,30 @@ The framework uses specific actions during the search.
 Then, it can adapt off-the-shelf graph search algorithms, e.g., the well-known algorithms like $A^*$ and $AO^*$, and consider social cost, plan legibility, acceptability~\cite{alili2009task}, etc., to search for a \textit{joint solution plan} for the agents. 
 
 % The joint solution plan this framework generates is formalized in the following definition (by extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA problem):
-A joint solution plan generated, prior to preprocessing stage, is defined as follows (extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA case). 
+A joint solution plan generated, prior to the preprocessing stage, is defined as follows (extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA case).
+
+% \begin{definition}
+% (\textbf{Joint Solution Plan}.) 
+% {It is a solution for $\mathcal{P}_{hr}$, represented as a tree or a graph, i.e., $G=(V,E)$. Each vertex ($v \in V$) represents the ground truth starting from the root node,  i.e., $s_0^r$. 
+% Each edge ($e \in E$) represents a set of actions performed by a same agent. Each set includes one primitive robot ($o^{r}$) or human ($o^{h}$) action as well as any number of communication actions ($c^r_1,...,c^r_n$). $G$ gets branched on the possible human choices ($o^{h}_1$, $o^{h}_2$, ..., $o^{h}_m$). 
+% }  
+% \end{definition}
+
 \begin{definition}
 (\textbf{Joint Solution Plan}.) 
-{It is a solution for $\mathcal{P}_{hr}$, represented as a tree or a graph, i.e., $G=(V,E)$. Each vertex ($v \in V$) represents the ground truth starting from the root node,  i.e., $s_0^r$. 
-Each edge ($e \in E$) represents a set of actions performed by a same agent. Each set includes one primitive robot ($o^{r}$) or human ($o^{h}$) action as well as any number of communication actions ($c^r_1,...,c^r_n$). $G$ gets branched on the possible human choices ($o^{h}_1$, $o^{h}_2$, ..., $o^{h}_m$). 
-}  
+It is a solution for $\mathcal{P}_{hr}$, represented as a tree or a graph, i.e., $G=(V,E)$. Each vertex ($v \in V$) represents {\em the ground truth} starting from the root node (i.e., $s_0^r$). 
+Each edge ($e \in E$) represents a primitive action performed either by the robot ($o^r$) or the human ($o^h$). 
+$G$ is branched on possible human choices ($o^{h}_1$, $o^{h}_2$, ..., $o^{h}_m$). 
+\label{def:hatp-joint-sol-plan}
 \end{definition}
 
-The requirement from this solution tree is that for each branch, from the root to a leaf node, the sequence of primitive and communication actions, say, $\pi=(o^r_1, c^r_2, c^r_3, o^h_4,...,o^r_{k-1},o^h_k)$ is a solution plan for $\mathcal{P}_{hr}$. Here, each $o_i^h$ represents a choice (often out of several choices) the human could make during execution.
+The requirement from this solution tree is that for each branch, from the root to a leaf node, the sequence of primitive actions, say, $\pi=(o^r_1, o^h_2,o^r_3,...,o^h_{k-1},o^r_k)$ is a solution plan for $\mathcal{P}_{hr}$. Here, each $o_i^h$ represents a choice (often out of several choices) the human could make during execution.
 
 % \textcolor{red}{*** We just repeat what we say at the end of def.4 and def.5 ***}
+% In this work, we assume that the robot is always aware of the world state, while the human agent may hold a belief that does not exist in the real world. Moreover, both agents are always certain about their individual beliefs unless they learn otherwise. (In this case, if needed, the human's belief gets updated or aligned with the world state). 
 
-% \textcolor{red}{
-% In this work, we assume that the robot is always aware of the world state, while the human agent may hold a belief that does not exist in the real world. 
-% Moreover, both agents can update their individual belief state but they are always certain about each fact (no uncertainties). 
-% }
-
-\subsection{Situation Assessment} In human psychology, especially in human-human interaction, spatial reasoning and perspective-taking are crucial. 
+\subsection{Situation Assessment} 
+In human psychology, especially in human-human interaction, spatial reasoning and perspective-taking are crucial. 
 % Using an existing approach from the literature, 
 In practice, we often build relations between 
 % \replaced[comment="R4"]{
@@ -755,15 +764,15 @@ This enables $\varphi_h$ to learn an \textit{observable} attribute's value achie
 % Thanks to spatial reasoning, one can now define and plan with execution time observability conventions in a principled way. 
 % We keep an account on agents' belief divergence that can occur in practice due to spatial reasoning and perspective taking. 
 
-The agent updates its belief with relevant ground truth learned via situation assessment, performed ``immediately'' after the execution of each action. So, technically, the robot performs situation assessment for the human and itself.
+The agent updates its belief with relevant ground truth learned via situation assessment, performed ``immediately'' (\textit{i.e.}, takes $0$ seconds) at each stage, before the execution of the next action. Technically, the robot performs situation assessment for the human and itself.
 
 \paragraph{When Being Communicated}
-Its belief gets updated by learning ground truth when another agent communicates an attribute-value pair. Communication occurs via a \textit{distinct set} of actions, modeled as a predefined communication protocol for a pair of sender-receiver agents. 
+The agent's belief is updated by learning the ground truth when another agent communicates an attribute-value pair. Communication occurs via a \textit{distinct set of actions}, modeled as a predefined communication protocol for a pair of sender-receiver agents. 
 % and they are specified explicitly in the agents' joint task model -- $\mathrm{HTN_r}$ and $\mathrm{HTN_h}$.
 
-The robot knows the truth, so technically, it is effective only for human beliefs.
-The human receives an attribute and its exact value at the current stage from the robot, and, accordingly, their belief gets updated. 
-We note that each action communicates only ``one'' attribute-value pair, so just one attribute gets updated in the human belief.
+% \textcolor{red}{TO BE REMOVE OR MOVED TO "COM ACTION MODELLING" *The robot knows the truth, so technically, it is effective only for human beliefs.
+% The human receives an attribute and its exact value at the current stage from the robot, and, accordingly, their belief gets updated. 
+% We note that each action communicates only ``one'' attribute-value pair, so just one attribute gets updated in the human belief.*}
 
 % In the next section
 % it needs to make decision "if", "when", and "what" to communicate with these explicit actions.
@@ -773,23 +782,32 @@ We note that each action communicates only ``one'' attribute-value pair, so just
 For an agent to decide \textit{if}, \textit{when}, and \textit{what} to communicate to another agent, it first needs to establish a common protocol with that agent even before planning.  
 In this work, we establish such communication protocols between each sender-receiver agents pair, where we use speech modality, and model explicit communication actions between two agents. 
 % They appear in their joint task model, 
-However, we note that these actions are different from agents' (non-) primitive actions, and they are used only in special circumstances during planning.
+However, we note that these actions are different from agents' (non-) primitive actions, and they are used only in special circumstances during planning and execution.
 
 \subsection{Modeling Communication Actions} 
-We propose a generic communication action model in this context. 
+Next, we propose a generic communication action schema ($ca$) in this context. 
 % which will later be used for the case, when the robot is aware of the ground truth, while the human's belief diverges from the real world.
 % 
-Suppose there exists a state-variable function, $f_{svs}:(?g_1 (gr_1), ?g_2 (gr_2), ..., ?g_k (gr_k),\mathcal{S}) \rightarrow ?g_{k+1} (gr_{k+1})$ such that,
+Suppose there exists a state-variable function,  $f_{svs}:(?g_1 (gr_1), ?g_2 (gr_2), ..., ?g_k (gr_k),\mathcal{S}) \rightarrow ?g_{k+1} (gr_{k+1})$, such that
 % $f_{svs_i}^s$, 
 % Such that, 
-for the current world state $s \in \mathcal{S}$, the corresponding state attribute, $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},s)$ maps to $q$.
+for the current world state $s \in \mathcal{S}$, 
+% the corresponding state attribute, 
+$f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},s)$ maps to $q$.
 
-An agent $\varphi_i$ can \textit{communicate} instantaneously this attribute-value pair to another agent $\varphi_j$, if the following conditions meet: 
-(1) For $\varphi_i$, its belief state satisfies the fact being communicated, i.e.,
-$f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_i}^s) = q$, and (2) $\varphi_j$'s belief state does not satisfy this truth, i.e., $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_j}^s) = r$ such that $r \neq q$.
-The effect of this action is that  
+The agent $\varphi_i$ can \textit{communicate} 
+% ``instantly'' (i.e., $t=0$ seconds) 
+this attribute-value pair to $\varphi_j$ (\textit{via} the action $ca_{\varphi_i, \varphi_j}(f_{\textit{svs}}(...),q)$), if the following conditions (i.e., its preconditions) meet: 
+(1) For $\varphi_i$, 
+% its belief state satisfies the fact being communicated, i.e.,
+$f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_i}^s) = q$, and (2) for $\varphi_j$,
+% 's belief state does not satisfy it, i.e., 
+$f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_j}^s) = r$ s.t.
+% such that 
+$r \neq q$.
+% The effect of this action is that  
 % the attribute gets the true value and 
-$\varphi_j$'s belief is updated, i.e., $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_j}^s) \leftarrow q$. 
+Later, $\varphi_j$'s belief is updated, i.e., $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_j}^s) \leftarrow q$. 
 % That means, the attribute receives the correct value and belief is
 % is assigned 
 % the \textit{exact} value, i.e., 
@@ -858,7 +876,7 @@ If so, all state attributes where the receiver agent's belief differs w.r.t. the
     
     \item \textbf{Communicate Only The Required Facts.}
     % Now that we decided to align the human's belief with the ground reality, 
-    It ``decides'' the \textit{key} changes in the human's belief to be made such that the relevance of their updated belief (might still be diverging) is non-ineffective. 
+    It ``decides'' the \textit{key} changes in the human's belief to be made such that the relevance of their updated belief (might still be diverging) is non-effective. 
     % In the worst case, the robot communicates all the divergent attribute-value pairs, and their belief states are perfectly aligned. 
     The subroutine that decides needed 
     % \deleted[comment="P2"]{all} 
@@ -867,14 +885,17 @@ If so, all state attributes where the receiver agent's belief differs w.r.t. the
         \item 
         \textit{Store} each attribute and its value if the attribute's value differs in the human's belief from the robot's belief. 
     
-        \item For each stored attribute-value pair, \textit{build} a communication action $c^r_i$ based on the model described earlier. They are considered equally costly.  
+        \item For each stored attribute-value pair, \textit{build} a communication action $ca_{\varphi_r, \varphi_h}(...)$ based on the schema described earlier. They are considered equally costly.  
         \item 
-         
-        At a given stage (of planning), e.g., the ground truth $s_i$, follow the Breadth-First Search ordering. 
-        The \textit{source} is $B_{\varphi_h}^{s_i}$, and each $c^r_i$ changes and aligns \textit{exactly} one attribute while its updated value satisfies the ground truth. If $c^r_i$ is applied, generates a new belief state (following the regular state transition rules), using: $B_{\varphi_h}^{s_i,1} = \gamma(B_{\varphi_h}^{s_i}, c^r_i)$.
-        It continues until the first (updated) belief is \textit{selected} to expand s.t. its remaining divergence is ineffective. We then \textit{retrieve} all the actions used from the root until the current belief state.   
+        At a given planning stage, \textit{e.g.}, the ground truth $s_i$, follow the Breadth-First Search ordering. 
+        The \textit{source} is $B_{\varphi_h}^{s_i}$, and each $ca_{\varphi_r, \varphi_h}(...)$ changes and aligns \textit{exactly} one attribute while its updated value satisfies the ground truth. 
+        Applying $ca_{\varphi_r, \varphi_h}(...)$ generates a new belief state following state transition rules, i.e., $B_{\varphi_h}^{s_i,1} = \gamma(B_{\varphi_h}^{s_i}, ca_{\varphi_r, \varphi_h}(...))$.
+        % If $ca_{\varphi_r, \varphi_h}(...)$ is applied, generates a new belief state following state transition rules, i.e., using $B_{\varphi_h}^{s_i,1} = \gamma(B_{\varphi_h}^{s_i}, ca_{\varphi_r, \varphi_h}(...))$.
+        % It continues until the first update generating a human belief s.t. its remaining divergence is ineffective. All actions used from the root until the current belief state are \textit{retrieved}.
+        It continues until the first (updated) belief is \textit{selected} to expand s.t. its remaining divergence is ineffective. The actions used from the root until the current belief state are \textit{retrieved}.
     \end{enumerate}
-
+    Once the above subroutine finishes, the retrieved action set $\mathit{CA} = \{ca^{i}_{\varphi_r,\varphi_h}(...)\}$ is utilized for belief alignment. 
+    % after each stage of HATP/EHDA's plan elaboration.
 % \end{myitemize}    
 \end{itemize}
 
@@ -882,8 +903,10 @@ If so, all state attributes where the receiver agent's belief differs w.r.t. the
 % Following our approach, the robot uses the required communication actions after each stage of plan elaboration, i.e., HATP/EHDA's plan elaboration. 
 % It then uses the predefined communication modality to interact with the human agent during execution via these communication actions. 
 
-The \textit{retrieved}  actions are utilized for belief alignment. 
-% after each stage of HATP/EHDA's plan elaboration.
+% Note that the agents could begin with different beliefs.
+Agents may begin with different beliefs. Situation assessment (SA) can update human belief state, but humans cannot know inferable facts. So, we redefine Definition~\ref{def:hatp-joint-sol-plan} to make it sound w.r.t. our new planning approach. 
+Assume at each step ($t=0,1,2,...$), humans perform SA, while the robot executes each communication action $ca \in \mathit{CA}$, such that the human's belief state \textit{updates immediately} (takes $0$ seconds). 
+Later, following the updated beliefs, the human's or robot's regular primitive action is executed, and the effects only appear in the next step. Hence, the other two types of belief updates happen post the action execution. And, continues. 
 
 % \section{Soundness and Completeness***}
 
@@ -1386,8 +1409,8 @@ A new planning approach is described, utilizing this better estimation of human 
 
 \bibliography{bib.bib}
 
-\clearpage
-\listofchanges[style=compactsummary]
+% \clearpage
+% \listofchanges[style=compactsummary]
 
 
 \end{document}
