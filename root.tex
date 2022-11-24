@@ -58,8 +58,9 @@
 % or commands are allowed.
 % Keep the /TemplateVersion tag as is
 \pdfinfo{
-/Title (Towards a robot partner reducing ambiguities using perspective taking)
-/Author (Anthony Favier, Shashank Shekhar, Rachid Alami)
+/Title (Considering Theory of Mind in  Human-Aware Task Planning for a Collaborative Robot)
+% /Author (Anthony Favier, Shashank Shekhar, Rachid Alami)
+/Author Paper #8284)
 /TemplateVersion (2022.1)
 }
 
@@ -124,7 +125,9 @@
 % \\ 
 % A Robot Builds Collaborative Plans
 % while Keeping Itself in Human's Shoes
-Considering Theory of Mind in  Human-Aware Task Planning \\ for a Collaborative Robot
+% Considering Theory of Mind in  Human-Aware Task Planning \\ for a Collaborative Robot
+Robust Task Planning for Human-Aware Collaborative Robots via Theory of Mind
+% Anticipating Human's Situation Assessment during \\ Robot Task Planning to Improve the Collaboration
 % Robust Planning for Human-Robot Joint Tasks \\ with Explicit Reasoning on Human Mental State
 %While Keeping Itself in Human's Shoes a Robot Produce Collaborative Plans 
 %is in Human's Shoes   
@@ -136,10 +139,10 @@ Considering Theory of Mind in  Human-Aware Task Planning \\ for a Collaborative 
     % Anthony Favier\textsuperscript{\rm 1,2},
     % Shashank Shekhar\textsuperscript{\rm 1},
     % Rachid Alami\textsuperscript{\rm 1,2}
-    Paper \#8284
+    Authors
 }
 \affiliations{
-    %Afiliations
+    % Afiliations
     % \textsuperscript{\rm 1}LAAS-CNRS, Universite de Toulouse, Toulouse, France\\
     % \textsuperscript{\rm 2}{Artificial and Natural Intelligence Toulouse Institute (ANITI)}
 
@@ -155,26 +158,47 @@ Considering Theory of Mind in  Human-Aware Task Planning \\ for a Collaborative 
 \maketitle
 
 \begin{abstract}
-% 
-Building on earlier work about Human-Aware Planning, we describe a new approach that:
-(a) models the robot’s capabilities to compute the spatial perspective of its human partner while following their activities; 
-and using that, (b) it estimates the evolution of the mental state of its human partner to perform robust planning for the human’s and robot’s joint tasks with a known objective to achieve.
-% We consider the human-aware task planning problem where human-robot teams are given a joint task with a known objective to achieve. The best current solver tackles it by modeling a team as independent agents, such that the robot plans for the human's and robot's (joint) tasks. Moreover, the robot knows that humans cannot be administered like artificial agents, so it emulates and predicts the human's decisions, actions, and reactions. 
-% To improve this solver, we describe a new 
-More specifically, our approach formalizes standard execution-time observability conventions based abstractly on situation assessment. Using this formalization during planning, it captures the evolution of human’s and robot’s beliefs to
-deal with belief divergences that could arise in practice and
-affect plan execution. While anticipating such a divergence, the approach decides \textit{if} and \textit{when} belief alignment is needed
-and achieves it using communication.  
-The proposed approach is sound and complete and generates robust plans for more realistic and challenging problems, and it uses communication effectively,
-i.e., without the robot giving unnecessary information that a collaborative human can observe or infer in practice.
-% They improve the planner's overall performance: (a) communication is effectively used, and (b) robust for more realistic and challenging problems.
+% OLD
+% Building on earlier work about human-aware planning and execution, we describe a new approach that:
+% (a) models the robot’s capabilities to compute the spatial perspective of its human partner while following their activities; 
+% and using that, (b) it estimates the evolution of the mental state of its human partner to perform robust planning for the human’s and robot’s joint tasks with a known objective to achieve.
+% More specifically, our approach formalizes standard execution-time observability conventions based abstractly on situation assessment. Using this formalization during planning, it captures the evolution of human’s and robot’s beliefs to
+% deal with belief divergences that could arise in practice and
+% affect plan execution. While anticipating such a divergence, the approach decides \textit{if} and \textit{when} belief alignment is needed
+% and achieves it using communication.  
+% The proposed approach is sound and complete and generates robust plans for more realistic and challenging problems, and it uses communication effectively,
+% i.e., without the robot giving unnecessary information that a collaborative human can observe or infer in practice.
+% NEW
+% While several works from the literature consider Theory Of Mind at execution time to adapt the robot's behavior online, we show how taking such considerations already at planning level can benefit human-robot collaboration.
+% Building on earlier work about Human-Aware Task Planning, we describe a new conceptual approach that:
+% (a) plans the robot actions to achieve a joint shared goal with a human considered as uncontrollable,
+% (b) manages the human's belief distinctly to predict their behavior and adapt the robot's one accordingly,
+% (c) anticipates the upcoming spatial perspective of the human to better estimate their belief. 
+% More specifically, we explain where and how Situation Assessment (SA) is inserted in the planning process. Thanks to this, we show how ambiguous situations due to estimated false human beliefs can be detected and avoided by different means (communication or delay robot actions).  
+% This conceptual approach has been implemented, and some qualitative and experimental results are discussed to show \textit{its potential}.
+
+When planning for a collaborative task, sharing the plan before execution is a common practice and assumption that may be verbally costly and even restrict the human's behavior. A recent approach named HATP/EHDA lifts this assumption and plans the robot actions while estimating the future human's behavior, without constraining it.
+For a proper interaction, Theory of Mind (ToM) must be considered by the robot. Several works integrate ToM at execution time to adapt online the robot's behavior to the human. However, such intelligent reactions may not always be enough. In some scenarios, ToM should be considered at planning time to be proactive. 
+Hence, we describe a new conceptual approach that: (a) plans the robot actions to achieve a joint shared goal with a human considered as uncontrollable,
+(b) manages the human's belief distinctly to predict their behavior and adapt the robot's one accordingly,
+(c) anticipates the upcoming spatial perspective of the human to better estimate their belief. 
+More specifically, we explain where and how Situation Assessment is inserted in the planning process. And we show, thanks to this addition, how ambiguous situations due to estimated false human beliefs can be detected and avoided by different means (communication or delay robot actions).  
+This conceptual approach has been implemented, and some qualitative and experimental results are discussed to show \textit{its potential}.
+
+***
+
+Considering Theory of Mind (ToM) when executing a human-robot shared plan enables a robot to adapt its behavior online. Recent work proposes to replan online while tracking the progress of the task from its own and humans' perspectives. 
+Consequently, if it finds a new shared plan, it communicates the humans' part of the plan along with other essential task details and starts to execute its own part. 
+In this scenario, ToM is required to handle uncertainties caused mainly due to humans' unplanned initiatives, like their temporary absence or inattention, which hinder humans from entailing knowledge about the task progress. However, plan sharing can be costly and committing every time to a new plan is restrictive to humans, so the contemporary human-aware task planners lift the requirement of shared planning such that they plan for only the robot's  behaviour while considering humans uncontrollable, it anticipates their decisions and actions. Such estimation leads to implicitly coordinated human-robot plans. 
+Building on an existing approach, we describe a new planning system that uses ToM to maintain human's-robot's individual mental models, while estimates humans' future initiatives to better maintain their mental model at planning time. 
+In particular, we formalize a version of situation assessment which is used for robust task planning. Doing so produces better robot's plans and encourages to communicate with the human only minimally. This concept is implemented, and some qualitative and experimental results are discussed to show \textit{its potential}. 
 \end{abstract}
 
 \section{Introduction}
 % With the increasing penetration of sensor networks, advancements in robotic technology, the Internet of Things (IoT), etc., multi-robot systems are becoming ubiquitous, and the complexity of the tasks these autonomous robots can handle individually or together as a team is constantly increasing.
 % However, robots collaborating and (or) interacting with humans, for example, a robot hands-over, a robot achieving a joint task with the help of a human or receiving some routine help from a human, etc., is seldom seen in our day-to-day life, but will soon become ubiquitous, too.   
 
-Consider a scenario where you (the \textit{human} agent) want to prepare, together with a robot, some pasta in your kitchen. This joint task comprises several components and activities, e.g., pasta packets are kept either in the kitchen or the living room, covering a pot (or a pan), turning a furnace on, salt, adding salt to the pasta, etc. 
+Consider a scenario where you (the \textit{human} agent) want to prepare, together with a robot, some pasta in your kitchen. This joint task comprises several components and activities, e.g., pasta packets are kept either in the kitchen or the living room, salt, covering a pot (or a pan), turning a furnace on, adding salt to the pasta, etc. 
 Sometimes, some components needed for pasta preparation might be accessible only to you (the robot) from your (its) current position, while some are accessible to both. 
 Like this subclass of collaborative tasks, its multiple instantiations exist across many real-world domains, e.g., homes, offices, hospitals, etc.
 
@@ -184,40 +208,43 @@ So, if they have several ways to achieve a goal or accomplish a task, the robot 
 %Even 
 % The above example outlines a crucial aspect of human-robot collaboration: 
 In such scenarios, the robot not only plans for agents' joint tasks but also predicts and emulates human decisions, actions, and reactions to achieve joint tasks seamlessly. 
-Anticipating human decisions based on an accurate estimation of their mental state opens the possibility for creating circumstances to promote actions to be performed by them, achieves the joint task or prevents humans from making errors based on their not up to date or inaccurate beliefs.
+Anticipating human decisions based on an accurate estimation of their mental state opens the possibility for creating circumstances to promote actions to be performed by them, achieve the joint task or prevent humans from making errors based on their not up to date or inaccurate beliefs.
 Human Aware Task Planning (HATP) is a framework concerning human-robot collaboration, based on human task modeling and human-aware planning, (partially) tackles these important issues~\cite{alami2006toward,alili2009planning,de2015hatp,lallement2018hatp}.
-A more elaborated architecture, the ``first'' of its type, called HATP/EHDA, extends existing HATP and better emulates human decisions and actions was recently proposed and showed an improved performance~\cite{BuisanA21,buisan:hal-03684211}.
+A more elaborated architecture, the ``first'' of its type, called HATP/EHDA, extends existing HATP and better \textbf{e}mulates \textbf{h}uman \textbf{d}ecisions and \textbf{a}ctions was recently proposed and showed an improved performance~\cite{BuisanA21,buisan:hal-03684211}.
 This new scheme raises interesting, non-trivial questions. Principled answers to them will improve the proposed HATP/EHDA framework toward task-level autonomy for human-robot collaboration.
 
 
 HATP/EHDA comprises a dual-HTNs (Hierarchical Task Networks~\cite{naubooks0014222}), a joint task specification model: 
 Considers a domain modeler available to describe dual-HTNs specifications for collaborative planning. 
-Such models describe agents'  capabilities, initial beliefs, shared tasks, world dynamics, understanding of common ground, etc. Moreover, the modeler implicitly captures hypothetical variables to represent the human mood, intentions, etc., and are non-trivial to manage. We note that both these models are with the robot while it performs planning. 
+Such models describe agents'  capabilities, initial beliefs, shared tasks, world dynamics, understanding of common ground, etc. Moreover, the modeler implicitly captures hypothetical variables to represent the human mood, intentions, etc., and are non-trivial to manage. Note that both these models are with the robot and it plans for both agents. 
 % while the robot plans their joint actions based on the specification models, predicts, and emulates human actions, decisions, and reactions.    
 % HATP/EHDA is the state-of-the-art planner~\cite{buisan:hal-03684211}, 
 % Without loss of generality, it assumes that agents \textit{decide} to act (e.g., pushing a heavy box, moving, noop, idle, etc.) one after the other. 
 % We note that HATP/EHDA is an extension of the HATP framework(s) --- having 
 % Note that HATP manages only one search thread for a shared plan, resulting in two coordinated plan streams. 
 % But, 
-For planning, it proposed a two-threaded search process, generating a joint plan tree comprising agents' actions. 
+For planning, a two-threaded search process is proposed, generating a joint plan tree comprising agents' actions. 
 The human agent is uncontrollable, so it is not trivial to determine their ``next'' action upfront, which captures the impact of their mental state, intention,  etc.
-Therefore, for a sound execution, after every robot action: The plan tree branches on all possible legal ``choices'' available to the human.
+Therefore, for a sound execution, after every robot action: The solution tree branches on all legal ``choices'' available to the human.
  
 However, 
 % being in its early stage of development, 
-HATP/EHDA's existing solver makes \textit{simplistic} assumptions during planning like an action executed by an agent would also impact the beliefs of others, i.e., considering the others are always aware of the execution and sharing the same perspective as the former. But, in reality, an agent can execute an action that influences other agents' beliefs differently under different conditions. E.g., \textit{adding} salt or \textit{switching-on} the furnace impacts the human's belief differently depending on whether they are ``co-present'' (in the kitchen) during execution or assessing the furnace's status now or later.  
-So, due to these limitations, the solver often generates plans less robust for real-time execution.        
+HATP/EHDA's existing solver makes simplistic \textit{assumptions} during planning like an action executed by an agent would also impact the beliefs of others, i.e., considering the others are always aware of the execution and sharing the same perspective as the former. But, in reality, an agent can execute an action that influences other agents' beliefs differently under different conditions. E.g., \textit{adding} salt or \textit{switching-on} the furnace impacts the human's belief differently depending on whether the human and robot are ``co-present'' (in the kitchen) during execution, or the human assessing the furnace's status post execution.  
+Due to these limitations, the solver often generates plans less robust for real-time execution.        
 
-We describe a new planning approach that uses enhanced reasoning about the human's and robot's individual knowledge/beliefs. To do so, it utilizes a novel paradigm for implementing suitable ``observability'' based conventions understood during plan execution in the human-robot context based on Theory of Mind (ToM)~\cite{devin2016implemented}. 
+We describe a new planning approach that uses enhanced reasoning about the human's and robot's individual beliefs and their evolution. 
+To do so, it utilizes a novel paradigm for implementing suitable ``observability'' based conventions understood during plan execution in the human-robot context based on Theory of Mind (ToM)~\cite{devin2016implemented}. 
 The idea of formalizing such conventions is inspired abstractly by existing situation assessment reasoners performing spatial reasoning and perspective taking during plan execution~\cite{flavell1992perspectives,trafton2005enabling,johnson2005perceptual,Sisbot2011SituationAF,warnier-2012,lemaignan-2017}.
 % 
-We provide a general description of this formalization, and to support it in the current framework, the existing dual-HTNs formalism is transformed such that the new specifications become less abstract, but enable the new solver to perform enhanced reasoning and to cater to the real-world scenarios that practically are \textit{not possible} to be handled by the old solver, and to support implicit and explicit communication.
+We provide a general description of this formalization, and to employ it in the HATP/EHDA framework, the existing dual-HTNs formalism is transformed such that the new specifications become less abstract, but enable the new solver to perform enhanced reasoning and to cater to the real-world scenarios that practically are \textit{not possible} to be handled by the existing solver, and to support 
+% implicit and explicit 
+communication.
 
 % As a result, 
 Our planner reasons about individual beliefs and their divergences while supporting agents' communication (\text{i.e.}, a decision on ``what'' to convey) and allows for \textit{robust} planning with explicit communication actions utilized ``if'' and ``when'' needed to align agents' beliefs. 
 We evaluate our planner on \textit{three novel domains}, provide qualitative and quantitative analyses, and discuss its theoretical properties.   
 
-Benchmarks (details), code, and a document detailing the background, related work, and results are provided.
+Benchmarks (details), code, and a document detailing the background, related work, and more results are provided.
 
 % In reality, a robot can act that \textit{influences} human's belief differently under different scenarios. For example, adding salt to the pasta or switching on the furnace (in the kitchen) would impact the human's belief state differently depending on whether the human is ``co-present'' in the kitchen at the time of action execution.   
 
@@ -256,17 +283,32 @@ Benchmarks (details), code, and a document detailing the background, related wor
 % We conclude with a summary, discussion, and future work.
 
 \section{Related Work}
+\textbf{1.} Human task modeling - issues references, what and why, other related issues
+
+\textbf{2.} Work on HATP: rachid's old work, saffiotti's group, work by Scassellati's group, other task planning methods in HRC
+
+\textbf{3.} Communication in HRC
+
+\textbf{4.} ToM - work by Sheila McIlraith's group, Bernhard Nebel's group, and Thomas Bolander's group on collaborative epistemic planning, 
+
+\textbf{5} Sandra's work on ToM, add examples where that approach is not relevant   
+
+
+****
+
+****
+
 % Several attempts to model human activities are made such that these models are used to design a system, which integrates into another paradigm dealing with human tasks to improve the latter's performance. 
 % A general approach for representing human activity and interaction with a computer at an abstract level is using \textit{task models}. 
-The hierarchical structure of human activity, seeing it as several abstraction levels to meet some criteria, was first exploited by Annett and Duncan~\citeyear{annett1967task}. Later, task modeling evolved to introduce system interactions, and its usage became common in user interface designing processes. Most advanced notations include {\sc ConcurTaskTrees}~\cite{paterno2004concurtasktrees} and {\sc hamsters}~\cite{martinie2019analysing}.
-Such models are used to evaluate interactive systems while inspiring us to choose hierarchical models.
+The hierarchical structure of human activity, seeing it at several abstraction levels to meet some criteria, was first exploited by Annett and Duncan~\citeyear{annett1967task}. Later, task modeling evolved to introduce system interactions, and its usage became common in user interface designing processes. Most advanced notations include {\sc ConcurTaskTrees}~\cite{paterno2004concurtasktrees} and {\sc hamsters}~\cite{martinie2019analysing}.
+Such models are used to evaluate interactive systems while inspiring us to choose hierarchical models in this work.
 % Such models are used for designing or evaluating interactive systems, provide a task understanding, and inspire this work since they share a high-level architecture with HTNs. 
 
 Previous approaches generally decompose tasks hierarchically to human-aware task planning and assume a fully controllable and cooperative human willing to achieve a joint-goal together~\cite{alami2006toward,montreuil2007planning,alili2009planning,alili2009task,lallement2014hatp,de2015hatp,lallement2018hatp}. 
 % Moreover, the agents are assumed to have established a shared goal before planning. 
 % Later, 
-Generated plans get shared with the human before the execution~\cite{milliez2016using}.
-We note that HATP does not represent humans as \textit{regular} agents with separate decision processes, which may lead to diverging plans without robot communication.
+Generated plans are shared with the human before the execution~\cite{milliez2016using}.
+We note that HATP does not represent humans as ``regular'' agents with separate decision processes, which may lead to diverging plans without robot communication.
 Also, it manages only one search thread for a shared plan, resulting in two coordinated plan streams. 
 
 % Other approaches are related to what we do, consider an external human model (e.g., Agent Markov Models (AMMs)~\cite{unhelkar2020decision,UnhelkarLS19}), which predicts human activities, and hence the robot plans accordingly~\cite{hoffman2007effects,unhelkar2020decision,UnhelkarLS19}. Such systems can determine actions that influence human's future actions. While some systems interact with humans even when they are non-collaborating~\cite{buckingham2020robot}.
@@ -298,7 +340,7 @@ E.g., in~\cite{roncone2017transparent,UnhelkarLS20}, the authors represent and p
 
 Following ToM abstractly, our approach estimates the evolution of the agents' beliefs and decides ``if'' and ``when'' belief alignment is required for planning. 
 And, it is achieved via explicit communication actions, answering ``what" to communicate. 
-Our solver does not use these actions (for the deliberation process) like (non-) primitive tasks.
+But, our solver does not use these actions (for the deliberation process) like (non-) primitive tasks.
 % but to minimally align an agent's belief with the ground reality 
 % so that the belief divergence does not impact the overall task achievement.
 
@@ -344,7 +386,7 @@ For elaborated basic terminologies, notations, and definitions related to HTNs l
 \begin{definition}
 \textbf{(HTN Planning Problem.)} 
 The HTN planning
-problem is a 3-tuple $\mathcal{P} = (s_0, w_0, D)$ where $s_0$ is the initial belief state (the ground truth), $w_0$ is the initial task network, and $D$ is the HTN planning domain which consists of a set of propositions, tasks and methods.
+problem is a 3-tuple $\mathcal{P} = (s_0, w_0, D)$ where $s_0$ is the initial belief state (the ground truth), $w_0$ is the initial task network, and $D$ is the HTN planning domain comprising a set of propositions (P), (non-) primitive tasks (O) and methods.
 \end{definition}
 % A \textit{domain} is a 3-tuple $D=(P, O, M)$ where $P$: set of primitive propositions, $O$: set of tasks, and $M$: set of methods. 
 % A task $o \in O$ is a primitive task described as $o=(name(o), pre(o), \textit{eff}(o))$, i.e., its name, precondition, and effect, respectively. 
@@ -359,7 +401,7 @@ problem is a 3-tuple $\mathcal{P} = (s_0, w_0, D)$ where $s_0$ is the initial be
 
 \begin{definition} \label{def:htn-sol-plan}
 (\textbf{Solution Plan}.) 
-{A sequence of primitive actions $\pi=(o_1,o_2,o_3...,o_k)$ is a solution plan for the HTN planning problem $\mathcal{P}=(s_0,w_0,D)$ iff there exists a primitive decomposition $w_p$ (for $w_0$), and $\pi$ is an instance of it. 
+{A sequence of primitive tasks $\pi=(o_1,o_2,o_3...,o_k)$, s.t., $\forall o_i, o_i \in O$, is a solution plan for the HTN problem $\mathcal{P}=(s_0,w_0,D)$ iff there exists a primitive decomposition $w_p$ (for $w_0$), and $\pi$ is an instance of it. 
 }  
 \end{definition}
 
@@ -377,9 +419,10 @@ problem is a 3-tuple $\mathcal{P} = (s_0, w_0, D)$ where $s_0$ is the initial be
 % More details on this are provided in~\cite{thesisBuisan21,buisan:hal-03684211}. 
 % 
 We restrict the framework's description to what is relevant but briefly discuss its ability to capture a broad class of scenarios. 
-It comprises a dual-HTN-based task specification model. It supports the robot to act in the presence of a human agent even when they do not share a task to achieve in the beginning. Or, it can also support the robot planning for both agents by asking the human to help it occasionally, can manage the creation of shared tasks, handle human's reactions modeled explicitly via triggers, etc. More details on triggers  in~\cite{ingrand1996prs,AlamiCFGI98}.   
+It comprises a dual-HTNs based task specification model. It supports the robot to act in the presence of a human agent even when they do not share a task to achieve in the beginning. Or, it can also support the robot planning for both agents by asking the human to help it occasionally, can manage the creation of shared tasks, handle human's reactions modeled explicitly via triggers, etc. More details on triggers  in~\cite{ingrand1996prs,AlamiCFGI98}.   
 
-Following is its brief working description: The structure manipulated by the solver is \textit{agent}~\cite{thesisBuisan21}. More precisely, we also said earlier that a two-agent model represented: the \textit{human} and the \textit{robot}. 
+Following is its brief working description: The structure manipulated by the solver is \textit{agent}~\cite{thesisBuisan21}. 
+More precisely, (we also it said earlier) a two-agent model represented: the \textit{human} and the \textit{robot}. 
 Each model has its own belief state, action model, task network, plan, and triggers. We are interested in solving the HATP/EHDA problem, $\mathcal{P}_{hr}$, in which agents start with a joint task, i.e., a shared initial task network, $w_0$, to decompose.
 The existing planner uses agents' action models and beliefs to decompose the given task network into its legal primitive components. 
 Decomposition updates the current network by inserting new (non) primitive tasks, additional constraints, etc., such that the single-agent process is generalized for the two-agent scenario.
@@ -391,7 +434,7 @@ While doing so, it also updates the belief state of each agent and models their 
 % Decomposing a non-primitive task, updating the current network with new constraints, etc., are generalized accordingly for the two-agent scenario.
 
 % Without loss of generality the framework assumes that only one agent \textit{decides} to act at a time, while it also decides ``which action to execute?'', e.g., \textit{cook}, \textit{noop}, \textit{add-salt}, \textit{delay}, etc., and similarly, followed by other agent(s). 
-Without loss of generality the framework assumes a single agent \textit{decides} to act at a time and, also ``which action to execute?'', e.g., add salt, cook, delay, etc., and similarly, other agents follow. 
+Without loss of generality, the framework assumes a single agent \textit{decides} to act at a time and, also ``which action to execute?'', e.g., add salt, cook, delay, etc., and similarly, other agents follow. 
 In this round-robin fashion (to include a broad spectrum of problems), it uses specific actions to synchronize agents' plans. {\em IDLE} is inserted into its plan when an agent's task network is empty, and {\em WAIT} when it does not have regular applicable actions.
 % Despite the turn-taking fashion, the planning process isn't purely sequential since two "synchronisation" special actions are modeled. The IDLE action is inserted in the agent's plan when their agenda(task network ?) is empty. And the WAIT action is used when the agent currently has no applicable action to perform.
 % after the other.
@@ -401,20 +444,20 @@ In this round-robin fashion (to include a broad spectrum of problems), it uses s
 First, the framework builds the whole search space by considering all possible, feasible decompositions~\cite{buisan:hal-03684211}. 
 Then, it can adapt off-the-shelf graph search algorithms, e.g., the well-known algorithms like $A^*$ and $AO^*$, and consider social cost, plan legibility, and acceptability~\cite{alili2009task}, etc., to search for the agents' \textit{joint solution plan}, defined next, extends Definition~\ref{def:htn-sol-plan} for the HATP/EHDA case. 
 
-One simplifying assumption the framework makes is if the actions of the human and robot at a given time stamp are ``interacting'' then they need to be modeled explicitly, helping \textit{parallelization} to be sound~\cite{CrosbyJR14}. More formally, interacting actions are those whose combined effect differs from the union of their individual effects, e.g.,~\cite{ShekharB20}. 
+A simplifying assumption the framework makes is if the actions of the human and robot at a given time stamp are ``interacting'' then they need to be modeled explicitly, helping the parallelization to be sound~\cite{CrosbyJR14}. More formally, interacting actions are those whose combined effect differs from the union of their individual effects, e.g.,~\cite{ShekharB20}. 
 
 % The joint solution plan this framework generates is formalized in the following definition (by extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA problem):
 % We define a joint solution plan as follows (extending Definition~\ref{def:htn-sol-plan} for the HATP/EHDA case).
 
 \begin{definition} \label{def:joint-sol-plan}
 (\textbf{Joint Solution Plan}.) 
-{It is a solution for $\mathcal{P}_{hr}$, represented as a tree or a graph, i.e., $G=(V,E)$. Each vertex ($v \in V$) represents the robot's belief state, starting from the root node $s_0^r$. Each edge ($e \in E$) represents a primitive action that is either a robot's action $o^{r}$ or a human's action $o^{h}$. $G$ gets branched on the possible choices ($o^{h}_1$, $o^{h}_2$, ..., $o^{h}_m$). 
+{The solution for $\mathcal{P}_{hr}$, is represented as a tree or a graph, i.e., $G=(V,E)$. Each vertex ($v \in V$) represents the robot's belief state, starting from initial belief. Each edge ($e \in E$) represents a primitive task that is either a robot's action $o^{r}$, or a human's action $o^{h}$. $G$ gets branched on the possible choices ($o^{h}_1$, $o^{h}_2$, ..., $o^{h}_m$). 
 % available for the human in the given state and its human's turn to act next.
 }  
 \end{definition}
 
 % The requirement from this solution tree is that 
-Each branch, from the root to a leaf node, the sequence of primitive actions, say,  $\pi=(o_1^r,o_2^h,o_3^r,...,o_{k-1}^h,o_k^r)$, must must satisfy all the solution conditions. 
+Each branch, from the root to a leaf node, its sequence of primitive actions, say,  $\pi=(o_1^r,o_2^h,o_3^r,...,o_{k-1}^h,o_k^r)$, must must satisfy all the solution conditions. 
 % for
 % for the HATP/EHDA problem 
 % $\mathcal{P}_{hr}$. 
@@ -467,13 +510,13 @@ We formally model run-time observability conventions, understood during plan exe
 The formalization below is based on the standard state-variable representation (for more details~\cite{naubooks0014222}) while we abuse the standard notations slightly, sometimes, to maintain the flow of the discussion.
 
 \subsection{A General Understanding of Common Ground}
-To describe an environment a set of \textit{constant symbols} is used. 
+To describe an environment a set of \text{constant symbols} is used. 
 % Usually, 
 Constants are often classified as different groups ($gr$), e.g., \textit{places}, \textit{pots}, \textit{agents}, \textit{etc.} 
 Each constant can be represented as an \textit{object symbol}, e.g., \textit{robot1}, \textit{human2}, \textit{pasta-pkt1}, etc. 
 An \textit{object variable} belonging to a group can be \textit{instantiated} using any constant symbol of that group.
 
-Suppose $\mathcal{S}$ is the complete state-space and $s \in \mathcal{S}$ represents a single state (or a \textit{belief} state in the current context).  
+Suppose $\mathcal{S}$ is the complete state-space and $s \in \mathcal{S}$ represents a single state (a \textit{belief} state in this current context).  
 
 % We start with some basic definitions below:
 
@@ -488,7 +531,7 @@ Each such possible \textit{instantiation} of defined state variable functions, r
 % If a variable is of the form $f_{svs_i}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ such that $gr_1$ contains \textit{only} one element in it, then we simplify this expression to, $f_{svs_i}: (\mathcal{S}) \rightarrow ?g_2 (gr_2)$ or, for a given state $s \in \mathcal{S}$, we further compress it to, $f_{svs_i}^{s} \rightarrow ?g_2 (gr_2)$. 
 If a variable $f_{svs_i}: (?g1 (gr_1), \mathcal{S}) \rightarrow ?g_2 (gr_2)$ such that $gr_1$ contains \textit{only} one element in it, then, for a given state $s \in \mathcal{S}$, we simplify this expression to, $f_{svs_i}^{s} \rightarrow ?g_2 (gr_2)$. 
 
-Suppose $s \in \mathcal{S}$ is the real state with the ground truth. As per our assumptions, the belief state of the robot w.r.t. the real-world is always the real world state, i.e., $B_{\varphi_r}^s = s$, and the human belief w.r.t. $s$ is $B_{\varphi_h}^s$ --- that is estimated when the robot takes the human's perspective. Each state variable function instantiation with respect to a belief state, $B_{\varphi_r}^s$ ($B_{\varphi_h}^s$), represents the truth value of that state attribute with the \textit{perspective} of that particular agent: $\varphi_r$ ($\varphi_h$). (Both perspectives are managed by the robot in our setting.) 
+Suppose $s \in \mathcal{S}$ is the real state with the ground truth. As per our assumptions, the belief state of the robot w.r.t. the real-world is always the real world state, i.e., $B_{\varphi_r}^s = s$, and the human belief w.r.t. $s$ is $B_{\varphi_h}^s$ --- that is estimated when the robot takes the human's perspective. Each state variable function instantiation with respect to a belief state, $B_{\varphi_r}^s$ ($B_{\varphi_h}^s$), represents the truth value of that state attribute with the \textit{perspective} of that particular agent, i.e., $\varphi_r$ ($\varphi_h$). (Both perspectives are managed by the robot in our setting.) 
 
 Suppose that $f_{\textit{svs}_i}:(g_{(1)l},g_{(2)m},...,g_{(k)n},s) \rightarrow g_{(k+1)p}$, for a legal state $s$ and $g(i)$ is the $i^{th}$ group while $g(i)j$ is its $j^{th}$ element, represents a possible {\em grounding} (Definition~\ref{def:svf}).
 % for a state-variable function.
@@ -496,7 +539,7 @@ Suppose that $f_{\textit{svs}_i}:(g_{(1)l},g_{(2)m},...,g_{(k)n},s) \rightarrow 
 
 \begin{definition} \label{def:bd}
 \textbf{(Belief Divergence.)}
-Belief divergence is defined as a situation during planning when there exists an instantiation such that $f_{\textit{svs}_i}:(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_r}) = {g_{(k+1)p}}  \neq f_{\textit{svs}_i}:(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_h})$.
+Belief divergence is defined as a situation during planning when there exists an instantiation such that $f_{\textit{svs}_i}:(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_r}^s) = {g_{(k+1)p}}  \neq f_{\textit{svs}_i}:(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_h}^s)$.
 % , then the human belief diverges.  
 % \label{def:bd}
 \end{definition} 
@@ -508,7 +551,7 @@ Note that uncertainty in individual's knowledge is not explicitly modeled, while
 
 \subsection{Place-Based Observability}
 % We now define 
-Place-based observability criteria is defined abstractly \textit{inspired} by standard execution time observability conventions relevant for the current context~\cite{devin2016implemented}. 
+Place-based observability criteria is defined abstractly inspired by standard execution time observability conventions relevant for the current context~\cite{devin2016implemented}. 
 %based on situation assessment.
 
 \begin{definition} \label{def:places}
@@ -516,7 +559,7 @@ Place-based observability criteria is defined abstractly \textit{inspired} by st
 % \label{def:places}
 \end{definition}
 
-Agents are always ``situated'' in a place or moving between two places. Two agents situated in a same place $p \in \mathit{Places}$; at a given time, are said to be \textit{co-present}.
+Agents are always ``situated'' in a place or moving between two places. Two agents situated in the same place $p \in \mathit{Places}$, at a given time, are said to be \textit{co-present}.
 
 % OLD GENERAL Discussion %%%
 % \begin{definition}
@@ -542,11 +585,11 @@ Agents are always ``situated'' in a place or moving between two places. Two agen
 Here, $\mathit{loc}$ is a location specific symbol for {\em place specific attribute}, while the function captures the associated place w.r.t. a state attribute, $f_{svs_i}(...)$.
 % for a given state. 
 
-Defining it this way captures and maintains the explicit places \textit{linked} with 
+Defining it this way captures and maintains the explicit places ``linked'' with 
 % ``only'' 
 the state attributes. 
 % of our interests. 
-Such explicit mappings suggest that the attribute is effective (\textit{observable}) in its dedicate place.
+Such explicit mappings suggest that the attribute is effective (\textit{observable}) in its dedicated place.
 % , and which might change over a course of action. 
 % Such changes are possible when an action changes the \textit{place} of effectiveness of a state attribute, e.g., the robot \textit{holding} a cup and \textit{moving} to an adjacent room. Such updates are currently manually handled.
 Such mappings can change when an action changes \textit{place} of the effectiveness of an attribute, e.g., 
@@ -590,12 +633,12 @@ But when we say a state-variable function ($f_{svs_j}(...)$) belongs to the clas
 
 
 To better understand these observability classes, consider a scenario with a cup of coffee and some sugar on the table as depicted in Figure~\ref{fig:obs_attr}. 
-Initially, the cup is far from the human and without sugar. While the human is not attentive (i.e., not \textit{co-present}) to the scenario, the robot adds some sugar to the cup and pushes it towards the human. 
+Initially, the cup is far from the human and without sugar. While the human is not attentive (i.e., not \textit{co-present}, say) to the scenario, the robot adds some sugar to the cup and pushes it towards the human. 
 % Once the human assesses this situation, being attentive 
 Once the human is attentive again, they
 can notice that the cup is closer. We can say that the position of the cup is \textit{observable}.
-However, without observing the robot adding sugar, the human cannot know if some sugar is added to the cup. Hence, we say the \textit{sugar-in-cup} attribute is \textit{inferrable}, 
-and the human agent would know if they observed the robot act. 
+However, without observing the robot adding sugar, the human cannot know if some sugar is added to the cup. Hence, we say the \textit{SugarInCup} attribute is \textit{inferrable}, 
+and the human agent would know if they observed the robot adding it. 
 % and the human agent can know when they observe the robot acting.
 
 % For example, suppose after the robot \textit{switches-on} the furnace, the furnace turns {\sc on}, and it is an \textit{observable} fact. So, if the human agent visits the kitchen in the future, they can see that the furnace is {\sc on}.     
@@ -641,19 +684,18 @@ If the agent executes an action, its belief is updated based on its effects. The
 % $B_{\varphi_r}^{s_2} = B_{\varphi_r}^{s_1}$ + replaced by the new assignment to the... (we need to introduce many more notations to do it this way) 
 
 \subsubsection{2. When Being an Observant:}
-% Let us first define action observability.
-% 
-% \paragraph{(Action Observability.)}
-\textbf{(\textit{Action Observability})}
+\hspace{-0.05in}
+\textbf{(\textit{Action Observability}.)}
 % An action being executed by an agent is \textit{observed} by all other agents co-present with the former, throughout the execution of this action.
 % % execution. 
 % Therefore, we state that if an agent observes an action being executed, 
 % % (and co-present throughout with the acing agent), with the help of situation assessment, 
 % the agent infers each \textit{inferrable} effect associated with this action.
-An action executed by an agent is \textit{observed} by another agent \emph{co-present} throughout the action execution. Therefore, we state that if an agent observes an action getting executed, the agent will infer the \textit{inferrable} effects of the action.
+% 
+An action executed by an agent is \textit{observed} by other agents \emph{co-present} throughout the action execution. Therefore, we state that if an agent observes an action getting executed, the agent will infer the \textit{inferrable} effects of the action.
 % or the inferrable state attributes associated to this action.
 % i.e., 
-Consequently, the agent immediately updates its belief state while each \textit{inferrable} attribute affected by the action receives a new value.  
+Consequently, the agent immediately updates its belief state while each inferrable attribute affected by the action receives a new value.  
 % with the new value for each state-attribute  affected inferrable} state attribute.
 
 % If the agent 
@@ -671,7 +713,7 @@ We do not yet consider cases where the robot's beliefs can diverge, too, assumin
 \subsubsection{3. Via Situation Assessment:}
 % This work abstractly employs in planning the main ideas of situation assessment based on spatial reasoning and observability.  (we said it!)
 The agent assesses the situation from its current location 
-with the help of spatial reasoning and its reference frame, i.e., the formal \textit{observability} model. Consequently, the agent updates its existing belief with the relevant ground truth. 
+with the help of spatial reasoning and its reference frame, i.e., the formalized \textit{observability} model. Consequently, the agent updates its existing belief with the relevant ground truth. 
 % Note that this also enables the agent to learn an \textit{observable} attribute's value achieved by another agent previously while now the agent shares its \textit{place} with the attribute (Definition~\ref{def:pssav}). 
 
 (Based on Definition~\ref{def:pssav}) We can always associate specific state attributes to \textit{places}. 
@@ -738,13 +780,14 @@ This enables $\varphi_h$ to learn an \textit{observable} attribute's value achie
 % Thanks to spatial reasoning, one can now define and plan with execution time observability conventions in a principled way. 
 % We keep an account on agents' belief divergence that can occur in practice due to spatial reasoning and perspective taking. 
 
-The agent updates its belief with relevant ground truth learned via situation assessment, performed ``immediately'' after the execution of each action. So, technically, the robot performs situation assessment for the human and itself.
+The agent updates its belief with relevant ground truth learned via situation assessment, performed ``immediately'' after the execution of each action. 
+Hence, the robot performs situation assessment for the human and itself.
 
 \subsubsection{4. When Being Communicated:}
 Its belief gets updated by learning ground truth when another agent communicates an attribute-value pair. Communication occurs via a \textit{distinct set} of actions, modeled as a predefined communication protocol for a pair of sender-receiver agents. 
 % and they are specified explicitly in the agents' joint task model -- $\mathrm{HTN_r}$ and $\mathrm{HTN_h}$.
 
-As the robot is always aware of ground truth, technically, it is effective only for the human belief.
+As the robot is always aware of ground truth, again, technically, it is effective only for the human belief.
 We note that each action communicates only {\em one} attribute-value pair, so just one attribute gets updated in the human belief.
 
 % In the next section
@@ -755,21 +798,21 @@ For each action, post its execution, the workflow for updating agents' beliefs i
 for the co-present agents, their beliefs are updated based on what they \textit{infer};
 and (3.) \textit{situation assessment} updates their beliefs with respective \textit{observable} facts. 
 % To make it unambiguous, say the \textit{first} action executed is a \textit{dummy} with no precondition and effect.
-To update initial observable facts, first a dummy action is executed with no precondition and effect.
+To update initial observable facts, first, a dummy action is executed with no precondition and effect.
 
 \section{Reasoning on Human Mental State}
-The human and robot agents carry individual, distinct belief states w.r.t. the ground truth (s.t. $\mathit{B}_{\varphi_r}$ is aligned with it), while the two can be either different or aligned. 
+The human and robot agents carry individual, distinct belief states w.r.t. the ground truth ($s$) (s.t. $\mathit{B}_{\varphi_r}^s$ is aligned with it), while the two can be either different or aligned. 
 However, the agents act as if they are certain about their knowledge.  
 Since the robot plans for both, it reasons about their distinct beliefs and manages the evolution of their individual beliefs. E.g., the robot adding salt to the pasta while the human being co-present or not can grow their belief states differently. 
 
 To produce a legal joint-plan, the robot is fine with such a divergence unless it has an \textit{adverse} effect, e.g., the human acting based on their false belief.
-At a stage, if the human agent, based on $\mathit{B}_{\varphi_h}$, can perform a set of actions that differs from what they could perform w.r.t. to $\mathit{B}_{\varphi_r}$ (or the ground reality), then we say that such divergent beliefs are \textit{relevant} to be \textit{tackled}.
+At a stage, if the human agent, based on $\mathit{B}_{\varphi_h}^{s_i}$, can perform a set of actions that differs from what they could perform w.r.t. to $\mathit{B}_{\varphi_r}^{s_i}$ (or the ground reality), then we say that such divergent beliefs are \textit{relevant} to be \textit{tackled}.
 A divergence is also declared as \textit{relevant} if an action has different effects w.r.t. the other agent's belief.
 
-One approach to tackle it could be to trace back to the action that creates this divergence and {\sc delay} it for future, if and when possible. E.g., the robot delays adding salt until the human arrives in the kitchen. 
-Second, communicating relevant divergences to the human agent, and is our main focus in this work. However, delaying may not always find a solution, but it could reduce communication requirements. (Our pilot development and results are in \textit{Appendix~C}.)
+One approach to tackle it could be to trace back to the action that creates this divergence and {\em DELAY} it for future, if and when possible. E.g., the robot delays adding salt until the human arrives in the kitchen. 
+Second, communicating relevant divergences to the human agent, and it is our main focus in this work. (However, delaying may not always find a solution, but it could reduce communication requirements. Our pilot development and results are in \textit{Appendix~C}.)
 
-Assessing the impact of human actions (based on their wrong $\mathit{B}_{\varphi_h}$) of different effects, with their overall positive and detrimental impacts on achieving a joint task can be interesting.
+Assessing the impact of different human actions (based on their wrong $\mathit{B}_{\varphi_h}^{s_i}$) or effects, with their overall positive and detrimental impacts on achieving a joint task can be interesting.
 An approach can be to analyze the agents' plan history or future actions to decide whether their beliefs should get aligned or not, or for that matter, how much to communicate, but it is out of the scope of this work. 
 
 \section{Planning With Communication Actions}
@@ -796,8 +839,8 @@ Suppose there exists a state-variable function, $f_{svs}:(?g_1 (gr_1), ?g_2 (gr_
 for the current world state $s \in \mathcal{S}$, the corresponding state attribute, $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},s)$ maps to $q$.
 
 An agent $\varphi_i$ can communicate this attribute-value pair to another agent $\varphi_j$, if the following conditions meet as action precondition: 
-(1) For $\varphi_i$, its belief state satisfies the fact being communicated, i.e.,
-$f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_i}^s) = q$, and (2) $\varphi_j$'s belief state does not satisfy this truth, i.e., $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_j}^s) = r$ such that $r \neq q$.
+(1.) For $\varphi_i$, its belief state satisfies the fact being communicated, i.e.,
+$f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_i}^s) = q$, and (2.) $\varphi_j$'s belief state does not satisfy this truth, i.e., $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_j}^s) = r$ such that $r \neq q$.
 The effect of this action is that now 
 % the attribute gets the true value and 
 $\varphi_j$'s belief is updated, i.e., $f_{\textit{svs}}(g_{(1)l},g_{(2)m},...,g_{(k)n},B_{\varphi_j}^s) \leftarrow q$. 
@@ -877,10 +920,10 @@ At this stage, say, the ground truth ($s_i$), we assume \textit{Updates Workflow
     \subsubsection{Communicate Only The Required Facts.}
     % The new approach 
     % Decides only the essential changes in the receiver's belief to be made. 
-    We note that there exists at least one attribute-value pair in receiver's belief causing adverse effects. 
-    The approach, explained in the next \textit{three steps}, looks for minimal number of such attribute-value pairs to be communicated so that
+    Note that there exists at least one \textit{attribute}-\textit{value} in receiver's belief state causing adverse effects. 
+    The approach, explained in the next \textit{three} steps, looks for the minimal number of such attribute-value pairs to be communicated so that
     % its modified belief (updated, but could still be diverging) becomes \textit{irrelevant}. 
-    the divergence in the updated beliefs is made \textit{irrelevant}, or even eliminated.
+    the divergence in the updated belief is made \textit{irrelevant}, or even eliminated.
     % And, for that following steps are followed. 
     % In the worst case, the robot communicates all the divergent attribute-value pairs, and their belief states are perfectly aligned. 
     % The subroutine used to decide which all communication actions will appear in the sender's executable plan; is described in the following steps:
@@ -962,9 +1005,9 @@ For a branch, it is guaranteed that it meets the {\em solution conditions}.
 % or \textit{assessed} by understanding a situation on or before the current time stamp. 
 % Of course, that agent’s action supplying the precondition (an attribute belonging to $\observable$ and its value) is scheduled before and cannot be destroyed. 
 % Hence this branch/trace is executable.
-Moreover, each precondition for an agent's action is achieved in earlier time stamp by either: its own action, 
+Moreover, each precondition for an agent's action is achieved in earlier time stamps by either: its own action, 
 % another agent's action occurred in the previous time step (this precondition is \textit{inferred}), 
-\textit{inferred} while observing another agent's acting, 
+\textit{inferred} while observing another agent's actions, 
 % by another agent communicated previously, 
 another agent \textit{communicated},
 % or \textit{assessed} by understanding a situation on or before the current time stamp. 
@@ -988,8 +1031,8 @@ Implies, the joint solution plan is executable.
 \begin{proof}
 Suppose a problem modeled based on our formalism has a solution, say, a joint solution tree, $\tau$ and is sound. 
 From $\tau$, remove all the communication and situation assessment steps, and say it generates $\tau'$. Now, relax the original problem, considering all the agents being always co-present and making all the propositions \textit{inferrable} everywhere. 
-Technically, our solver will generate $\tau'$ for this new problem when it exhaustively generates the whole search space (of course, it may contain redundant actions). 
-We {\em assure} it based on the underlying mechanism and that there is at least one solution ($\tau$) for the original problem. As a result, it is trivial to visualize that $\tau'$ is always extendable to generate $\tau$ w.r.t. the original problem. Since after the execution of each step, one can employ the situation assessment and action's effect inference subroutines, checking for belief divergences and using communication actions if needed. 
+Technically, the solver will generate $\tau'$ for this new problem when it exhaustively generates the whole search space (of course, it may contain redundant actions). 
+We assure it believing on the underlying mechanism and that there is at least one solution ($\tau$) for the original problem. As a result, it is trivial to visualize that $\tau'$ is always extendable to generate $\tau$ w.r.t. the original problem. (\textit{Updates Workflow}.) After the execution of each step, one can employ the situation assessment and action's effect inference subroutines, checking for belief divergences and using communication actions if needed. 
 % If the underlying scheme exhaustively generates all possible plan elaboration, 
 % a solution for the relaxed problem 
 % that the underlying solver can find, which means, this formalism after extending each proposition in $P$, and making it \textit{inferrable} at each \textit{place}, is also solvable. Then the proof is simple. 
@@ -1231,7 +1274,7 @@ In principle, the old solver can handle a belief divergence only when agents sta
 The old solver can align the beliefs via explicitly influencing (the human's) action model and a cumbersome technique using triggers to update their task networks. Our approach estimates the evolution of belief divergences at planning time and uses explicit communication actions to handle them in practice to generate robust plans. 
 
 \subsubsection{Cooking Pasta Domain:}
-Suppose a stove and salt are available in \textit{Kitchen} ($\in$ $\textit{Places}$), and the pasta can be either in \textit{Kitchen} or \textit{Room} (the two are adjacent). The agents have different roles and can only operate in the two places. Robot \textit{adds} salt to the pot and \textit{turns-on} the stove. Human \textit{grabs} the pasta and \textit{pours} it into the pot. 
+Suppose a stove and salt are available in \textit{Kitchen} $\in$ $\textit{Places}$, and the pasta can be either in \textit{Kitchen} or \textit{Room} (the two are adjacent). The agents have different roles and can only operate in the two places. Robot \textit{adds} salt to the pot and \textit{turns-on} the stove. Human \textit{grabs} the pasta and \textit{pours} it into the pot. 
 Pasta can be poured after salt is added to the pot and the stove is {\sc on}.
 Focus on the following two attributes associated to \textit{Kitchen}: For a given state, $s_i \in \mathcal{S}$, $f_{\textit{SaltInPot}}^{s_i} \in \{\textit{true, false}\}$ and $f_{\textit{stove}}^{s_i} \in \{\textit{on, off}\}$ such that only $f_{\textit{stove}}^{s_i}$ is \textit{inferrable}, all others belong to $\observable$.
 
@@ -1244,7 +1287,7 @@ The washer fluid ($\observable$) and engine oil ($\inferrable$) levels have to b
 Only the robot can \textit{refill} both the tanks and store the gallon while situated at \textit{Front} of the car. 
 \textit{Front-left} and \textit{Front-right} headlights have to be \textit{checked} and a light-bulb has to be \textit{replaced} at \textit{Rear}. 
 % Only the human can execute the last two actions and can either start from \textit{Front} or \textit{Rear}. 
-Only the human can check and replace lights, and they can start by either of this two tasks.
+Only the human can check and replace lights, and they can start with either of these two tasks.
 Both agents starts at \textit{Front}.
 The car's hood needs to be \textit{closed} by the human at last.
 
@@ -1258,7 +1301,7 @@ The car's hood needs to be \textit{closed} by the human at last.
 % Consider the first domain. We discuss the plans obtained in two different scenarios as shown in Figure~\ref{fig:scenarios}. Assume that both the agents are in \textit{Kitchen} and the pasta is in \textit{Room}. Scenario~(A) captures the agents' plans when the robot starts while Scenario~(B) shows when the human starts. Let us change the scenario: Suppose, in hindsight, the pasta is moved to \textit{kitchen} such that the robot knows it, while the human still has the old belief. For this, Scenario~(C) captures the plans obtained when the human starts. 
 
 % Analysis i
-In the first domain to discuss \textit{subtleties} the old solver overlooks and how ours is aware of them, updates beliefs, and effectively manages divergences. 
+In the first domain, we highlight \textit{subtleties} the old solver overlooks and how ours is aware of them, updates beliefs, and effectively manages divergences. 
 We discuss the plans obtained in two scenarios 
 as shown in Figure~\ref{fig:scenarios}. Assume that both the agents are in \textit{Kitchen} and the human acts first. Scenario~(A): Captures the agents' plans when the pasta is in \textit{Room}. 
 Scenario~(B): 
@@ -1271,7 +1314,7 @@ In hindsight, the pasta is moved from \textit{Room} to {\em Kitchen}, which the 
     % Our solver predicts it when the human returns to the kitchen and assesses that the stove is {\sc on}, and their belief gets updated.
     \item \textbf{Scenario~(A):} 
     % The human leaves the kitchen and hence practically is unaware of the changes achieved in the environment by the robot's actions: {\em turn on} and {\em add salt}. 
-    As the human left {\em Kitchen}, practically, she is unaware of the changes caused by the robot's actions: {\em turn on} and {\em add salt}. (\textit{Left}) The old solver considers agents omniscient. So, the human knows that the stove is {\sc on}, and salt is added even before arriving back in {\em Kitchen}. (\textit{Right}) Thanks to both situation assessment and inference based on action observability, it estimates that when returning to the kitchen, the human assesses that the stove is {\sc on}. Moreover, it predicts that the human cannot know \textit{SaltInPot} and that this divergence, identified as relevant, needs to be handled via communication.
+    As the human left {\em Kitchen}, practically, they are unaware of the changes caused by the robot's actions: {\em turn on} and {\em add salt}. (\textit{Left}) The old solver considers agents omniscient. So, the human knows that the stove is {\sc on}, and salt is added even before arriving back in {\em Kitchen}. (\textit{Right}) Thanks to both situation assessment and inference based on action observability, it estimates that when returning to the kitchen, the human assesses that the stove is {\sc on}. Moreover, it predicts that the human cannot know \textit{SaltInPot} and that this divergence, identified as relevant, needs to be handled via communication.
     % The old solver considers agents omniscient, i.e., they know everything immediately once achieved. Hence, the human knows that the stove is {\sc on}, and salt is added even before being back in \textit{Kitchen}.
     % The new solver, thanks to both an appropriate situation assessment and inference based on action observability, estimates that when returning to the kitchen, the human assesses that the stove is {\sc on}.
     % Moreover, it predicts that the human cannot know the \textit{SaltInPot} fact and that this divergence, identified as relevant, needs to be handled via communication. 
@@ -1301,9 +1344,9 @@ In hindsight, the pasta is moved from \textit{Room} to {\em Kitchen}, which the 
         \\ \cline{1-5}
         \textit{Cooking} & 18.6\% & 77.0\% & 23.0\%  & 54.9\%\\
         \textit{Box} & 25.0\% & 83.3\% & 16.7\%  & 68.8\%\\
-        \textit{Car} & 12.5\% & 73.2\% & 26.8\%  & 83.6\%\\
+        \textit{Car} & 12.5\% & 73.2\% & 26.8\%  & 79.7\%\\
         \hline
-        \textbf{Average} & 18.7\% & 77.8\% & 22.2\%  & 69.1\%\\
+        \textbf{Average} & 18.7\% & 77.8\% & 22.2\%  & 67.8\%\\
     \end{tabular}
     \end{adjustbox}
     \caption
@@ -1348,7 +1391,7 @@ In hindsight, the pasta is moved from \textit{Room} to {\em Kitchen}, which the 
 % We designed three new domains to test our solver and compare it with the existing solver and the 
 Quantitative results in three new domains appear in Table~\ref{tab:q_results}. 
 We consider (in box domain) \textit{three} boxes to be prepared and sent. 
-In all three, we generated 512 different initial states, including 448 (87.5\%) with divergent initial agents' beliefs and 64 states where agents' beliefs are fully aligned initially. 
+In each domain, we generated 512 different initial states, including 448 (87.5\%) with divergent initial beliefs and 64 states where beliefs are fully aligned initially. 
 Overall, 3072 plans were generated.
 % In each domain, we generated 512 different initial states, including 448 (87.5\%) with divergent initial agents' beliefs, and 64 states where both agent beliefs are fully aligned, initially. Thus, we computed a total of 2048 plans.
 
@@ -1362,18 +1405,20 @@ Overall, 3072 plans were generated.
 
 With the old approach, a planning failure occurs due to: 
 (a) an action of a plan not applicable in another agent's belief state, including the ground truth; 
-(b) if an inactivity deadlock occurs, which is assumed to be the case after a succession of at least four \textit{WAIT} and (or) \textit{IDLE} actions. 
+(b) if an inactivity deadlock occurs, which is assumed to be the case after a succession of at least four {\em WAIT} and (or) {\em IDLE} actions. 
 % Such deadlocks can occur when the human has a belief divergence, making them wait for robot's actions that never happen (e.g., the human waits for the robot to add salt but \textit{SaltInPot} already holds for it).
 % Along with the success rate (\textit{S}), the \textit{ratio} of the number of failed plans due to a non-applicable action (\textit{NA}) and due to an inactivity deadlock (\textit{IDL}) appear in the table, too.
-Such deadlock occurs when the human has a belief divergence and waits for a never-happening robot's action, e.g., waiting for \textit{add salt}, but \textit{SaltInPot} is already achieved.
+Such deadlocks occur when the human has a belief divergence and waits for a never-happening robot's action, e.g., waiting for \textit{adding} salt, but \textit{SaltInPot} is already achieved.
 For the old solver, the success rate (\textit{S}), the \textit{ratios} of the number of failed plans due to a inapplicable action (\textit{NA}) and to an inactivity deadlock (\textit{IDL}) appear in the table.
 % Using our approach, the \textit{ratio} of successful plans with a communication action is presented under \textit{Com}.
 For ours, the \textit{ratio} of successful plans with a communication action is presented under \textit{Com}.
 
-As the existing solver does not handle belief divergence in planning, the applicability of actions is never an issue w.r.t. another agent's belief. Therefore, if the \textit{IDL} case occurs, it is understood that the task specification is erroneous. 
-% However, we handle belief divergences in planning, captured and supported by our \textit{observability} based tools, employed in our solver, developed to cater to more realistic scenarios.
+As the old solver does not handle belief divergence in planning, the applicability of actions is never an issue w.r.t. another agent's beliefs. 
+%Therefore, if the \textit{IDL} case occurs, it is understood that the task specification is erroneous. 
+Therefore, if the \textit{IDL} case occurs, it is understood that the initial belief divergences are not tackled by modeling triggers explicitly in the task specifications. 
+% do not handle initial belief divergences (via modeling triggers explicitly). 
 
-Our solver always finds legal plans, and on average $\approx$ 69\% of them use \textit{communication}.
+Our solver always finds legal plans, and on average $\approx$ 68\% of them use \textit{communication}.
 Moreover, the robot doesn't need to communicate systematically as assessing situations handles a major part of the divergences (87.5\% of the scenarios have divergent beliefs initially).
 For the old solver, if no initial belief divergence exists, it always finds a legal plan, considering the agents omniscient. 
 E.g., Fig.~\ref{fig:scenarios}(A). However, sometimes, this causes problems in practice.
@@ -1385,28 +1430,28 @@ Scenarios beginning with unaligned beliefs induce actions often not applicable i
 We can see that our solver uses more communication actions in the car maintenance domain than in the other two.
 But looking at the \textit{low} old solver's success rate (12.5\%), we conclude that this domain generally needs more communication. 
 Compared to others, it purposely creates non-relevant belief divergence, e.g., the robot storing the gallon in the cabinet ($\inferrable$) is irrelevant.
-After a close analysis, we found that $\approx$ 72\% of the plans have divergent human beliefs at least in one branch after the last action (\textit{leaf}) was executed (i.e., \textit{irrelevant} divergences never got communicated). 
+After a close analysis, we found that $\approx$ 42\% of the plans have divergent human beliefs at least in one branch after the last action (\textit{leaf}) was executed (i.e., \textit{irrelevant} divergences never got communicated). 
 
 % **In the car maintenance domain, the position of the oil bottle isn't relevant for the human. Thus, when Human isn't observing Robot storing the bottle a non relevant belief divergence is created (71.9\%). This divergence has no influence on Human actions so no belief alignment is performed (implies less communication). 
 
 \section{Discussion}
 % Building on earlier work,
-We formalize run-time observability conventions based abstractly on situation assessment and action observability. 
-We use this formalism to estimate the evolution of the human mental state and capture belief divergences. 
-A new planning approach is described, utilizes the estimation of human mental state to plan for robust and consistent human-robot joint activities such that a relevant belief divergence is tackled by explicitly modeled communication actions. Compared to the old, ours produces consistent and more robust plans. 
+We formalize execution-time observability conventions based on situation assessment and action observability (ToM). We use it to estimate the evolution of the human mental state and capture belief divergences. 
+A new planner is described, which utilizes this better estimation of human mental state to plan for more robust and consistent human-robot joint activities such that a relevant belief divergence is tackled by explicitly modeled communication actions. 
+% Compared to the old solver, 
+% This new planner produces consistent and more robust plans. 
 
-First of all, we \textit{put} an effort to make our main contributions to have a ``generic'' description. Hence, they are not limited to only our intended HATP/EHDA framework.
+Moreover, our effort was to make our main \textit{contributions} (i.e., formalizing observability based conventions) to have a ``generic'' description. Hence, they are not limited to only our intended framework (HATP/EHDA).
 % , which we plan to enhance in this paper.
 
-Also, a principled way to handle those conventions is vital for robust planning, as, otherwise, it can lead to difficulty at run-time. 
+Handling these conventions formally is vital for robust planning, as otherwise, it can lead to problems at run-time. 
 E.g., Fig.~\ref{fig:scenarios}(A): the human knowing \textit{SaltInPot} is ambiguous. 
-Explicit reasoning on the human mental state detects ambiguous situations and removes them via communication while avoiding the robot from being mouthy.
+Explicit reasoning on the human mental state detects ambiguous situations and removes them via communication. 
 
 Our formalism does not refute something believed by an agent through situation assessment. 
-E.g., for some $s_i \in \mathcal{S}$, if the human wrongly believes that the pasta is in \textit{Kitchen}. The situation assessment does not help refute this, while the human is in \textit{Kitchen}. 
-The reason is that $f_{\textit{pasta-not-in-kitchen}}^{s_i}(...)$ is not modeled explicitly as an attribute. 
-And hence such issues do not affect the its completeness. 
-% as far as the situation assessment is concerned. 
+E.g., for some $s_i \in \mathcal{S}$, if the human \textit{wrongly} believes that the pasta is in \textit{Kitchen}. The situation assessment does not help refute this, while the human is in \textit{Kitchen}. 
+The reason is that $f_{\textit{PastaNotInKitchen}}^{s_i}(...)$ is not modeled explicitly as an attribute. 
+And hence such issues do not affect the completeness. 
 Moreover, our solver handles them as a \textit{relevant} divergence to be aligned. Followed by the human is communicated with correct updates.
 
 % We informally introduced the option to delay robot's actions. We study this aspect separately and in a prototypical way. We have an initial success as we empirically found situations where it would be helpful and reduce overall communication requirements depending on the cost trade-offs. We intend to bring this idea to our elaboration process.
